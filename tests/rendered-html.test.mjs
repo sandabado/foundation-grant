@@ -228,6 +228,23 @@ test("ships the optimized Jesse Gawlik founder portrait", async () => {
   assert.ok(portrait.byteLength < 500_000);
 });
 
+test("states a specific and truthful open-science licensing plan", async () => {
+  const source = await readFile(
+    new URL("../app/FoundationExperience.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /Field study protocols will be registered on OSF before data collection begins/);
+  assert.match(source, /Human-participant data will be de-identified/);
+  assert.match(source, /Public registrations and versioned archival releases will receive repository-issued DOIs/);
+  assert.match(source, /Quarterly expense updates and an annual financial summary/);
+  assert.match(source, /CC BY 4\.0 International license/);
+  assert.match(source, /https:\/\/creativecommons\.org\/licenses\/by\/4\.0\//);
+  assert.match(source, /OSF PROJECT \/ COMING SOON/);
+  assert.match(source, /ZENODO ARCHIVE \/ COMING SOON/);
+  assert.doesNotMatch(source, /osf\.io\/YOUR_PROJECT_ID/);
+});
+
 test("integrates all four interactive architectural models inside their sections", async () => {
   const [experience, garden, dome, architecture] = await Promise.all([
     readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),

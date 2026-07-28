@@ -450,12 +450,15 @@ export default function FoundationExperience() {
             <article className="science-commitment">
               <span className="eyebrow">OPEN SCIENCE COMMITMENT</span>
               <ul>
-                <li>Pre-registration on OSF before data collection</li>
-                <li>Open data on OSF/Zenodo under CC-BY license</li>
-                <li>Negative results published</li>
-                <li>Full replication protocol will be made available</li>
-                <li>Annual financial summary published</li>
+                <li><strong>Pre-registration.</strong> Field study protocols will be registered on OSF before data collection begins.</li>
+                <li><strong>Open data.</strong> Public-interest datasets will be archived through OSF and Zenodo under the CC BY 4.0 International license.</li>
+                <li><strong>Privacy by design.</strong> Human-participant data will be de-identified, and sensitive ecological locations will not be made openly identifiable.</li>
+                <li><strong>Citable outputs.</strong> Public registrations and versioned archival releases will receive repository-issued DOIs.</li>
+                <li><strong>Negative results.</strong> Failed hypotheses and null findings will be published alongside positive results.</li>
+                <li><strong>Replication protocol.</strong> Complete methods and data dictionaries will support independent verification.</li>
+                <li><strong>Financial transparency.</strong> Quarterly expense updates and an annual financial summary will be published.</li>
               </ul>
+              <p className="repository-plan"><strong>Repository plan.</strong> OSF will hold preregistrations, evolving protocols, and field logs. Zenodo will preserve versioned annual releases when they are ready for citation.</p>
             </article>
             <article className="advisory-note">
               <span className="eyebrow">ADVISORY BOARD</span>
@@ -466,7 +469,9 @@ export default function FoundationExperience() {
           </div>
           <div className="public-links">
             <a className="button button-secondary" href="mailto:jesse@wholebody.foundation">CONTACT JESSE</a>
-            <span aria-disabled="true">OSF PROFILE / COMING SOON</span>
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0 TERMS ↗</a>
+            <span aria-disabled="true">OSF PROJECT / COMING SOON</span>
+            <span aria-disabled="true">ZENODO ARCHIVE / COMING SOON</span>
             <span aria-disabled="true">FIELD LOG / COMING SOON</span>
           </div>
         </div>
@@ -506,9 +511,9 @@ export default function FoundationExperience() {
           <p>Field research station · Open data · Public-interest science</p>
           <a className="button button-primary" href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Inquiry">EMAIL THE FOUNDATION ↗</a>
           <a className="footer-email" href="mailto:jesse@wholebody.foundation">JESSE@WHOLEBODY.FOUNDATION</a>
-          <address>Old Glory Peak Field Station<br />Morongo Valley, San Bernardino County, California<br /><br />OSF profile · coming soon<br />Field log · coming soon</address>
+          <address>Old Glory Peak Field Station<br />Morongo Valley, San Bernardino County, California<br /><br />OSF project · coming soon<br />Zenodo archive · coming soon<br />Field log · coming soon</address>
         </div>
-        <small>© 2026 WHOLE BODY FOUNDATION · ALL RESEARCH OUTPUTS PUBLISHED UNDER CC-BY LICENSE UNLESS OTHERWISE NOTED</small>
+        <small>© 2026 WHOLE BODY FOUNDATION · UNLESS OTHERWISE NOTED, FOUNDATION-AUTHORED PUBLIC RESEARCH OUTPUTS ARE RELEASED UNDER <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0 INTERNATIONAL</a></small>
       </footer>
     </main>
   );
