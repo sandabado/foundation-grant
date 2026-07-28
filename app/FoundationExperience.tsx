@@ -1,40 +1,64 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import EarthCube from "./EarthCube";
 
 const nav = [
   ["mission", "Mission"],
-  ["dome", "Dome"],
-  ["garden", "Garden"],
-  ["survey", "Survey"],
+  ["map", "Map"],
+  ["build", "Build"],
+  ["method", "Method"],
+  ["phases", "Phases"],
   ["budget", "Budget"],
-  ["roadmap", "Roadmap"],
-  ["team", "Team"],
+  ["library", "Library"],
+  ["public", "Public"],
 ];
 
 const gardenNodes = [
   { id: "north", x: 50, y: 18, title: "Herb Spiral North", meta: "Medicinals + culinary herbs", body: "A dry-to-moist microclimate gradient supports desert-adapted herbs with copper edging and gravity-fed drip irrigation." },
   { id: "east", x: 79, y: 70, title: "Pollinator Spiral", meta: "Flowers + nitrogen fixers", body: "A companion-planted bed extends bloom cycles, supports native pollinators, and restores nitrogen to depleted desert soil." },
   { id: "west", x: 21, y: 70, title: "Root Crop Spiral", meta: "Deep soil + shade", body: "A deeper soil profile grows roots beneath a seasonal shade frame, protecting moisture through the hottest months." },
-  { id: "cistern", x: 50, y: 52, title: "Copper Cistern", meta: "1,000 gallon water hub", body: "The central reservoir gravity-feeds every bed. A copper resonator doubles as an instrumented field-study point." },
+  { id: "cistern", x: 50, y: 52, title: "Copper Cistern", meta: "1,000 gallon water hub", body: "The central reservoir gravity-feeds every bed. Water is tested for ORP, pH, and mineral content before it reaches the growing system." },
 ];
 
 const budget = [
-  ["Personnel", 45000, "#84a66e"],
-  ["Equipment", 8000, "#b87333"],
-  ["Sponsor fee", 7500, "#c9a227"],
-  ["Travel", 6000, "#2e86ab"],
-  ["Data + hosting", 4000, "#6d4aff"],
-  ["Legal + insurance", 3500, "#d7d0bd"],
-  ["Contingency", 1000, "#888888"],
+  ["California climate investment", 50000, "#84a66e"],
+  ["Foundation grants", 15000, "#b87333"],
+  ["Community + workshops", 10000, "#d7d0bd"],
 ] as const;
 
 const milestones = [
-  ["01", "MONTHS 1—3", "Map the baseline", "Fiscal sponsorship active · First 50 survey points · Public field log"],
-  ["02", "MONTHS 4—6", "Build the system", "First grant · Dome fabrication · Garden earthworks · 150 survey points"],
-  ["03", "MONTHS 7—12", "Run the experiment", "Full sensor network · First harvest · Open dataset · Annual report"],
-  ["04", "MONTHS 13—18", "Share the method", "Second survey cycle · Workshop series · 501(c)(3) transition"],
+  ["01", "BASELINE", "Map the baseline", "Fiscal sponsorship active · First 50 GPS-tagged survey points · Public field log on OSF · Old Glory Peak ridge survey · Magnetometer transects across fault traces · Mineral identification catalog"],
+  ["02", "INFRASTRUCTURE", "Build the system", "First grant awarded · Dome fabrication · Garden earthworks · 150 survey points · Water quality baseline · Offline field computer operational"],
+  ["03", "EXPERIMENT", "Run the experiment", "Full sensor network · IRB-approved psychophysiology protocol · First harvest · Annual open dataset published · Alpha Node vs. Control Node comparison begins"],
+  ["04", "REPLICATION", "Share the method", "Second survey cycle · Workshop series for land managers · 501(c)(3) transition · Replication protocol published · Peer-reviewed manuscript submitted"],
+];
+
+const methods = [
+  {
+    number: "01",
+    title: "Environmental geophysics",
+    body: "Smartphone magnetometer transects calibrated against USGS aeromagnetic data. Rock sampling with standard field methods: Mohs hardness, streak plate, HCl reaction, magnetic susceptibility. Water quality testing: ORP, pH, heavy metals, mineral content.",
+  },
+  {
+    number: "02",
+    title: "Community psychophysiology",
+    body: "Polar H10 chest straps for 5-minute RMSSD recordings three times weekly. Salivary cortisol via Salivette tubes, morning and evening, monthly. Quasi-experimental design with a matched control community. Repeated-measures ANOVA, Bonferroni-corrected for six supplementary outcomes. IRB-approved and pre-registered on OSF before data collection.",
+  },
+  {
+    number: "03",
+    title: "Network & systems science",
+    body: "Decision latency analysis from governance meeting timestamps. Local economic velocity tracking. Fractal scaling analysis of community network structures.",
+  },
+];
+
+const documents = [
+  ["PDF", "Project Summary", "Mission, research questions, methods, site justification, budget, and timeline."],
+  ["PDF", "Magnetometer Survey Protocol", "Transect design, including Transect C along the Old Glory Peak ridge: east–west, 400 meters, nine stations at 50-meter spacing. Station log, quality control, data export, and field safety protocols."],
+  ["PDF", "BIO-001 Psychophysiology Protocol", "HRV specifications, cortisol assay protocol, control matching criteria, statistical analysis plan, Bonferroni correction, and the three-outcome framework."],
+  ["PDF", "Phase 1 Action Plan", "Week-by-week implementation: legal setup, equipment acquisition, field survey execution, and grant submissions."],
+  ["PDF", "Annual Budget Breakdown", "Line-item budget with justification: personnel, data stewardship, construction, field collection, documentation, and contingency."],
+  ["PDF", "Informed Consent Template", "IRB-ready consent form for HRV and cortisol study participants."],
+  ["CSV", "Open Dataset — Survey Points", "GPS coordinates, magnetometer readings, lithology, and mineral identification. Published when field data is available."],
 ];
 
 function Dome() {
@@ -78,8 +102,8 @@ function Dome() {
     >
       <div className="dome-orbit" style={{ transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}>
         <svg viewBox="-150 -145 300 300" role="img">
-          {edges.map(([a, b], i) => <line key={i} x1={points[a].x} y1={points[a].y} x2={points[b].x} y2={points[b].y} className={i % 3 === 0 ? "strut hot" : "strut"} />)}
-          {points.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="3" className="joint" />)}
+          {edges.map(([a, b], i) => <line key={i} x1={points[a].x.toFixed(4)} y1={points[a].y.toFixed(4)} x2={points[b].x.toFixed(4)} y2={points[b].y.toFixed(4)} className={i % 3 === 0 ? "strut hot" : "strut"} />)}
+          {points.map((p, i) => <circle key={i} cx={p.x.toFixed(4)} cy={p.y.toFixed(4)} r="3" className="joint" />)}
         </svg>
       </div>
       <span className="drag-note">DRAG TO ROTATE</span>
@@ -157,48 +181,79 @@ export default function FoundationExperience() {
       </nav>
 
       <header className="hero" id="top">
+        <picture className="hero-media">
+          <source media="(max-width: 768px)" srcSet="/hero-images/mojave-hero-mobile.jpg" />
+          <img
+            src="/hero-images/mojave-hero-desktop.jpg"
+            alt="Aerial view of the angular Sawtooth Mountains terrain north of Morongo Valley"
+            fetchPriority="high"
+          />
+        </picture>
+        <div className="hero-scrim" />
         <div className="hero-grid" />
         <div className="hero-copy">
-          <span className="eyebrow reveal">MOJAVE DESERT / 34.969° N, 116.419° W</span>
+          <span className="eyebrow reveal">MOJAVE FIELD RESEARCH / 34.969° N, 116.419° W</span>
           <h1><span>FIELDWORK</span><br />FOR A LIVING<br /><em>PLANET.</em></h1>
+          <span className="hero-location">SURVEYING THE OLD GLORY PEAK TRANSECT CORRIDOR</span>
           <p>A community research station mapping the unseen forces that shape desert ecology—and testing practical systems for life in a hotter, drier world.</p>
-          <a href="#mission" className="cta">ENTER THE FIELD <span>↓</span></a>
-        </div>
-        <div className="hero-mark">
-          <EarthCube />
-          <span>WHOLE / BODY</span>
+          <div className="hero-actions" aria-label="Explore the fieldwork">
+            <a href="#map">MAP</a>
+            <a href="#build">BUILD</a>
+            <a href="#library">SHARE</a>
+          </div>
         </div>
         <div className="hero-stats">
           <div><strong>50</strong><span>SQUARE MILES</span></div>
-          <div><strong>200+</strong><span>SURVEY POINTS</span></div>
-          <div><strong>01</strong><span>LIVING LAB</span></div>
+          <div><strong>04</strong><span>FAULT TRANSECTS</span></div>
+          <div><strong>CC</strong><span>BY OPEN DATA</span></div>
         </div>
       </header>
 
       <section id="mission" className="section mission">
-        <div className="section-number">01 / MISSION</div>
+        <div className="section-number">01 / THE PREMISE</div>
         <div className="mission-lead">
-          <span className="eyebrow">THE PREMISE</span>
+          <span className="eyebrow">PUBLIC-INTEREST FIELD SCIENCE</span>
           <h2>The desert is not empty.<br />It is <em>information-dense.</em></h2>
         </div>
         <div className="mission-copy">
-          <p>We’re building a baseline ecological record where geomagnetic mapping, soil observation, acoustic research, and dryland agriculture meet.</p>
+          <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, and dryland agriculture meet.</p>
           <p>This is public-interest field science: measurable, repeatable, and shared openly with the people who steward the land.</p>
         </div>
         <div className="pillars">
           {[
-            ["01", "MAP", "GPS-tagged magnetic readings reveal patterns across 50 square miles of the Mojave."],
-            ["02", "BUILD", "A metal-free dome and one-acre garden turn a remote site into a working laboratory."],
-            ["03", "SHARE", "Field notes, datasets, and build methods stay open for land managers and communities."],
+            ["01", "MAP", "Link GPS-tagged field strength to lithology, mineral assemblage, and photographic documentation."],
+            ["02", "BUILD", "Test natural-material structures, desert agriculture, water systems, and offline field computing."],
+            ["03", "SHARE", "Pre-register hypotheses, publish negative results, and release data under a CC-BY license."],
           ].map(p => <article key={p[0]}><span>{p[0]}</span><h3>{p[1]}</h3><p>{p[2]}</p></article>)}
         </div>
       </section>
 
-      <section id="dome" className="section dome-section">
-        <div className="section-number light">02 / INSTRUMENT</div>
+      <section id="map" className="section survey-section">
+        <div className="section-number light">02 / MAP THE BASELINE</div>
+        <div className="survey-map">
+          <div className="contours">{Array.from({length: 11}, (_, i) => <i key={i} style={{ inset: `${i * 3.7 + 8}% ${i * 4.3 + 7}%`, transform: `rotate(${i * 7 - 28}deg)` }} />)}</div>
+          {Array.from({length: 38}, (_, i) => <b key={i} style={{ left: `${8 + ((i * 37) % 84)}%`, top: `${9 + ((i * 53) % 76)}%`, animationDelay: `${(i % 8) * .14}s` }} />)}
+          <div className="map-callout"><span>ANOMALY CLUSTER 07</span><strong>+184 nT</strong><small>34.9678° / −116.4012°</small></div>
+        </div>
+        <div className="survey-copy">
+          <span className="eyebrow">OPEN-ACCESS BASELINE</span>
+          <h2>Make the invisible<br />legible.</h2>
+          <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline across the Old Glory Peak transect corridor, in a region shaped by the Pinto Mountain and Morongo Valley fault systems.</p>
+          <p>Historical gold mining in the Morongo District documents mineralized quartz vein systems along these structures. Four transects cross the fault traces, including a dedicated high-resolution grid along the Old Glory Peak ridge itself.</p>
+          <p>Every station links field strength to lithology, mineral assemblage, and photographic documentation. Every dataset is published on the Open Science Framework under a CC-BY license before analysis begins.</p>
+          <div className="research-standard">
+            <span>THE STANDARD</span>
+            <p>We pre-register our hypotheses. We publish negative results.</p>
+            <strong>We do not claim magic. We claim optimized physics.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="build" className="section dome-section">
+        <div className="section-number light">03 / BUILD THE INSTRUMENT</div>
         <div className="section-head light">
           <div><span className="eyebrow">ACOUSTIC + FIELD RESEARCH</span><h2>A room with<br />no interference.</h2></div>
-          <p>Ten feet across. Sixty-five Douglas fir struts. Zero metal fasteners. The 2V geodesic dome creates a controlled acoustic space without distorting electromagnetic readings.</p>
+          <p>Ten feet across. Sixty-five Douglas fir struts. Zero metal fasteners. The 2V geodesic dome creates a controlled acoustic space without distorting electromagnetic readings—a replicable prototype for natural-material research structures.</p>
         </div>
         <div className="dome-layout">
           <Dome />
@@ -210,72 +265,134 @@ export default function FoundationExperience() {
         </div>
       </section>
 
-      <section id="garden" className="section garden-section">
-        <div className="section-number">03 / LIVING SYSTEM</div>
+      <section id="systems" className="section garden-section">
+        <div className="section-number">04 / LIVING SYSTEM</div>
         <div className="section-head">
           <div><span className="eyebrow">TETRAHEDRON GARDEN</span><h2>Grow food.<br />Measure everything.</h2></div>
           <p>Three productive spirals orbit one water hub. Each element performs twice: sustaining a crop while collecting evidence about desert growing systems.</p>
         </div>
         <Garden />
         <div className="metric-row">
-          <div><strong>90%</strong><span>LESS WATER*</span></div><div><strong>3×</strong><span>PLANTING DENSITY*</span></div><div><strong>12</strong><span>MICROCLIMATES</span></div>
-          <small>* Pilot targets to be validated during the first growing cycle.</small>
+          <div><strong>1K</strong><span>GALLON CISTERN</span></div><div><strong>03</strong><span>PRODUCTIVE SPIRALS</span></div><div><strong>ORP</strong><span>PH + MINERAL TESTING</span></div>
+          <small>Every water reading becomes part of the Living River baseline.</small>
+        </div>
+        <div className="water-note">
+          <span className="eyebrow">WATER AS EVIDENCE</span>
+          <p>A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content—baseline data for the Living River system and a verifiable record of what this land produces without synthetic inputs.</p>
+        </div>
+        <div className="offline-panel">
+          <div>
+            <span className="eyebrow">FIELD COMPUTER / AIR-GAPPED</span>
+            <h2>Offline by design.</h2>
+          </div>
+          <div>
+            <p>A self-contained field computer runs entirely without internet. Raspberry Pi 5 with a closed WiFi network, GPS module, and local AI reference system. Field notes are GPS-stamped and stored locally. No cloud dependency. No data leaving the site.</p>
+            <div className="offline-stats"><span>SOLAR-CHARGED</span><span>BATTERY-BACKED</span><span>AIR-GAPPED</span></div>
+          </div>
         </div>
       </section>
 
-      <section id="survey" className="section survey-section">
-        <div className="section-number light">04 / FIELD SURVEY</div>
-        <div className="survey-map">
-          <div className="contours">{Array.from({length: 11}, (_, i) => <i key={i} style={{ inset: `${i * 3.7 + 8}% ${i * 4.3 + 7}%`, transform: `rotate(${i * 7 - 28}deg)` }} />)}</div>
-          {Array.from({length: 38}, (_, i) => <b key={i} style={{ left: `${8 + ((i * 37) % 84)}%`, top: `${9 + ((i * 53) % 76)}%`, animationDelay: `${(i % 8) * .14}s` }} />)}
-          <div className="map-callout"><span>ANOMALY CLUSTER 07</span><strong>+184 nT</strong><small>34.9678° / −116.4012°</small></div>
+      <section id="method" className="section method-section">
+        <div className="section-number light">05 / METHOD</div>
+        <div className="section-head light">
+          <div><span className="eyebrow">MECHANISM BEFORE CLAIM</span><h2>How we work.</h2></div>
+          <p>Our methodology sits at the intersection of three disciplines. Every measurement is tied to a mechanism, a protocol, and a place.</p>
         </div>
-        <div className="survey-copy">
-          <span className="eyebrow">OPEN-ACCESS BASELINE</span>
-          <h2>Make the invisible<br />legible.</h2>
-          <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline for change. Every observation links field strength to soil, sound, weather, and land use.</p>
-          <div className="data-sample"><span>POINT 0192</span><b>47,382 nT</b><small>LAT 34.9691 / LON −116.4194 / ±3.2m</small></div>
+        <div className="method-grid">
+          {methods.map(method => (
+            <article key={method.number}>
+              <span>{method.number}</span>
+              <h3>{method.title}</h3>
+              <p>{method.body}</p>
+            </article>
+          ))}
+        </div>
+        <div className="method-manifesto">
+          <strong>We do not claim magic. We claim optimized physics.</strong>
+          <p>Every claim backed by a mechanism. Every measurement tied to a GPS coordinate. Every dataset open and reproducible.</p>
         </div>
       </section>
 
-      <section id="budget" className="section budget-section">
-        <div className="section-number">05 / RESOURCES</div>
-        <div className="budget-head"><div><span className="eyebrow">YEAR ONE</span><h2>$75,000</h2></div><p>A lean first year funds people before objects: field collection, data stewardship, construction, insurance, and public documentation.</p></div>
-        <div className="budget-table">
-          {budget.map(([name, amount, color], i) => <div key={name} className="budget-row"><span className="rank">0{i + 1}</span><span>{name}</span><div className="budget-bar"><i style={{ width: `${(amount / 45000) * 100}%`, background: color }} /></div><b>${amount.toLocaleString()}</b></div>)}
-        </div>
-        <div className="funding"><span>PROPOSED FUNDING MIX</span><p>California climate investment <b>$50K</b> · Foundation grants <b>$15K</b> · Community + workshops <b>$10K</b></p></div>
-      </section>
-
-      <section id="roadmap" className="section roadmap-section">
-        <div className="section-number light">06 / ROADMAP</div>
-        <div className="section-head light"><div><span className="eyebrow">18 MONTHS</span><h2>From first point<br />to public method.</h2></div><p>A staged path that makes early work useful immediately, then adds infrastructure as evidence and support grow.</p></div>
+      <section id="phases" className="section roadmap-section">
+        <div className="section-number light">06 / PHASES</div>
+        <div className="section-head light"><div><span className="eyebrow">STAGED FOR EVIDENCE</span><h2>From first point<br />to public method.</h2></div><p>A staged path that makes early work useful immediately, then adds infrastructure as evidence and support grow.</p></div>
         <div className="timeline">
           {milestones.map(m => <article key={m[0]}><span className="milestone">{m[0]}</span><small>{m[1]}</small><h3>{m[2]}</h3><p>{m[3]}</p></article>)}
         </div>
       </section>
 
-      <section id="team" className="section team-section">
-        <div className="section-number">07 / PEOPLE</div>
+      <section id="budget" className="section budget-section">
+        <div className="section-number">07 / RESOURCES</div>
+        <div className="budget-head"><div><span className="eyebrow">LEAN FIRST YEAR</span><h2>$75,000</h2></div><p>A lean first year funds people before objects: field collection, data stewardship, construction, insurance, and public documentation.</p></div>
+        <div className="budget-table">
+          {budget.map(([name, amount, color], i) => <div key={name} className="budget-row"><span className="rank">0{i + 1}</span><span>{name}</span><div className="budget-bar"><i style={{ width: `${(amount / 50000) * 100}%`, background: color }} /></div><b>${amount.toLocaleString()}</b></div>)}
+        </div>
+        <div className="funding"><span>OPEN FINANCE STANDARD</span><p>Every dollar tracked. Every expense reported. <b>Open financial summary published annually.</b></p></div>
+      </section>
+
+      <section id="library" className="section library-section">
+        <div className="section-number light">08 / DOCUMENT LIBRARY</div>
+        <div className="section-head light">
+          <div><span className="eyebrow">THE FULL RESEARCH PACKAGE</span><h2>Read the method.<br />Trace the evidence.</h2></div>
+          <p>Every document is versioned and updated as the project evolves. Permanent OSF links will replace the release markers as each document is published.</p>
+        </div>
+        <div className="document-grid">
+          {documents.map(([type, title, description], index) => (
+            <article className="document-card" key={title}>
+              <div><span>{type}</span><small>0{index + 1}</small></div>
+              <h3>{title}</h3>
+              <p>{description}</p>
+              <span className="document-status">OSF RELEASE / IN PREPARATION</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="public" className="section team-section">
+        <div className="section-number">09 / BUILT IN PUBLIC</div>
         <div className="section-head">
-          <div><span className="eyebrow">WHO WE ARE</span><h2>Built in public.<br />Led from the field.</h2></div>
-          <p>Whole Body Foundation is assembling a practical, interdisciplinary team around a simple standard: observe deeply, document honestly, and build only what the land can support.</p>
+          <div><span className="eyebrow">LED FROM THE FIELD</span><h2>Built in public.<br />Led from the field.</h2></div>
+          <p>Whole Body Foundation operates on a simple standard: observe deeply, document honestly, and build only what the land can support.</p>
         </div>
         <div className="team-grid">
           <article className="lead-card">
-            <div className="portrait-placeholder"><span>JG</span><small>PORTRAIT FORTHCOMING</small></div>
-            <div><span className="eyebrow">PROJECT LEAD</span><h3>Jesse Gawlik</h3><p>Founder and field lead coordinating the foundation’s ecological research, site systems, public documentation, and community partnerships in the Mojave.</p><a href="mailto:jesse@wholebody.foundation">JESSE@WHOLEBODY.FOUNDATION ↗</a></div>
+            <div className="portrait-placeholder"><span>JG</span><small>MORONGO VALLEY / CA</small></div>
+            <div><span className="eyebrow">FOUNDER &amp; FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Independent researcher based in Morongo Valley, California. Coordinating ecological research, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
           </article>
-          <div className="advisor-grid">
-            {["Environmental Scientist","Permaculture Designer","Legal / Compliance Advisor"].map((role, i) => <article key={role}><span>0{i + 1}</span><small>SEEKING</small><h3>{role}</h3><p>Advisor role open for a mission-aligned practitioner.</p></article>)}
+          <div className="public-grid">
+            <article className="science-commitment">
+              <span className="eyebrow">OPEN SCIENCE COMMITMENT</span>
+              <ul>
+                <li>Pre-registration on OSF before data collection</li>
+                <li>Open data on OSF or Zenodo under CC-BY license</li>
+                <li>Negative results published</li>
+                <li>Full replication protocol available</li>
+                <li>Annual financial summary published</li>
+              </ul>
+            </article>
+            <article className="advisory-note">
+              <span className="eyebrow">ADVISORY BOARD</span>
+              <h3>In formation.</h3>
+              <p>Seeking mission-aligned scientists and practitioners in environmental geophysics, desert ecology, and community health.</p>
+              <a href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Advisory%20Inquiry">START A CONVERSATION ↗</a>
+            </article>
+          </div>
+          <div className="public-links">
+            <a href="mailto:jesse@wholebody.foundation">CONTACT JESSE</a>
+            <span aria-disabled="true">OSF PROFILE / COMING SOON</span>
+            <span aria-disabled="true">FIELD LOG / COMING SOON</span>
           </div>
         </div>
       </section>
 
       <footer>
-        <div><span className="eyebrow">WHOLE BODY FOUNDATION</span><h2>Help build the<br /><em>baseline.</em></h2></div>
-        <div className="footer-side"><p>For funders, field partners, researchers, and people who believe careful observation is an act of stewardship.</p><a href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Inquiry">FOR GRANT INQUIRIES ↗</a><address>Morongo Valley, California<br />Mailing address available on request</address></div>
-        <small>MOJAVE DESERT · COMMUNITY SCIENCE · ECOLOGICAL RESILIENCE</small>
+        <div><span className="eyebrow">WHOLE BODY FOUNDATION</span><h2>Mojave field<br /><em>research.</em></h2></div>
+        <div className="footer-side">
+          <p>Field research station · Open data · Public-interest science</p>
+          <a href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Inquiry">JESSE@WHOLEBODY.FOUNDATION ↗</a>
+          <address>Morongo Valley<br />San Bernardino County, California<br /><br />OSF profile · coming soon<br />Field log · coming soon</address>
+        </div>
+        <small>© 2026 WHOLE BODY FOUNDATION · RESEARCH OUTPUTS PUBLISHED UNDER CC-BY UNLESS OTHERWISE NOTED</small>
       </footer>
     </main>
   );
