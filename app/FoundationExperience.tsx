@@ -250,14 +250,17 @@ export default function FoundationExperience() {
 
       <section id="phase-1-tet-garden" className="section garden-section">
         <div className="section-number">03 / ARCHITECTURE · PHASE 1</div>
-        <div className="section-head">
-          <div><span className="eyebrow">PHASE 1</span><h2>Tetrahedron<br />Garden.</h2></div>
-          <p>Twelve triangular raised beds arranged in a Flower of Life geometric pattern orbit a central copper cistern pool. A solar-calibrated copper gnomon tracks time and season. An orchard ring and six cold frames complete the perimeter.</p>
+        <div className="architecture-layout">
+          <div className="architecture-copy">
+            <span className="eyebrow">PHASE 1</span>
+            <h2>Tetrahedron Garden.</h2>
+            <p>Twelve triangular raised beds arranged in a Flower of Life geometric pattern orbit a central copper cistern pool. A solar-calibrated copper gnomon tracks time and season. An orchard ring and six cold frames complete the perimeter.</p>
+            <strong>12 beds. One cistern. Food grows with the geometry of the land.</strong>
+          </div>
+          <Garden />
         </div>
-        <Garden />
         <div className="metric-row">
           <div><strong>1K</strong><span>GALLON CISTERN</span></div><div><strong>12</strong><span>TRIANGULAR BEDS</span></div><div><strong>ORP</strong><span>PH + MINERAL TESTING</span></div>
-          <small>12 beds. One cistern. Food grows with the geometry of the land.</small>
         </div>
         <div className="water-note">
           <span className="eyebrow">WATER AS EVIDENCE</span>
@@ -267,20 +270,18 @@ export default function FoundationExperience() {
 
       <section id="phase-2-elemental-domes" className="section dome-section">
         <div className="section-number light">04 / ARCHITECTURE · PHASE 2</div>
-        <div className="section-head light">
-          <div><span className="eyebrow">PHASE 2</span><h2>Four elemental<br />domes.</h2></div>
-          <div className="section-copy">
+        <div className="architecture-layout">
+          <div className="architecture-copy">
+            <span className="eyebrow">PHASE 2</span>
+            <h2>Four elemental domes.</h2>
             <p>Four geodesic domes hold Earth, Fire, Air, and Water practices around the central garden. Each dome is built entirely of Douglas fir, joined with hardwood dowels and hide glue. No metal. No interference.</p>
-            <p><strong>2V geodesic geometry. 65 connected struts per dome. Zero metal fasteners.</strong></p>
+            <strong>2V geodesic geometry. 65 connected struts per dome. Zero metal fasteners.</strong>
+            <div className="phase-model-specs">
+              <span className="eyebrow">STRUCTURAL MODEL / 2V</span>
+              {[["DIAMETER", "10 FT"], ["STRUTS", "65 × CONNECTED"], ["HUBS", "26 × HARDWOOD"], ["GEOMETRY", "2V ICOSAHEDRAL"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}
+            </div>
           </div>
-        </div>
-        <div className="dome-layout">
           <FieldDome />
-          <aside>
-            <span className="eyebrow">STRUCTURAL MODEL / 2V</span>
-            {[["DIAMETER", "10 FT"], ["STRUTS", "65 × CONNECTED"], ["HUBS", "26 × HARDWOOD"], ["GEOMETRY", "2V ICOSAHEDRAL"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}
-            <p>A grounded, connected timber shell designed as a replicable natural-material structure.</p>
-          </aside>
         </div>
       </section>
 
