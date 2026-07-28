@@ -176,6 +176,11 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
   assert.match(terrain, /particleMaterial\.color\.copy\(cycleColor\)/);
   assert.match(terrain, /--hero-daylight/);
   assert.match(terrain, /--hero-sun-x/);
+  assert.match(terrain, /const starFragmentShader/);
+  assert.match(terrain, /float nightVisibility = pow\(1\.0 - daylight, 1\.7\)/);
+  assert.match(terrain, /const starCount = window\.innerWidth < 720 \? 100 : 210/);
+  assert.match(terrain, /const followsMilkyWay/);
+  assert.match(terrain, /starMaterial\.uniforms\.daylight\.value = daylight/);
   assert.match(terrain, /new SphereGeometry\(0\.032, 12, 12\)/);
   assert.match(terrain, /new RingGeometry\(0\.022, 0\.04, 24\)/);
   assert.match(terrain, /size: 0\.012/);

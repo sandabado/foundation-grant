@@ -194,6 +194,50 @@ const routeFragmentShader = `
   }
 `;
 
+const starVertexShader = `
+  attribute float starSize;
+  attribute float starBrightness;
+  attribute float starPhase;
+  varying float vBrightness;
+  varying float vPhase;
+
+  void main() {
+    vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
+    vBrightness = starBrightness;
+    vPhase = starPhase;
+    gl_PointSize = starSize * (280.0 / -viewPosition.z);
+    gl_Position = projectionMatrix * viewPosition;
+  }
+`;
+
+const starFragmentShader = `
+  uniform float time;
+  uniform float daylight;
+  varying float vBrightness;
+  varying float vPhase;
+
+  void main() {
+    vec2 point = gl_PointCoord - vec2(0.5);
+    float radius = length(point);
+    float core = 1.0 - smoothstep(0.08, 0.5, radius);
+    float brightStar = smoothstep(0.82, 1.0, vBrightness);
+    float rays =
+      (1.0 - smoothstep(0.012, 0.17, abs(point.x))) +
+      (1.0 - smoothstep(0.012, 0.17, abs(point.y)));
+    rays *= (1.0 - smoothstep(0.12, 0.5, radius)) * brightStar * 0.22;
+    float twinkle = 0.88 + sin(time * (0.72 + vPhase * 0.17) + vPhase) * 0.12;
+    float nightVisibility = pow(1.0 - daylight, 1.7);
+    float alpha = (core + rays) * (0.28 + vBrightness * 0.72) *
+      twinkle * nightVisibility;
+    vec3 starColor = mix(
+      vec3(0.68, 0.76, 0.94),
+      vec3(1.0, 0.89, 0.72),
+      vBrightness * 0.58
+    );
+    gl_FragColor = vec4(starColor * (0.78 + vBrightness * 0.34), alpha);
+  }
+`;
+
 function disposeMaterial(material: Material | Material[]) {
   if (Array.isArray(material)) {
     material.forEach(item => item.dispose());
@@ -397,6 +441,55 @@ export default function InteractiveTerrain() {
     });
     const particles = new Points(particleGeometry, particleMaterial);
     world.add(particles);
+
+    const starCount = window.innerWidth < 720 ? 100 : 210;
+    const starPositions = new Float32Array(starCount * 3);
+    const starSizes = new Float32Array(starCount);
+    const starBrightness = new Float32Array(starCount);
+    const starPhases = new Float32Array(starCount);
+    let starSeed = 7349;
+    const nextStarRandom = () => {
+      starSeed = (starSeed * 16807) % 2147483647;
+      return (starSeed - 1) / 2147483646;
+    };
+    for (let index = 0; index < starCount; index += 1) {
+      const stride = index * 3;
+      const x = (nextStarRandom() - 0.5) * 18;
+      const followsMilkyWay = nextStarRandom() < 0.34;
+      const milkyWayBand = 2.75 + x * 0.075;
+      const y = followsMilkyWay
+        ? milkyWayBand + (nextStarRandom() - 0.5) * 1.12
+        : 1.55 + nextStarRandom() * 3.05;
+      const brightness = Math.pow(nextStarRandom(), 2.15);
+      starPositions[stride] = x;
+      starPositions[stride + 1] = y;
+      starPositions[stride + 2] = -0.32 - nextStarRandom() * 0.16;
+      starSizes[index] = 0.035 + brightness * 0.105 +
+        (brightness > 0.94 ? 0.045 : 0);
+      starBrightness[index] = brightness;
+      starPhases[index] = nextStarRandom() * Math.PI * 2;
+    }
+    const starGeometry = new BufferGeometry();
+    starGeometry.setAttribute("position", new BufferAttribute(starPositions, 3));
+    starGeometry.setAttribute("starSize", new BufferAttribute(starSizes, 1));
+    starGeometry.setAttribute(
+      "starBrightness",
+      new BufferAttribute(starBrightness, 1),
+    );
+    starGeometry.setAttribute("starPhase", new BufferAttribute(starPhases, 1));
+    const starMaterial = new ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        daylight: { value: 0 },
+      },
+      vertexShader: starVertexShader,
+      fragmentShader: starFragmentShader,
+      transparent: true,
+      blending: AdditiveBlending,
+      depthWrite: false,
+    });
+    const stars = new Points(starGeometry, starMaterial);
+    scene.add(stars);
     const cycleColor = new Color();
 
     let isVisible = true;
@@ -473,6 +566,9 @@ export default function InteractiveTerrain() {
       stage.style.setProperty("--hero-daylight", daylight.toFixed(3));
       stage.style.setProperty("--hero-twilight", twilight.toFixed(3));
       stage.style.setProperty("--hero-sun-x", `${(sunPosition * 100).toFixed(1)}%`);
+      starMaterial.uniforms.time.value = time;
+      starMaterial.uniforms.daylight.value = daylight;
+      stars.rotation.z = Math.sin(time * 0.006) * 0.0018;
       cycleColor
         .lerpColors(NIGHT_LAVENDER, FIELD_GREEN, daylight)
         .lerp(SUNSET_COPPER, Math.min(twilight * 0.78, 1));
