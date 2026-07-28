@@ -147,7 +147,7 @@ const fragmentShader = `
     fieldCycle = mix(fieldCycle, vec3(0.89, 0.627, 0.392), twilight * 0.78);
     terrain = mix(terrain, fieldCycle * 1.18, fieldSignal * 0.74);
     terrain *= mix(0.88, 1.03, vignette);
-    float skyFade = 1.0 - smoothstep(0.86, 1.0, vUv.y) * 0.44;
+    float skyFade = 1.0 - smoothstep(0.68, 0.98, vUv.y);
     gl_FragColor = vec4(terrain, skyFade);
   }
 `;

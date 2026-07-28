@@ -166,6 +166,7 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
   assert.match(terrain, /float lensGhost/);
   assert.match(terrain, /vec3 cottonSky/);
   assert.match(terrain, /float fieldSignal/);
+  assert.match(terrain, /float skyFade = 1\.0 - smoothstep\(0\.68, 0\.98, vUv\.y\)/);
   assert.match(terrain, /world\.scale\.set\(horizontalScale, skyReveal, 1\)/);
   assert.match(terrain, /dayColor: \{ value: FIELD_GREEN \}/);
   assert.match(terrain, /sunsetColor: \{ value: SUNSET_COPPER \}/);
