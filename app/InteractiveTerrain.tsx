@@ -84,23 +84,37 @@ const fragmentShader = `
     float atmosphere = smoothstep(0.46, 0.95, vUv.y) * 0.035;
     float mineralShade = clamp(vLift * 0.22, -0.035, 0.045);
     float landMask = 1.0 - smoothstep(0.72, 0.94, vUv.y);
-    float sweep = fract(time * 0.018);
-    vec2 shadowPoint = vec2(-0.16 + sweep * 1.34, 0.49 + sin(time * 0.11) * 0.045);
+
+    float solarPhase = fract(time * 0.0225);
+    float solarAngle = solarPhase * 6.2831853;
+    float sunHeight = sin(solarAngle);
+    float daylight = smoothstep(-0.3, 0.16, sunHeight);
+    float twilight = exp(-abs(sunHeight) * 7.0);
+    vec2 sunPoint = vec2(
+      0.5 - cos(solarAngle) * 0.72,
+      0.55 + sunHeight * 0.19
+    );
+    vec2 shadowPoint = sunPoint - vec2(cos(solarAngle) * 0.14, 0.045);
     vec2 shadowDelta = (vUv - shadowPoint) * vec2(1.0, 2.3);
-    float movingShadow = 1.0 - smoothstep(0.09, 0.31, length(shadowDelta));
-    vec2 sunPoint = shadowPoint + vec2(0.15, 0.045);
+    float movingShadow = 1.0 - smoothstep(0.1, 0.36, length(shadowDelta));
     vec2 sunDelta = (vUv - sunPoint) * vec2(1.0, 2.05);
-    float sunGlow = 1.0 - smoothstep(0.055, 0.28, length(sunDelta));
+    float sunGlow = 1.0 - smoothstep(0.035, 0.3, length(sunDelta));
+    float sunDisc = 1.0 - smoothstep(0.006, 0.023, length(sunDelta));
     float diagonalSweep = 1.0 - smoothstep(
       0.025,
-      0.17,
-      abs((vUv.x + vUv.y * 0.2) - (-0.08 + sweep * 1.38))
+      0.2,
+      abs((vUv.x + vUv.y * 0.2) - (sunPoint.x + 0.1))
     );
+
     terrain += vec3(mineralShade);
     terrain += vec3(0.517, 0.650, 0.431) * atmosphere;
-    terrain *= 1.0 - movingShadow * landMask * 0.26;
+    vec3 nightTerrain = terrain * vec3(0.16, 0.22, 0.34) + vec3(0.008, 0.014, 0.035);
+    terrain = mix(nightTerrain, terrain, daylight);
+    terrain += vec3(0.31, 0.105, 0.025) * twilight * (0.42 + landMask * 0.58);
+    terrain *= 1.0 - movingShadow * landMask * (0.09 + daylight * 0.18);
     terrain += vec3(1.0, 0.72, 0.39) *
-      (sunGlow * 0.085 + diagonalSweep * 0.038) * landMask;
+      (sunGlow * 0.16 + diagonalSweep * 0.055) * landMask * daylight;
+    terrain += vec3(1.0, 0.82, 0.56) * sunDisc * daylight * 0.62;
     terrain *= mix(0.88, 1.03, vignette);
     gl_FragColor = vec4(terrain, 1.0);
   }
@@ -273,7 +287,7 @@ export default function InteractiveTerrain() {
 
       for (let pulseIndex = 0; pulseIndex < 2; pulseIndex += 1) {
         const pulse = new Mesh(
-          new SphereGeometry(0.055, 16, 16),
+          new SphereGeometry(0.032, 12, 12),
           new MeshBasicMaterial({
             color: FIELD_GREEN,
             transparent: true,
@@ -287,13 +301,13 @@ export default function InteractiveTerrain() {
           curve,
           mesh: pulse,
           offset: routeIndex * 0.17 + pulseIndex * 0.5,
-          speed: 0.032 + routeIndex * 0.004,
+          speed: 0.042 + routeIndex * 0.004,
         });
       }
 
       [0.18, 0.42, 0.68, 0.88].forEach((position, stationIndex) => {
         const ring = new Mesh(
-          new RingGeometry(0.042, 0.07, 28),
+          new RingGeometry(0.022, 0.04, 24),
           new MeshBasicMaterial({
             color: FIELD_GREEN,
             transparent: true,
@@ -322,9 +336,9 @@ export default function InteractiveTerrain() {
     particleGeometry.setAttribute("position", new BufferAttribute(particlePositions, 3));
     const particleMaterial = new PointsMaterial({
       color: FIELD_GREEN,
-      size: 0.025,
+      size: 0.012,
       transparent: true,
-      opacity: 0.42,
+      opacity: 0.34,
       blending: AdditiveBlending,
       depthWrite: false,
     });
@@ -401,10 +415,15 @@ export default function InteractiveTerrain() {
       });
       stations.forEach((station, index) => {
         station.mesh.lookAt(camera.position);
-        const scale = 0.85 + Math.sin(time * 2.4 + station.offset + index * 0.08) * 0.24;
+        const scale = 0.82 + Math.sin(time * 2.4 + station.offset + index * 0.08) * 0.16;
         station.mesh.scale.setScalar(scale);
-        station.mesh.material.opacity = 0.42 + Math.sin(time * 2 + station.offset) * 0.2;
+        station.mesh.material.opacity = 0.34 + Math.sin(time * 2 + station.offset) * 0.14;
       });
+      const solarHeight = Math.sin(time * 0.0225 * Math.PI * 2);
+      const nightPresence = MathUtils.clamp((-solarHeight + 0.1) / 1.1, 0, 1);
+      particleMaterial.opacity = 0.24 + nightPresence * 0.28;
+      particles.position.x = Math.sin(time * 0.06) * 0.07;
+      particles.position.y = Math.sin(time * 0.045) * 0.025;
       particles.rotation.z = Math.sin(time * 0.025) * 0.004;
 
       renderer.render(scene, camera);
@@ -431,7 +450,7 @@ export default function InteractiveTerrain() {
 
   return (
     <div
-      className={`hero-media terrain-stage ${ready ? "is-ready" : ""}`}
+      className={`hero-media terrain-stage ${ready ? "is-ready" : ""} ${paused ? "is-paused" : ""}`}
       ref={stageRef}
       aria-label="Interactive computational terrain model of the Old Glory Peak transect corridor"
     >
@@ -442,7 +461,7 @@ export default function InteractiveTerrain() {
         fetchPriority="high"
       />
       <div className="terrain-readout" aria-hidden="true">
-        <span>TRANSECT C / LIVE FIELD</span>
+        <span>TRANSECT C / SOLAR CYCLE</span>
         <i />
         <span>16 GPS STATIONS</span>
       </div>

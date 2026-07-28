@@ -61,6 +61,7 @@ type NavItem = {
 };
 
 const nav: NavItem[] = [
+  { id: "mission", label: "Mission", sections: ["mission"] },
   { id: "site-context", label: "Site", sections: ["site-context"] },
   { id: "method", label: "Method", sections: ["method"] },
   {
@@ -229,23 +230,23 @@ export default function FoundationExperience() {
         <div className="hero-grid" />
         <div className="hero-copy">
           <span className="eyebrow reveal">MOJAVE DESERT / 34.969° N, 116.419° W</span>
-          <h1>FIELDWORK FOR A<br /><em>LIVING PLANET.</em></h1>
-          <span className="hero-location">OLD GLORY PEAK TRANSECT CORRIDOR</span>
+          <h1>FIELDWORK FOR A<br /><em>Living Planet</em></h1>
           <div className="hero-deck">
-            <p>Mapping the Old Glory Peak transect corridor — where the Pinto Mountain and Morongo Valley Fault traces intersect between the San Gorgonio and San Jacinto fault zones.</p>
-            <p><strong>The desert is not empty. It is information-dense.</strong></p>
-            <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, dryland agriculture, mycelial network surveys, and community health monitoring converge at the Old Glory Peak field station.</p>
+            <p>Mapping the geological and ecological systems of the Old Glory Peak transect corridor.</p>
           </div>
           <div className="hero-actions" aria-label="Explore the fieldwork">
             <a className="button button-primary" href="#site-context">ENTER THE FIELD ↓</a>
           </div>
         </div>
-        <div className="hero-stats">
-          <div><strong>04</strong><span>FAULT TRANSECTS</span></div>
-          <div><strong>04</strong><span>RESEARCH DISCIPLINES</span></div>
-          <div><strong>CC</strong><span>BY OPEN DATA</span></div>
-        </div>
       </header>
+
+      <section id="mission" className="section mission-statement">
+        <div>
+          <span className="eyebrow">WHY THIS WORK</span>
+          <h2>The desert is not empty.<br /><em>It is information-dense.</em></h2>
+        </div>
+        <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, dryland agriculture, mycelial network surveys, and community health monitoring converge at the Old Glory Peak field station.</p>
+      </section>
 
       <section id="site-context" className="section survey-section">
         <div className="section-number light">01 / THE GROUND TRUTH</div>

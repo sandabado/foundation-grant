@@ -40,6 +40,9 @@ test("server-renders the Old Glory Peak field station experience", async () => {
 
   const html = await response.text();
   assert.match(html, /Whole Body Foundation — Old Glory Peak Field Station/i);
+  assert.match(html, /FIELDWORK FOR A[\s\S]*Living Planet/);
+  assert.match(html, /The desert is not empty\.[\s\S]*It is information-dense\./);
+  assert.match(html, /We’re building a baseline ecological record/);
   assert.match(html, /Old Glory Peak[\s\S]*transect/i);
   assert.match(html, /Mycelial and ecological networks/i);
   assert.match(html, /IRB approval pending/i);
@@ -63,6 +66,7 @@ test("server-renders the Old Glory Peak field station experience", async () => {
   assert.doesNotMatch(html, /ACOUSTIC \+ FIELD RESEARCH/i);
 
   const orderedSections = [
+    'id="mission"',
     'id="site-context"',
     'id="method"',
     'id="phase-1-tet-garden"',
@@ -91,6 +95,7 @@ test("navigation maps every top-level experience and groups all architecture pha
   );
 
   for (const id of [
+    "mission",
     "site-context",
     "method",
     "phase-1-tet-garden",
@@ -112,6 +117,29 @@ test("navigation maps every top-level experience and groups all architecture pha
   assert.match(source, /className="button button-primary" href="#site-context"/);
   assert.match(source, /className="document-card document-card-link"/);
   assert.match(source, /className="document-card document-card-static"/);
+});
+
+test("keeps the hero concise while the terrain moves through a solar cycle", async () => {
+  const [experience, terrain] = await Promise.all([
+    readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/InteractiveTerrain.tsx", import.meta.url), "utf8"),
+  ]);
+
+  const hero = experience.slice(
+    experience.indexOf('<header className="hero"'),
+    experience.indexOf('<section id="mission"'),
+  );
+  assert.equal(hero.match(/<p>/g)?.length, 1);
+  assert.doesNotMatch(hero, /hero-stats/);
+  assert.match(hero, /FIELDWORK FOR A<br \/><em>Living Planet<\/em>/);
+
+  assert.match(terrain, /float solarPhase = fract\(time \* 0\.0225\)/);
+  assert.match(terrain, /vec3 nightTerrain/);
+  assert.match(terrain, /float sunDisc/);
+  assert.match(terrain, /new SphereGeometry\(0\.032, 12, 12\)/);
+  assert.match(terrain, /new RingGeometry\(0\.022, 0\.04, 24\)/);
+  assert.match(terrain, /size: 0\.012/);
+  assert.match(terrain, /TRANSECT C \/ SOLAR CYCLE/);
 });
 
 test("ships all seven linked research and investor PDF working drafts", async () => {
