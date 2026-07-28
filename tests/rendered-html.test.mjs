@@ -159,9 +159,20 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
     /className="mission-line">The desert is not empty\.<\/span><em>It is information-dense\.<\/em>/,
   );
 
-  assert.match(terrain, /float solarPhase = fract\(time \* 0\.0225\)/);
+  assert.match(terrain, /float solarPhase = fract\(time \* 0\.0225 \+ 0\.75\)/);
   assert.match(terrain, /vec3 nightTerrain/);
   assert.match(terrain, /float sunDisc/);
+  assert.match(terrain, /float sunRays/);
+  assert.match(terrain, /float lensGhost/);
+  assert.match(terrain, /vec3 cottonSky/);
+  assert.match(terrain, /float fieldSignal/);
+  assert.match(terrain, /world\.scale\.set\(horizontalScale, skyReveal, 1\)/);
+  assert.match(terrain, /dayColor: \{ value: FIELD_GREEN \}/);
+  assert.match(terrain, /sunsetColor: \{ value: SUNSET_COPPER \}/);
+  assert.match(terrain, /nightColor: \{ value: NIGHT_LAVENDER \}/);
+  assert.match(terrain, /particleMaterial\.color\.copy\(cycleColor\)/);
+  assert.match(terrain, /--hero-daylight/);
+  assert.match(terrain, /--hero-sun-x/);
   assert.match(terrain, /new SphereGeometry\(0\.032, 12, 12\)/);
   assert.match(terrain, /new RingGeometry\(0\.022, 0\.04, 24\)/);
   assert.match(terrain, /size: 0\.012/);

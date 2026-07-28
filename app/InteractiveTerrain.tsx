@@ -33,6 +33,9 @@ import type { Material } from "three";
 
 const FIELD_GREEN = new Color("#84a66e");
 const MINERAL_GREEN = new Color("#2d4f3a");
+const SUNSET_COPPER = new Color("#e3a064");
+const NIGHT_LAVENDER = new Color("#9b8ac4");
+const SOLAR_PHASE_OFFSET = 0.75;
 const TERRAIN_TEXTURE = "/hero-images/old-glory-field-green-sun.jpg";
 
 type FieldPulse = {
@@ -80,12 +83,18 @@ const fragmentShader = `
 
   void main() {
     vec3 terrain = texture2D(terrainMap, vUv).rgb;
+    float fieldSignal = smoothstep(
+      0.045,
+      0.28,
+      terrain.g - max(terrain.r, terrain.b)
+    );
     float vignette = 1.0 - smoothstep(0.35, 0.98, distance(vUv, vec2(0.52, 0.48)));
     float atmosphere = smoothstep(0.46, 0.95, vUv.y) * 0.035;
     float mineralShade = clamp(vLift * 0.22, -0.035, 0.045);
     float landMask = 1.0 - smoothstep(0.72, 0.94, vUv.y);
+    float skyMask = smoothstep(0.66, 0.98, vUv.y);
 
-    float solarPhase = fract(time * 0.0225);
+    float solarPhase = fract(time * 0.0225 + 0.75);
     float solarAngle = solarPhase * 6.2831853;
     float sunHeight = sin(solarAngle);
     float daylight = smoothstep(-0.3, 0.16, sunHeight);
@@ -100,6 +109,12 @@ const fragmentShader = `
     vec2 sunDelta = (vUv - sunPoint) * vec2(1.0, 2.05);
     float sunGlow = 1.0 - smoothstep(0.035, 0.3, length(sunDelta));
     float sunDisc = 1.0 - smoothstep(0.006, 0.023, length(sunDelta));
+    float horizontalRay = 1.0 - smoothstep(0.004, 0.055, abs(sunDelta.y));
+    float verticalRay = 1.0 - smoothstep(0.003, 0.04, abs(sunDelta.x));
+    float sunRays = max(horizontalRay, verticalRay) * sunGlow;
+    vec2 lensPoint = vec2(0.5) - (sunPoint - vec2(0.5)) * 0.48;
+    vec2 lensDelta = (vUv - lensPoint) * vec2(1.0, 2.05);
+    float lensGhost = 1.0 - smoothstep(0.025, 0.095, length(lensDelta));
     float diagonalSweep = 1.0 - smoothstep(
       0.025,
       0.2,
@@ -110,13 +125,30 @@ const fragmentShader = `
     terrain += vec3(0.517, 0.650, 0.431) * atmosphere;
     vec3 nightTerrain = terrain * vec3(0.16, 0.22, 0.34) + vec3(0.008, 0.014, 0.035);
     terrain = mix(nightTerrain, terrain, daylight);
+    vec3 cottonSky = mix(
+      vec3(0.98, 0.56, 0.49),
+      vec3(0.48, 0.39, 0.64),
+      smoothstep(0.68, 1.0, vUv.y)
+    );
+    float cottonStrength = skyMask * (0.12 + daylight * 0.16 + twilight * 0.48);
+    terrain = mix(terrain, cottonSky, cottonStrength);
     terrain += vec3(0.31, 0.105, 0.025) * twilight * (0.42 + landMask * 0.58);
     terrain *= 1.0 - movingShadow * landMask * (0.09 + daylight * 0.18);
     terrain += vec3(1.0, 0.72, 0.39) *
-      (sunGlow * 0.16 + diagonalSweep * 0.055) * landMask * daylight;
-    terrain += vec3(1.0, 0.82, 0.56) * sunDisc * daylight * 0.62;
+      (sunGlow * 0.24 + sunRays * 0.15 + diagonalSweep * 0.07) *
+      mix(0.38, 1.0, skyMask) * daylight;
+    terrain += vec3(1.0, 0.82, 0.56) * sunDisc * daylight * 0.92;
+    terrain += vec3(0.86, 0.62, 0.49) * lensGhost * daylight * 0.11;
+    vec3 fieldCycle = mix(
+      vec3(0.608, 0.541, 0.769),
+      vec3(0.517, 0.650, 0.431),
+      daylight
+    );
+    fieldCycle = mix(fieldCycle, vec3(0.89, 0.627, 0.392), twilight * 0.78);
+    terrain = mix(terrain, fieldCycle * 1.18, fieldSignal * 0.74);
     terrain *= mix(0.88, 1.03, vignette);
-    gl_FragColor = vec4(terrain, 1.0);
+    float skyFade = 1.0 - smoothstep(0.86, 1.0, vUv.y) * 0.44;
+    gl_FragColor = vec4(terrain, skyFade);
   }
 `;
 
@@ -132,7 +164,9 @@ const routeFragmentShader = `
   uniform float time;
   uniform float speed;
   uniform float offset;
-  uniform vec3 color;
+  uniform vec3 dayColor;
+  uniform vec3 sunsetColor;
+  uniform vec3 nightColor;
   varying vec2 vUv;
 
   void main() {
@@ -142,7 +176,13 @@ const routeFragmentShader = `
     float wake = smoothstep(0.34, 0.0, distanceToHead) * 0.22;
     float edge = smoothstep(0.5, 0.05, abs(vUv.y - 0.5));
     float alpha = (0.18 + pulse * 0.82 + wake) * edge;
-    gl_FragColor = vec4(color * (0.72 + pulse * 1.28), alpha);
+    float solarAngle = fract(time * 0.0225 + 0.75) * 6.2831853;
+    float sunHeight = sin(solarAngle);
+    float daylight = smoothstep(-0.3, 0.16, sunHeight);
+    float twilight = exp(-abs(sunHeight) * 7.0);
+    vec3 cycleColor = mix(nightColor, dayColor, daylight);
+    cycleColor = mix(cycleColor, sunsetColor, twilight * 0.78);
+    gl_FragColor = vec4(cycleColor * (0.72 + pulse * 1.28), alpha);
   }
 `;
 
@@ -212,6 +252,7 @@ export default function InteractiveTerrain() {
         uniforms: terrainUniforms,
         vertexShader,
         fragmentShader,
+        transparent: true,
       }),
     );
     terrain.position.z = -0.12;
@@ -250,6 +291,7 @@ export default function InteractiveTerrain() {
     const pulses: FieldPulse[] = [];
     const stations: StationRing[] = [];
     const routeMaterials: ShaderMaterial[] = [];
+    const routeBaseMaterials: MeshBasicMaterial[] = [];
 
     routeDefinitions.forEach((points, routeIndex) => {
       const curve = new CatmullRomCurve3(points, false, "centripetal");
@@ -264,6 +306,7 @@ export default function InteractiveTerrain() {
         new TubeGeometry(curve, 110, 0.018, 5, false),
         baseMaterial,
       );
+      routeBaseMaterials.push(baseMaterial);
       world.add(baseRoute);
 
       const animatedMaterial = new ShaderMaterial({
@@ -271,7 +314,9 @@ export default function InteractiveTerrain() {
           time: { value: 0 },
           speed: { value: 0.034 + routeIndex * 0.004 },
           offset: { value: routeIndex * 0.19 },
-          color: { value: FIELD_GREEN },
+          dayColor: { value: FIELD_GREEN },
+          sunsetColor: { value: SUNSET_COPPER },
+          nightColor: { value: NIGHT_LAVENDER },
         },
         vertexShader: routeVertexShader,
         fragmentShader: routeFragmentShader,
@@ -344,6 +389,7 @@ export default function InteractiveTerrain() {
     });
     const particles = new Points(particleGeometry, particleMaterial);
     world.add(particles);
+    const cycleColor = new Color();
 
     let isVisible = true;
     let animationFrame = 0;
@@ -366,10 +412,10 @@ export default function InteractiveTerrain() {
 
       const viewportAspect = width / height;
       const imageAspect = 16 / 9;
-      const coverScale = viewportAspect > imageAspect
-        ? viewportAspect / imageAspect
-        : imageAspect / viewportAspect;
-      world.scale.setScalar(Math.max(1, coverScale));
+      const horizontalScale = Math.max(1, viewportAspect / imageAspect);
+      const skyReveal = width < 800 ? 0.82 : 0.78;
+      world.scale.set(horizontalScale, skyReveal, 1);
+      world.position.y = width < 800 ? -0.82 : -0.98;
     };
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(stage);
@@ -407,21 +453,42 @@ export default function InteractiveTerrain() {
       routeMaterials.forEach(material => {
         material.uniforms.time.value = time;
       });
+      const solarAngle = ((time * 0.0225 + SOLAR_PHASE_OFFSET) % 1) * Math.PI * 2;
+      const solarHeight = Math.sin(solarAngle);
+      const daylight = MathUtils.smoothstep(solarHeight, -0.3, 0.16);
+      const twilight = Math.exp(-Math.abs(solarHeight) * 7);
+      const sunPosition = MathUtils.clamp(
+        0.5 - Math.cos(solarAngle) * 0.72,
+        0.06,
+        0.94,
+      );
+      stage.style.setProperty("--hero-daylight", daylight.toFixed(3));
+      stage.style.setProperty("--hero-twilight", twilight.toFixed(3));
+      stage.style.setProperty("--hero-sun-x", `${(sunPosition * 100).toFixed(1)}%`);
+      cycleColor
+        .lerpColors(NIGHT_LAVENDER, FIELD_GREEN, daylight)
+        .lerp(SUNSET_COPPER, Math.min(twilight * 0.78, 1));
+      routeBaseMaterials.forEach(material => {
+        material.color.copy(cycleColor);
+        material.opacity = 0.26 + daylight * 0.16 + twilight * 0.12;
+      });
       pulses.forEach((pulse, index) => {
         const t = (time * pulse.speed + pulse.offset) % 1;
         pulse.mesh.position.copy(pulse.curve.getPointAt(t));
         const scale = 0.8 + Math.sin(time * 4 + index) * 0.2;
         pulse.mesh.scale.setScalar(scale);
+        pulse.mesh.material.color.copy(cycleColor);
       });
       stations.forEach((station, index) => {
         station.mesh.lookAt(camera.position);
         const scale = 0.82 + Math.sin(time * 2.4 + station.offset + index * 0.08) * 0.16;
         station.mesh.scale.setScalar(scale);
         station.mesh.material.opacity = 0.34 + Math.sin(time * 2 + station.offset) * 0.14;
+        station.mesh.material.color.copy(cycleColor);
       });
-      const solarHeight = Math.sin(time * 0.0225 * Math.PI * 2);
       const nightPresence = MathUtils.clamp((-solarHeight + 0.1) / 1.1, 0, 1);
       particleMaterial.opacity = 0.24 + nightPresence * 0.28;
+      particleMaterial.color.copy(cycleColor);
       particles.position.x = Math.sin(time * 0.06) * 0.07;
       particles.position.y = Math.sin(time * 0.045) * 0.025;
       particles.rotation.z = Math.sin(time * 0.025) * 0.004;
