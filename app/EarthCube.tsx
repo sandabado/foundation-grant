@@ -1,18 +1,16 @@
 "use client";
 
+import { geoGraticule10, geoOrthographic, geoPath } from "d3-geo";
 import { useEffect, useRef } from "react";
+import { feature } from "topojson-client";
+import type { MultiPolygon, Topology } from "topojson-specification";
+import landTopologyData from "world-atlas/land-50m.json";
 
 type GeoPoint = [number, number];
 
-const LAND: GeoPoint[][] = [
-  [[-168,72],[-145,69],[-127,55],[-123,42],[-112,31],[-98,20],[-83,25],[-80,31],[-66,45],[-58,52],[-72,62],[-92,72],[-118,76],[-145,73]],
-  [[-82,12],[-73,9],[-62,5],[-50,-3],[-47,-17],[-58,-35],[-67,-55],[-74,-42],[-79,-18],[-82,0]],
-  [[-17,36],[-5,37],[12,33],[32,30],[44,12],[50,-12],[35,-34],[18,-35],[8,-25],[-2,-5],[-12,12]],
-  [[-11,36],[5,44],[22,55],[42,60],[63,70],[92,76],[125,69],[151,59],[166,48],[142,35],[121,23],[104,7],[81,9],[68,22],[51,28],[38,40],[23,39],[12,34]],
-  [[112,-11],[132,-12],[153,-24],[147,-39],[126,-43],[113,-28]],
-  [[-52,60],[-42,72],[-28,82],[-48,84],[-62,76]],
-  [[43,-13],[51,-16],[50,-25],[45,-25]],
-];
+const LAND_TOPOLOGY = landTopologyData as unknown as Topology<{ land: MultiPolygon }>;
+const REAL_LAND = feature(LAND_TOPOLOGY, LAND_TOPOLOGY.objects.land);
+const GRATICULE = geoGraticule10();
 
 const CLOUDS: GeoPoint[][] = [
   [[-150,38],[-118,43],[-86,38],[-55,42],[-28,38]],
@@ -23,6 +21,17 @@ const CLOUDS: GeoPoint[][] = [
 
 const FIELD_NODES: GeoPoint[] = [
   [-118, 35], [-74, 41], [-46, -15], [2, 48], [31, -2], [78, 22], [121, 31], [151, -33],
+];
+
+const CUBE_VERTICES: [number, number, number][] = [
+  [-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],
+  [-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1],
+];
+
+const CUBE_EDGES: [number, number][] = [
+  [0,1],[1,2],[2,3],[3,0],
+  [4,5],[5,6],[6,7],[7,4],
+  [0,4],[1,5],[2,6],[3,7],
 ];
 
 function project(lon: number, lat: number, rotation: number, cx: number, cy: number, radius: number) {
@@ -51,7 +60,7 @@ export default function EarthCube() {
     let frame = 0;
     let width = 0;
     let height = 0;
-    let start = performance.now();
+    const start = performance.now();
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const resize = () => {
@@ -95,7 +104,71 @@ export default function EarthCube() {
       const radius = Math.min(width, height) * 0.305;
       const rotation = reduceMotion ? -0.55 : -0.55 + (now - start) * 0.000035;
       const pulse = reduceMotion ? 0 : Math.sin((now - start) * 0.0014);
+      const elapsed = now - start;
       context.clearRect(0, 0, width, height);
+
+      const cubeAngleY = reduceMotion ? 0.58 : elapsed * 0.00016 + pointer.current.x * 0.42;
+      const cubeAngleX = reduceMotion ? -0.32 : -0.32 + Math.sin(elapsed * 0.00012) * 0.2 - pointer.current.y * 0.32;
+      const cubeAngleZ = reduceMotion ? 0.05 : Math.sin(elapsed * 0.00009) * 0.11;
+      const cubeScale = radius * 1.24;
+      const focalLength = radius * 5.4;
+      const cubePoints = CUBE_VERTICES.map(([x, y, z]) => {
+        const y1 = y * Math.cos(cubeAngleX) - z * Math.sin(cubeAngleX);
+        const z1 = y * Math.sin(cubeAngleX) + z * Math.cos(cubeAngleX);
+        const x2 = x * Math.cos(cubeAngleY) + z1 * Math.sin(cubeAngleY);
+        const z2 = -x * Math.sin(cubeAngleY) + z1 * Math.cos(cubeAngleY);
+        const x3 = x2 * Math.cos(cubeAngleZ) - y1 * Math.sin(cubeAngleZ);
+        const y3 = x2 * Math.sin(cubeAngleZ) + y1 * Math.cos(cubeAngleZ);
+        const perspective = focalLength / (focalLength - z2 * cubeScale);
+        return {
+          x: cx + x3 * cubeScale * perspective,
+          y: cy + y3 * cubeScale * perspective,
+          z: z2,
+          perspective,
+        };
+      });
+
+      const drawCubeLayer = (front: boolean) => {
+        for (const [from, to] of CUBE_EDGES) {
+          const a = cubePoints[from];
+          const b = cubePoints[to];
+          const averageDepth = (a.z + b.z) / 2;
+          if ((averageDepth > 0) !== front) continue;
+          const edgeGlow = context.createLinearGradient(a.x, a.y, b.x, b.y);
+          if (front) {
+            edgeGlow.addColorStop(0, "rgba(132,166,110,.9)");
+            edgeGlow.addColorStop(0.5, "rgba(215,208,189,.7)");
+            edgeGlow.addColorStop(1, "rgba(184,115,51,.88)");
+            context.shadowColor = "rgba(132,166,110,.35)";
+            context.shadowBlur = 8;
+            context.lineWidth = 1.35;
+            context.setLineDash([]);
+          } else {
+            edgeGlow.addColorStop(0, "rgba(132,166,110,.2)");
+            edgeGlow.addColorStop(1, "rgba(184,115,51,.13)");
+            context.shadowBlur = 0;
+            context.lineWidth = 0.75;
+            context.setLineDash([3, 6]);
+          }
+          context.strokeStyle = edgeGlow;
+          context.beginPath();
+          context.moveTo(a.x, a.y);
+          context.lineTo(b.x, b.y);
+          context.stroke();
+        }
+        context.setLineDash([]);
+        context.shadowBlur = 0;
+        if (front) {
+          for (const point of cubePoints.filter((item) => item.z > 0)) {
+            context.fillStyle = "rgba(215,208,189,.9)";
+            context.beginPath();
+            context.arc(point.x, point.y, 1.6 * point.perspective, 0, Math.PI * 2);
+            context.fill();
+          }
+        }
+      };
+
+      drawCubeLayer(false);
 
       const outerGlow = context.createRadialGradient(cx, cy, radius * 0.65, cx, cy, radius * 1.5);
       outerGlow.addColorStop(0, `rgba(132,166,110,${0.18 + pulse * 0.025})`);
@@ -119,29 +192,37 @@ export default function EarthCube() {
       context.fillStyle = ocean;
       context.fillRect(cx - radius, cy - radius, radius * 2, radius * 2);
 
+      const earthProjection = geoOrthographic()
+        .translate([cx, cy])
+        .scale(radius)
+        .clipAngle(90)
+        .precision(0.35)
+        .rotate([(rotation * 180) / Math.PI, -3, 0]);
+      const earthPath = geoPath(earthProjection, context);
+
+      context.beginPath();
+      earthPath(GRATICULE);
       context.strokeStyle = "rgba(215,208,189,.11)";
       context.lineWidth = 0.65;
-      for (let lat = -60; lat <= 60; lat += 20) {
-        const points: GeoPoint[] = [];
-        for (let lon = -180; lon <= 180; lon += 3) points.push([lon, lat]);
-        traceGeoLine(points, rotation, cx, cy, radius);
-        context.stroke();
-      }
-      for (let lon = -180; lon < 180; lon += 20) {
-        const points: GeoPoint[] = [];
-        for (let lat = -88; lat <= 88; lat += 3) points.push([lon, lat]);
-        traceGeoLine(points, rotation, cx, cy, radius);
-        context.stroke();
-      }
+      context.stroke();
 
-      for (const continent of LAND) {
-        traceGeoLine(continent, rotation, cx, cy, radius, true);
-        context.fillStyle = "rgba(132,166,110,.82)";
-        context.fill();
-        context.strokeStyle = "rgba(201,162,39,.68)";
-        context.lineWidth = 1;
-        context.stroke();
-      }
+      const landLight = context.createLinearGradient(
+        cx - radius * 0.75,
+        cy - radius,
+        cx + radius * 0.85,
+        cy + radius,
+      );
+      landLight.addColorStop(0, "rgba(174,194,150,.94)");
+      landLight.addColorStop(0.42, "rgba(112,146,91,.92)");
+      landLight.addColorStop(1, "rgba(47,75,53,.96)");
+      context.beginPath();
+      earthPath(REAL_LAND);
+      context.fillStyle = landLight;
+      context.fill();
+      context.strokeStyle = "rgba(215,208,189,.38)";
+      context.lineWidth = 0.58;
+      context.lineJoin = "round";
+      context.stroke();
 
       for (const cloud of CLOUDS) {
         traceGeoLine(cloud, rotation * 1.12, cx, cy, radius);
@@ -207,6 +288,8 @@ export default function EarthCube() {
       context.setLineDash([]);
       context.restore();
 
+      drawCubeLayer(true);
+
       if (!reduceMotion) frame = requestAnimationFrame(draw);
     };
 
@@ -246,14 +329,6 @@ export default function EarthCube() {
       }}
     >
       <canvas ref={canvasRef} aria-hidden="true" />
-      <div className="cube-wire" aria-hidden="true">
-        <i className="cube-face cube-front" />
-        <i className="cube-face cube-back" />
-        <i className="cube-face cube-left" />
-        <i className="cube-face cube-right" />
-        <i className="cube-face cube-top" />
-        <i className="cube-face cube-bottom" />
-      </div>
       <div className="earth-field" aria-hidden="true">
         {Array.from({ length: 12 }, (_, index) => (
           <i key={index} style={{ "--particle-index": index } as React.CSSProperties} />
