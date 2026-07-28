@@ -259,13 +259,6 @@ export default function FoundationExperience() {
           </div>
           <Garden />
         </div>
-        <div className="metric-row">
-          <div><strong>1K</strong><span>GALLON CISTERN</span></div><div><strong>12</strong><span>TRIANGULAR BEDS</span></div><div><strong>ORP</strong><span>PH + MINERAL TESTING</span></div>
-        </div>
-        <div className="water-note">
-          <span className="eyebrow">WATER AS EVIDENCE</span>
-          <p>Each bed performs twice: sustaining a crop while collecting evidence about desert growing systems. A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content.</p>
-        </div>
       </section>
 
       <section id="phase-2-elemental-domes" className="section dome-section">
@@ -276,10 +269,6 @@ export default function FoundationExperience() {
             <h2>Four elemental domes.</h2>
             <p>Four geodesic domes hold Earth, Fire, Air, and Water practices around the central garden. Each dome is built entirely of Douglas fir, joined with hardwood dowels and hide glue. No metal. No interference.</p>
             <strong>2V geodesic geometry. 65 connected struts per dome. Zero metal fasteners.</strong>
-            <div className="phase-model-specs">
-              <span className="eyebrow">STRUCTURAL MODEL / 2V</span>
-              {[["DIAMETER", "10 FT"], ["STRUTS", "65 × CONNECTED"], ["HUBS", "26 × HARDWOOD"], ["GEOMETRY", "2V ICOSAHEDRAL"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}
-            </div>
           </div>
           <FieldDome />
         </div>

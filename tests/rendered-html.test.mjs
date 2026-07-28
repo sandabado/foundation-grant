@@ -114,6 +114,9 @@ test("integrates all four interactive architectural models inside their sections
   assert.match(experience, /<GreatHallModel \/>/);
   assert.match(experience, /<ResidentialClustersModel \/>/);
   assert.doesNotMatch(experience, /Abstract plan/);
+  assert.doesNotMatch(experience, /className="metric-row"/);
+  assert.doesNotMatch(experience, /className="water-note"/);
+  assert.doesNotMatch(experience, /className="phase-model-specs"/);
   assert.equal(
     experience.match(/className="architecture-layout"/g)?.length,
     4,
