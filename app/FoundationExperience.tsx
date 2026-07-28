@@ -1,7 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import InteractiveTerrain from "./InteractiveTerrain";
+
+const TetrahedronGarden = dynamic(() => import("./TetrahedronGarden"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="tet-garden-viewer tet-garden-loading"
+      aria-label="Loading the interactive Tetrahedron Garden"
+    >
+      <span>ASSEMBLING THE FIELD MODEL</span>
+    </div>
+  ),
+});
+
+const FieldDome = dynamic(() => import("./FieldDome"), {
+  ssr: false,
+  loading: () => (
+    <div className="field-dome-viewer dome-model-loading" aria-label="Loading the interactive field dome">
+      <span>ASSEMBLING THE DOME MODEL</span>
+    </div>
+  ),
+});
 
 const nav = [
   ["mission", "Mission"],
@@ -12,13 +34,6 @@ const nav = [
   ["budget", "Budget"],
   ["library", "Library"],
   ["public", "Public"],
-];
-
-const gardenNodes = [
-  { id: "north", x: 50, y: 18, title: "Herb Spiral North", meta: "Medicinals + culinary herbs", body: "A dry-to-moist microclimate gradient supports desert-adapted herbs with copper edging and gravity-fed drip irrigation." },
-  { id: "east", x: 79, y: 70, title: "Pollinator Spiral", meta: "Flowers + nitrogen fixers", body: "A companion-planted bed extends bloom cycles, supports native pollinators, and restores nitrogen to depleted desert soil." },
-  { id: "west", x: 21, y: 70, title: "Root Crop Spiral", meta: "Deep soil + shade", body: "A deeper soil profile grows roots beneath a seasonal shade frame, protecting moisture through the hottest months." },
-  { id: "cistern", x: 50, y: 52, title: "Copper Cistern", meta: "1,000 gallon water hub", body: "The central reservoir gravity-feeds every bed. Water is tested for ORP, pH, and mineral content before it reaches the growing system." },
 ];
 
 const budget = [
@@ -53,6 +68,7 @@ const methods = [
 ];
 
 const documents = [
+  { type: "PDF", title: "Investor One-Pager", description: "The opportunity, four-phase campus plan, research model, current status, and funding requirements in one concise planning brief.", href: "/documents/investor-one-pager.pdf" },
   { type: "PDF", title: "Project Summary", description: "Mission, research questions, methods, Old Glory Peak site justification, budget, and timeline.", href: "/documents/project-summary.pdf" },
   { type: "PDF", title: "Magnetometer Survey Protocol", description: "Transect A–D design, including the Old Glory Peak ridge survey, station log template, quality control checklist, data export format, and field safety protocols.", href: "/documents/magnetometer-survey-protocol.pdf" },
   { type: "PDF", title: "BIO-001 Psychophysiology Protocol", description: "HRV measurement specifications, cortisol assay protocol, control node matching criteria, statistical analysis plan, and Bonferroni correction.", href: "/documents/bio-001-psychophysiology-protocol.pdf" },
@@ -62,82 +78,8 @@ const documents = [
   { type: "CSV", title: "Open Dataset — Survey Points", description: "GPS coordinates, magnetometer readings, lithology, mineral identification, and Old Glory Peak transect identifiers. Published when field data is available.", href: null },
 ];
 
-function Dome() {
-  const [rotation, setRotation] = useState({ x: -10, y: 15 });
-  const dragging = useRef(false);
-  const last = useRef({ x: 0, y: 0 });
-  const points = useMemo(() => {
-    const rings = [
-      [0, 0, 132],
-      [52, 0, 118],
-      [92, 0, 82],
-      [122, 0, 30],
-    ];
-    return rings.flatMap(([radius, , z], ri) => {
-      const count = ri === 0 ? 1 : ri * 5;
-      return Array.from({ length: count }, (_, i) => {
-        const a = (Math.PI * 2 * i) / count + (ri % 2 ? 0 : Math.PI / count);
-        return { x: Math.cos(a) * radius, y: -Math.sin(a) * radius, z, ring: ri, index: i };
-      });
-    });
-  }, []);
-  const edges = useMemo(() => {
-    const out: [number, number][] = [];
-    points.forEach((p, i) => {
-      if (p.ring === 0) return;
-      const ringStart = 1 + ((p.ring - 1) * p.ring * 5) / 2;
-      out.push([i, ringStart + ((p.index + 1) % (p.ring * 5))]);
-      const prevStart = p.ring === 1 ? 0 : 1 + ((p.ring - 2) * (p.ring - 1) * 5) / 2;
-      out.push([i, prevStart + Math.floor(p.index * ((p.ring - 1) / p.ring))]);
-    });
-    return out;
-  }, [points]);
-
-  return (
-    <div
-      className="dome-stage"
-      onPointerDown={(e) => { dragging.current = true; last.current = { x: e.clientX, y: e.clientY }; e.currentTarget.setPointerCapture(e.pointerId); }}
-      onPointerMove={(e) => { if (!dragging.current) return; const dx = e.clientX - last.current.x; const dy = e.clientY - last.current.y; last.current = { x: e.clientX, y: e.clientY }; setRotation(r => ({ x: Math.max(-35, Math.min(25, r.x - dy * .25)), y: r.y + dx * .35 })); }}
-      onPointerUp={() => { dragging.current = false; }}
-      aria-label="Interactive geodesic dome model. Drag to rotate."
-    >
-      <div className="dome-orbit" style={{ transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)` }}>
-        <svg viewBox="-150 -145 300 300" role="img">
-          {edges.map(([a, b], i) => <line key={i} x1={points[a].x.toFixed(4)} y1={points[a].y.toFixed(4)} x2={points[b].x.toFixed(4)} y2={points[b].y.toFixed(4)} className={i % 3 === 0 ? "strut hot" : "strut"} />)}
-          {points.map((p, i) => <circle key={i} cx={p.x.toFixed(4)} cy={p.y.toFixed(4)} r="3" className="joint" />)}
-        </svg>
-      </div>
-      <span className="drag-note">DRAG TO ROTATE</span>
-      <span className="axis x-axis">X</span><span className="axis y-axis">Y</span>
-    </div>
-  );
-}
-
 function Garden() {
-  const [selected, setSelected] = useState(gardenNodes[3]);
-  return (
-    <div className="garden-grid">
-      <div className="garden-map">
-        <div className="garden-lines" />
-        {gardenNodes.map(n => (
-          <button key={n.id} className={`garden-node ${selected.id === n.id ? "active" : ""}`} style={{ left: `${n.x}%`, top: `${n.y}%` }} onClick={() => setSelected(n)} aria-label={`Explore ${n.title}`}>
-            <span>{n.id === "cistern" ? "H₂O" : "✦"}</span>
-          </button>
-        ))}
-        <span className="map-label">1 ACRE PILOT / NOT TO SCALE</span>
-      </div>
-      <div className="garden-detail" key={selected.id}>
-        <span className="eyebrow">SELECTED FIELD NODE</span>
-        <h3>{selected.title}</h3>
-        <p className="detail-meta">{selected.meta}</p>
-        <p>{selected.body}</p>
-        <div className="dual">
-          <span><b>AG /</b> food, habitat, water</span>
-          <span><b>LAB /</b> soil, sound, field data</span>
-        </div>
-      </div>
-    </div>
-  );
+  return <TetrahedronGarden />;
 }
 
 export default function FoundationExperience() {
@@ -254,7 +196,7 @@ export default function FoundationExperience() {
           </div>
         </div>
         <div className="dome-layout">
-          <Dome />
+          <FieldDome />
           <aside>
             <span className="eyebrow">BUILD SPEC / 2V</span>
             {[["DIAMETER", "10 FT"], ["A STRUTS", "35 × 54.75″"], ["B STRUTS", "30 × 56.25″"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}

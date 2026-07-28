@@ -6,6 +6,7 @@ const documentNames = [
   "annual-budget-breakdown.pdf",
   "bio-001-psychophysiology-protocol.pdf",
   "informed-consent-template.pdf",
+  "investor-one-pager.pdf",
   "magnetometer-survey-protocol.pdf",
   "phase-1-action-plan.pdf",
   "project-summary.pdf",
@@ -47,7 +48,7 @@ test("server-renders the Old Glory Peak field station experience", async () => {
   assert.doesNotMatch(html, /OSF RELEASE \/ IN PREPARATION/);
 });
 
-test("ships all six linked research PDF working drafts", async () => {
+test("ships all seven linked research and investor PDF working drafts", async () => {
   const documentsRoot = new URL("../public/documents/", import.meta.url);
   const files = (await readdir(documentsRoot))
     .filter((name) => name.endsWith(".pdf"))
@@ -66,4 +67,19 @@ test("ships all six linked research PDF working drafts", async () => {
   }
 
   assert.match(source, /DATASET \/ PENDING FIELD COLLECTION/);
+});
+
+test("integrates the procedural garden and dome inside their existing sections", async () => {
+  const [experience, garden, dome] = await Promise.all([
+    readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/TetrahedronGarden.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/FieldDome.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(experience, /function Garden\(\) \{\s*return <TetrahedronGarden \/>;/);
+  assert.match(experience, /<FieldDome \/>/);
+  assert.match(garden, /ENHANCE DETAIL/);
+  assert.match(garden, /EXPAND MODEL/);
+  assert.match(dome, /65 STRUTS/);
+  assert.match(dome, /EXPAND MODEL/);
 });

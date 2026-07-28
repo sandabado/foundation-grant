@@ -10,8 +10,12 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
+    BaseDocTemplate,
+    Frame,
+    FrameBreak,
     KeepTogether,
     PageBreak,
+    PageTemplate,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -839,8 +843,359 @@ def consent_template() -> Path:
     )
 
 
+def investor_one_pager() -> Path:
+    investor_styles = {
+        "h1": ParagraphStyle(
+            "InvestorH1",
+            fontName="Times-Bold",
+            fontSize=11,
+            leading=12.5,
+            textColor=MINERAL,
+            spaceBefore=6,
+            spaceAfter=3.5,
+            keepWithNext=True,
+        ),
+        "h2": ParagraphStyle(
+            "InvestorH2",
+            fontName="Helvetica-Bold",
+            fontSize=7.2,
+            leading=8.4,
+            textColor=RUST,
+            spaceBefore=4.5,
+            spaceAfter=2.2,
+            keepWithNext=True,
+        ),
+        "body": ParagraphStyle(
+            "InvestorBody",
+            fontName="Helvetica",
+            fontSize=6.65,
+            leading=8.35,
+            textColor=INK,
+            spaceAfter=3.2,
+        ),
+        "bullet": ParagraphStyle(
+            "InvestorBullet",
+            fontName="Helvetica",
+            fontSize=6.35,
+            leading=7.8,
+            textColor=INK,
+            leftIndent=8,
+            firstLineIndent=-6,
+            spaceAfter=1.1,
+        ),
+        "note": ParagraphStyle(
+            "InvestorNote",
+            fontName="Helvetica-Bold",
+            fontSize=6.3,
+            leading=8,
+            textColor=MINERAL,
+            spaceAfter=2,
+        ),
+        "metric": ParagraphStyle(
+            "InvestorMetric",
+            fontName="Times-Bold",
+            fontSize=9.5,
+            leading=10.5,
+            textColor=MINERAL,
+            alignment=TA_LEFT,
+        ),
+        "quote": ParagraphStyle(
+            "InvestorQuote",
+            fontName="Times-Bold",
+            fontSize=14,
+            leading=15.5,
+            textColor=MINERAL,
+            spaceAfter=3,
+        ),
+        "small": ParagraphStyle(
+            "InvestorSmall",
+            fontName="Helvetica",
+            fontSize=5.8,
+            leading=7.2,
+            textColor=MUTED,
+            spaceAfter=2,
+        ),
+    }
+
+    def ip(text: str, style: str = "body") -> Paragraph:
+        return Paragraph(text, investor_styles[style])
+
+    def ib(items: list[str]) -> list[Paragraph]:
+        return [ip(f"- {item}", "bullet") for item in items]
+
+    def block(title: str, paragraphs: list[Paragraph]) -> KeepTogether:
+        return KeepTogether([ip(title, "h2"), *paragraphs])
+
+    def investor_page(canvas, doc):
+        canvas.saveState()
+        canvas.setFillColor(PAPER)
+        canvas.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, fill=1, stroke=0)
+        canvas.setFillColor(MINERAL)
+        canvas.rect(0, PAGE_HEIGHT - 0.18 * inch, PAGE_WIDTH, 0.18 * inch, fill=1, stroke=0)
+        canvas.setFillColor(GREEN)
+        canvas.setFont("Helvetica-Bold", 6.3)
+        canvas.drawString(0.48 * inch, PAGE_HEIGHT - 0.42 * inch, "WHOLE BODY FOUNDATION")
+        canvas.setFillColor(INK)
+        canvas.setFont("Times-Bold", 21)
+        canvas.drawString(
+            0.48 * inch,
+            PAGE_HEIGHT - 0.76 * inch,
+            "Permanent Field Infrastructure",
+        )
+        canvas.setFont("Times-Bold", 18)
+        canvas.drawString(
+            0.48 * inch,
+            PAGE_HEIGHT - 1.04 * inch,
+            "for Public-Interest Science",
+        )
+        canvas.setFillColor(MINERAL)
+        canvas.setFont("Helvetica", 6.7)
+        canvas.drawString(
+            0.48 * inch,
+            PAGE_HEIGHT - 1.25 * inch,
+            "OLD GLORY PEAK / MORONGO VALLEY / SAN BERNARDINO COUNTY, CALIFORNIA / EST. 2026",
+        )
+        canvas.setFillColor(colors.Color(RUST.red, RUST.green, RUST.blue, alpha=0.1))
+        canvas.roundRect(
+            PAGE_WIDTH - 2.45 * inch,
+            PAGE_HEIGHT - 0.81 * inch,
+            1.95 * inch,
+            0.32 * inch,
+            4,
+            fill=1,
+            stroke=0,
+        )
+        canvas.setFillColor(RUST)
+        canvas.setFont("Helvetica-Bold", 5.8)
+        canvas.drawCentredString(
+            PAGE_WIDTH - 1.475 * inch,
+            PAGE_HEIGHT - 0.68 * inch,
+            "PLANNING BRIEF / JULY 2026",
+        )
+        canvas.setStrokeColor(GREEN)
+        canvas.setLineWidth(0.65)
+        canvas.line(
+            0.48 * inch,
+            PAGE_HEIGHT - 1.38 * inch,
+            PAGE_WIDTH - 0.48 * inch,
+            PAGE_HEIGHT - 1.38 * inch,
+        )
+        canvas.line(0.48 * inch, 0.47 * inch, PAGE_WIDTH - 0.48 * inch, 0.47 * inch)
+        canvas.setFillColor(MUTED)
+        canvas.setFont("Helvetica", 5.4)
+        canvas.drawString(
+            0.48 * inch,
+            0.27 * inch,
+            "CONTACT@WHOLEBODY.FOUNDATION / WWW.WHOLEBODY.FOUNDATION / OSF PROJECT PENDING",
+        )
+        canvas.drawRightString(
+            PAGE_WIDTH - 0.48 * inch,
+            0.27 * inch,
+            "PLANNING ESTIMATES - NOT AN OFFERING MEMORANDUM",
+        )
+        canvas.restoreState()
+
+    left = Frame(
+        0.48 * inch,
+        0.58 * inch,
+        3.42 * inch,
+        8.93 * inch,
+        leftPadding=0,
+        rightPadding=0.12 * inch,
+        topPadding=0,
+        bottomPadding=0,
+        id="left",
+    )
+    right = Frame(
+        4.02 * inch,
+        0.58 * inch,
+        3.5 * inch,
+        8.93 * inch,
+        leftPadding=0.12 * inch,
+        rightPadding=0,
+        topPadding=0,
+        bottomPadding=0,
+        id="right",
+    )
+
+    story: list = [
+        ip("THE OPPORTUNITY", "h1"),
+        ip(
+            "Build what must last. Whole Body Foundation is planning land acquisition, permanent wooden "
+            "infrastructure, and a field station for multidisciplinary research in the high desert of "
+            "Southern California. The model prioritizes ownership, durable construction, and open evidence."
+        ),
+        ip("WHAT WE'RE BUILDING", "h1"),
+        block(
+            "PHASE 1 - TETRAHEDRON GARDEN",
+            ib(
+                [
+                    "12 triangular raised beds in a Flower of Life pattern.",
+                    "1,000-gallon copper cistern, solar gnomon, orchard ring, and 6 cold frames.",
+                    "Planning range: $8,000-$12,000 / Target duration: 90 days.",
+                ]
+            ),
+        ),
+        block(
+            "PHASE 2 - FOUR ELEMENTAL DOMES",
+            ib(
+                [
+                    "Four 10-foot, 2V Douglas fir domes for EARTH, FIRE, AIR, and WATER practices.",
+                    "Hardwood dowel joinery and hide glue; no metal fasteners.",
+                    "Planning range: $700-$900 per dome / 8 weeks per structure.",
+                ]
+            ),
+        ),
+        block(
+            "PHASE 3 - DODECAHEDRON GREAT HALL",
+            ib(
+                [
+                    "50-75 person wooden hall with nonagonal base and copper-paneled acoustic dome.",
+                    "Three seating tiers, stained glass, and a central presentation platform.",
+                    "Planning range: $150,000-$200,000 / Target duration: 6 months.",
+                ]
+            ),
+        ),
+        block(
+            "PHASE 4 - QUINCUNX RESIDENTIAL CLUSTERS",
+            ib(
+                [
+                    "Two clusters of six wooden dome homes, each centered on a pool.",
+                    "Privacy landscape, shared decks, fire areas, and desert-adapted planting.",
+                    "Planning range: $35,000-$45,000 per home / 3 months per home.",
+                ]
+            ),
+        ),
+        Spacer(1, 4),
+        Table(
+            [[ip("TOTAL INITIAL CAMPUS BUILDOUT", "note"), ip("$750K-$1.2M", "metric")]],
+            colWidths=[2.05 * inch, 1.1 * inch],
+            style=TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, -1), colors.Color(GREEN.red, GREEN.green, GREEN.blue, alpha=0.12)),
+                    ("BOX", (0, 0), (-1, -1), 0.7, GREEN),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 7),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 7),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                ]
+            ),
+        ),
+        Spacer(1, 16),
+        ip(
+            "We do not rent what we can own.<br/>We do not lease what we can build.",
+            "quote",
+        ),
+        ip(
+            "The long-term objective is durable field infrastructure that compounds research, training, and community value over time.",
+            "small",
+        ),
+        FrameBreak(),
+        ip("THE RESEARCH MODEL", "h1"),
+        ip(
+            "<b>Every claim backed by a mechanism. Every measurement tied to a GPS coordinate. "
+            "Every dataset open and reproducible.</b>",
+            "note",
+        ),
+        block(
+            "1 / ENVIRONMENTAL GEOPHYSICS",
+            ib(
+                [
+                    "Magnetometer transects calibrated against USGS aeromagnetic data.",
+                    "Four survey lines across the Pinto, Morongo Valley, and Emerson/Landers fault systems.",
+                    "Rock identification and water testing for ORP, pH, heavy metals, and mineral content.",
+                ]
+            ),
+        ),
+        block(
+            "2 / COMMUNITY PSYCHOPHYSIOLOGY",
+            ib(
+                [
+                    "Planned Polar H10 HRV/RMSSD recordings and monthly salivary cortisol collection.",
+                    "IRB review is required before enrollment or data collection; protocol pre-registration will follow approval.",
+                ]
+            ),
+        ),
+        block(
+            "3 / NETWORK AND SYSTEMS SCIENCE",
+            ib(
+                [
+                    "Decision latency, local economic velocity, and fractal scaling of community networks.",
+                    "Open-data release is planned under CC-BY, including negative results.",
+                ]
+            ),
+        ),
+        ip("CURRENT STATUS / JULY 2026", "h1"),
+        *ib(
+            [
+                "<b>LIVE:</b> wholebody.foundation and the Foundation grant site.",
+                "<b>COMPLETE:</b> locked master-plan render package.",
+                "<b>IMPLEMENTED:</b> procedural Phase 1 interactive garden model.",
+                "<b>PENDING:</b> Explorers Club Rising Explorer grant ($2K; Aug. 31, 2026 deadline).",
+                "<b>INQUIRY:</b> fiscal sponsorship discussions.",
+                "<b>PHASE 0:</b> Morongo Valley land search.",
+            ]
+        ),
+        ip("FUNDING REQUIREMENTS", "h1"),
+        block(
+            "FIRST-YEAR OPERATIONS - $75,000",
+            ib(
+                [
+                    "Field personnel: $45,000 / Equipment: $15,000.",
+                    "Data stewardship: $5,000 / Insurance, permits, legal: $8,000.",
+                    "Documentation and website maintenance: $2,000.",
+                ]
+            ),
+        ),
+        block(
+            "FIVE-YEAR CAMPUS PLAN - $1,200,000",
+            ib(
+                [
+                    "Land acquisition: $400,000 / Phase 1-2 construction: $150,000.",
+                    "Great Hall: $200,000 / 12-home residential program: $450,000.",
+                ]
+            ),
+        ),
+        ip("PRIMARY FUNDING PATHS", "h1"),
+        *ib(
+            [
+                "CalEPA Environmental Justice grants: $50K-$500K.",
+                "Explorers Club Rising Explorer: $2,000.",
+                "Private donors, community supporters, and in-kind land contributions.",
+            ]
+        ),
+        Spacer(1, 3),
+        ip(
+            "Planning ranges are preliminary and subject to site control, engineering, permitting, insurance, "
+            "contractor pricing, and regulatory review. No human-subject research begins without required approval.",
+            "small",
+        ),
+    ]
+
+    path = OUTPUT_DIR / "investor-one-pager.pdf"
+    doc = BaseDocTemplate(
+        str(path),
+        pagesize=letter,
+        leftMargin=0,
+        rightMargin=0,
+        topMargin=0,
+        bottomMargin=0,
+        title="Whole Body Foundation Investor One-Pager",
+        author="Whole Body Foundation",
+        subject="Planning brief for the Old Glory Peak field station and campus infrastructure.",
+        pageTemplates=[
+            PageTemplate(id="InvestorOnePager", frames=[left, right], onPage=investor_page)
+        ],
+    )
+    doc.build(story)
+    shutil.copy2(path, PUBLIC_DIR / path.name)
+    return path
+
+
 def main():
     paths = [
+        investor_one_pager(),
         project_summary(),
         magnetometer_protocol(),
         bio_protocol(),
