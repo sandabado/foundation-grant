@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import InteractiveTerrain from "./InteractiveTerrain";
 
@@ -348,7 +349,15 @@ export default function FoundationExperience() {
         </div>
         <div className="team-grid">
           <article className="lead-card">
-            <div className="portrait-placeholder"><span>JG</span><small>MORONGO VALLEY / CA</small></div>
+            <div className="portrait-image">
+              <Image
+                src="/images/jesse-gawlik.jpg"
+                alt="Jesse Gawlik in the Mojave Desert"
+                width={1600}
+                height={1200}
+                sizes="(max-width: 800px) 88vw, 40vw"
+              />
+            </div>
             <div><span className="eyebrow">FOUNDER AND FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Jesse Gawlik — Independent researcher based in Morongo Valley, California. Coordinating ecological research at the Old Glory Peak field station, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
           </article>
           <div className="public-grid">

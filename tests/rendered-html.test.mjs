@@ -101,6 +101,21 @@ test("ships all seven linked research and investor PDF working drafts", async ()
   assert.match(source, /PROTOCOL \/ IN PREPARATION/);
 });
 
+test("ships the optimized Jesse Gawlik founder portrait", async () => {
+  const [source, portrait] = await Promise.all([
+    readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../public/images/jesse-gawlik.jpg", import.meta.url)),
+  ]);
+
+  assert.match(source, /src="\/images\/jesse-gawlik\.jpg"/);
+  assert.match(source, /width=\{1600\}/);
+  assert.match(source, /height=\{1200\}/);
+  assert.doesNotMatch(source, /className="portrait-placeholder"/);
+  assert.equal(portrait[0], 0xff);
+  assert.equal(portrait[1], 0xd8);
+  assert.ok(portrait.byteLength < 500_000);
+});
+
 test("integrates all four interactive architectural models inside their sections", async () => {
   const [experience, garden, dome, architecture] = await Promise.all([
     readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
