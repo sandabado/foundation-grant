@@ -161,7 +161,9 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
 
   assert.match(terrain, /float solarPhase = fract\(time \* 0\.0225 \+ 0\.75\)/);
   assert.match(terrain, /vec3 nightTerrain/);
-  assert.match(terrain, /float sunDisc/);
+  assert.match(terrain, /float dayProgress/);
+  assert.match(terrain, /float directionalLight/);
+  assert.match(terrain, /float movingShadow/);
   assert.match(terrain, /float sunRays/);
   assert.match(terrain, /float lensGhost/);
   assert.match(terrain, /vec3 cottonSky/);

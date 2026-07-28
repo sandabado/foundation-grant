@@ -99,16 +99,24 @@ const fragmentShader = `
     float sunHeight = sin(solarAngle);
     float daylight = smoothstep(-0.3, 0.16, sunHeight);
     float twilight = exp(-abs(sunHeight) * 7.0);
+    float dayProgress = clamp(solarPhase * 2.0, 0.0, 1.0);
     vec2 sunPoint = vec2(
       0.5 - cos(solarAngle) * 0.72,
-      0.55 + sunHeight * 0.19
+      0.82 + sunHeight * 0.14
     );
-    vec2 shadowPoint = sunPoint - vec2(cos(solarAngle) * 0.14, 0.045);
-    vec2 shadowDelta = (vUv - shadowPoint) * vec2(1.0, 2.3);
-    float movingShadow = 1.0 - smoothstep(0.1, 0.36, length(shadowDelta));
+    float shadowCenter = mix(-0.25, 1.25, dayProgress);
+    float shadowDistance = abs(
+      vUv.x + (vUv.y - 0.48) * 0.24 - shadowCenter
+    );
+    float movingShadow = 1.0 - smoothstep(0.1, 0.34, shadowDistance);
+    float directionalLight = smoothstep(
+      -0.58,
+      0.52,
+      (vUv.x - 0.5) * cos(solarAngle) * 1.7 +
+      (vUv.y - 0.42) * 0.3
+    );
     vec2 sunDelta = (vUv - sunPoint) * vec2(1.0, 2.05);
     float sunGlow = 1.0 - smoothstep(0.035, 0.3, length(sunDelta));
-    float sunDisc = 1.0 - smoothstep(0.006, 0.023, length(sunDelta));
     float horizontalRay = 1.0 - smoothstep(0.004, 0.055, abs(sunDelta.y));
     float verticalRay = 1.0 - smoothstep(0.003, 0.04, abs(sunDelta.x));
     float sunRays = max(horizontalRay, verticalRay) * sunGlow;
@@ -133,11 +141,11 @@ const fragmentShader = `
     float cottonStrength = skyMask * (0.12 + daylight * 0.16 + twilight * 0.48);
     terrain = mix(terrain, cottonSky, cottonStrength);
     terrain += vec3(0.31, 0.105, 0.025) * twilight * (0.42 + landMask * 0.58);
-    terrain *= 1.0 - movingShadow * landMask * (0.09 + daylight * 0.18);
+    terrain *= 1.0 - (1.0 - directionalLight) * landMask * daylight * 0.2;
+    terrain *= 1.0 - movingShadow * landMask * daylight * 0.2;
     terrain += vec3(1.0, 0.72, 0.39) *
       (sunGlow * 0.24 + sunRays * 0.15 + diagonalSweep * 0.07) *
       mix(0.38, 1.0, skyMask) * daylight;
-    terrain += vec3(1.0, 0.82, 0.56) * sunDisc * daylight * 0.92;
     terrain += vec3(0.86, 0.62, 0.49) * lensGhost * daylight * 0.11;
     vec3 fieldCycle = mix(
       vec3(0.608, 0.541, 0.769),
