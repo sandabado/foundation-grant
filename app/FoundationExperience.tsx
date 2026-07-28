@@ -319,8 +319,8 @@ export default function FoundationExperience() {
           <div className="architecture-copy">
             <span className="eyebrow">PHASE 2</span>
             <h2>Four elemental domes.</h2>
-            <p>Four geodesic domes hold Earth, Fire, Air, and Water practices around the central garden. Each dome is built entirely of Douglas fir, joined with hardwood dowels and hide glue. No metal. No interference.</p>
-            <strong>2V geodesic geometry. 65 connected struts per dome. Zero metal fasteners.</strong>
+            <p>Earth, Fire, Air, and Water form a precise diamond around the Tetrahedron Garden. Each 2V dome rests on its own raised all-wood platform, reducing ground-borne vibration and supporting controlled acoustic recording. Douglas fir struts, hardwood dowels, and hide glue keep every structure free of metal interference.</p>
+            <strong>Four domes. Four wood isolation platforms. One living garden at the center.</strong>
           </div>
           <FieldDome />
         </div>

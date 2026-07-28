@@ -13,12 +13,15 @@ import {
 import * as THREE from "three";
 
 const OBSIDIAN = "#080a08";
+const BONE = "#f5f0e1";
 const FIELD_GREEN = "#84a66e";
 const MINERAL_GREEN = "#2d4f3a";
 const DOUGLAS_FIR = "#8a5a38";
 const DOUGLAS_FIR_LIGHT = "#a7754d";
 const HARDWOOD = "#5f3b27";
 const FOUNDATION_STONE = "#45463f";
+const COPPER = "#b87333";
+const WATER = "#4f8583";
 const DOME_RADIUS = 3;
 const GROUND_EPSILON = 0.0001;
 
@@ -26,6 +29,8 @@ type CameraCommand = {
   id: number;
   key: string;
 };
+
+type DomeModel = ReturnType<typeof buildDomeStructure>;
 
 function buildDomeStructure() {
   const basis = new THREE.IcosahedronGeometry(1, 0);
@@ -140,7 +145,13 @@ function buildDomeStructure() {
   };
 }
 
-function AcousticField({ motionEnabled }: { motionEnabled: boolean }) {
+function AcousticField({
+  motionEnabled,
+  color,
+}: {
+  motionEnabled: boolean;
+  color: string;
+}) {
   const group = useRef<THREE.Group>(null);
 
   useFrame(({ clock }) => {
@@ -165,8 +176,8 @@ function AcousticField({ motionEnabled }: { motionEnabled: boolean }) {
         <mesh key={radius} rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[radius, radius + 0.025, 64]} />
           <meshStandardMaterial
-            color={FIELD_GREEN}
-            emissive={FIELD_GREEN}
+            color={color}
+            emissive={color}
             emissiveIntensity={0.42}
             transparent
             opacity={0.2}
@@ -178,17 +189,97 @@ function AcousticField({ motionEnabled }: { motionEnabled: boolean }) {
   );
 }
 
-function DomeStructure({ motionEnabled }: { motionEnabled: boolean }) {
-  const model = useMemo(() => buildDomeStructure(), []);
-  useEffect(() => () => model.panels.dispose(), [model]);
-
+function WoodIsolationPlatform({ accent }: { accent: string }) {
   return (
     <group>
+      <mesh position={[0, -0.08, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[3.36, 3.42, 0.34, 24]} />
+        <meshStandardMaterial color={HARDWOOD} roughness={0.9} metalness={0} />
+      </mesh>
+      <mesh position={[0, 0.105, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[3.25, 3.25, 0.12, 32]} />
+        <meshStandardMaterial
+          color={DOUGLAS_FIR_LIGHT}
+          roughness={0.82}
+          metalness={0}
+        />
+      </mesh>
+      {Array.from({ length: 16 }, (_, index) => {
+        const angle = (index / 16) * Math.PI * 2;
+        return (
+          <mesh
+            key={angle}
+            position={[Math.cos(angle) * 2.75, -0.27, Math.sin(angle) * 2.75]}
+            castShadow
+            receiveShadow
+          >
+            <cylinderGeometry args={[0.13, 0.16, 0.28, 8]} />
+            <meshStandardMaterial
+              color={HARDWOOD}
+              roughness={0.9}
+              metalness={0}
+            />
+          </mesh>
+        );
+      })}
+      <mesh position={[0, 0.175, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[3.08, 3.22, 64]} />
+        <meshStandardMaterial
+          color={accent}
+          emissive={accent}
+          emissiveIntensity={0.25}
+          transparent
+          opacity={0.72}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0, 0.168, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.5, 2.82, 64]} />
+        <meshStandardMaterial
+          color={DOUGLAS_FIR}
+          roughness={0.86}
+          metalness={0}
+        />
+      </mesh>
+      {Array.from({ length: 12 }, (_, index) => {
+        const angle = (index / 12) * Math.PI;
+        return (
+          <mesh
+            key={angle}
+            position={[0, 0.185, 0]}
+            rotation={[-Math.PI / 2, 0, angle]}
+          >
+            <planeGeometry args={[6, 0.025]} />
+            <meshStandardMaterial
+              color={DOUGLAS_FIR_LIGHT}
+              roughness={0.88}
+              metalness={0}
+            />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+function DomeStructure({
+  model,
+  motionEnabled,
+  element,
+  accent,
+}: {
+  model: DomeModel;
+  motionEnabled: boolean;
+  element: string;
+  accent: string;
+}) {
+  return (
+    <group position={[0, 0.21, 0]}>
       <mesh geometry={model.panels} receiveShadow>
         <meshPhysicalMaterial
-          color={FIELD_GREEN}
+          color={accent}
           transparent
-          opacity={0.035}
+          opacity={0.045}
           roughness={0.72}
           transmission={0.08}
           thickness={0.08}
@@ -247,16 +338,257 @@ function DomeStructure({ motionEnabled }: { motionEnabled: boolean }) {
           </group>
         ))}
 
-      <AcousticField motionEnabled={motionEnabled} />
+      <AcousticField motionEnabled={motionEnabled} color={accent} />
       <Html
-        position={[0, 3.42, 0]}
+        position={[0, 3.55, 0]}
         center
-        distanceFactor={8}
+        distanceFactor={10}
         className="dome-scene-label"
         style={{ pointerEvents: "none" }}
       >
-        10 FT / 2V / 65 CONNECTED STRUTS / 26 WOOD HUBS
+        {element} / WOOD ISOLATION PLATFORM
       </Html>
+    </group>
+  );
+}
+
+function GardenSignal({ motionEnabled }: { motionEnabled: boolean }) {
+  const group = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
+    if (!group.current) return;
+    const elapsed = clock.getElapsedTime();
+    group.current.children.forEach((child, index) => {
+      const ring = child as THREE.Mesh<
+        THREE.RingGeometry,
+        THREE.MeshStandardMaterial
+      >;
+      const phase = motionEnabled
+        ? (elapsed * 0.11 + index * 0.31) % 1
+        : index * 0.28;
+      ring.scale.setScalar(0.92 + phase * 0.16);
+      ring.material.opacity = 0.32 * (1 - phase);
+    });
+  });
+
+  return (
+    <group ref={group} position={[0, 0.075, 0]}>
+      {[2.25, 2.55, 2.85].map(radius => (
+        <mesh key={radius} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[radius, radius + 0.025, 64]} />
+          <meshStandardMaterial
+            color={FIELD_GREEN}
+            emissive={FIELD_GREEN}
+            emissiveIntensity={0.36}
+            transparent
+            opacity={0.24}
+            depthWrite={false}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function TetrahedronGarden({ motionEnabled }: { motionEnabled: boolean }) {
+  const water = useRef<THREE.MeshStandardMaterial>(null);
+
+  useFrame(({ clock }) => {
+    if (!water.current) return;
+    water.current.emissiveIntensity = motionEnabled
+      ? 0.25 + Math.sin(clock.getElapsedTime() * 1.2) * 0.08
+      : 0.25;
+  });
+
+  return (
+    <group>
+      <mesh position={[0, -0.045, 0]} receiveShadow>
+        <cylinderGeometry args={[3.05, 3.18, 0.12, 48]} />
+        <meshStandardMaterial color="#10150f" roughness={0.97} />
+      </mesh>
+      {[1.12, 2.08, 2.95].map(radius => (
+        <mesh
+          key={radius}
+          position={[0, 0.025, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
+          <ringGeometry args={[radius, radius + 0.055, 72]} />
+          <meshStandardMaterial
+            color={FIELD_GREEN}
+            emissive={FIELD_GREEN}
+            emissiveIntensity={0.16}
+            transparent
+            opacity={0.48}
+            depthWrite={false}
+          />
+        </mesh>
+      ))}
+
+      {Array.from({ length: 12 }, (_, index) => {
+        const angle = (index / 12) * Math.PI * 2;
+        const radius = index % 2 === 0 ? 1.72 : 2.06;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const lineLength = Math.max(0.35, radius - 0.72);
+        return (
+          <group key={angle}>
+            <mesh
+              position={[x, 0.17, z]}
+              rotation={[0, Math.PI / 2 - angle, 0]}
+              castShadow
+              receiveShadow
+            >
+              <cylinderGeometry args={[0.46, 0.46, 0.3, 3]} />
+              <meshStandardMaterial
+                color={index % 3 === 0 ? "#345d42" : MINERAL_GREEN}
+                emissive={MINERAL_GREEN}
+                emissiveIntensity={0.18}
+                roughness={0.94}
+              />
+            </mesh>
+            <mesh
+              position={[
+                Math.cos(angle) * (0.72 + lineLength / 2),
+                0.055,
+                Math.sin(angle) * (0.72 + lineLength / 2),
+              ]}
+              rotation={[0, -angle, 0]}
+            >
+              <boxGeometry args={[lineLength, 0.025, 0.035]} />
+              <meshStandardMaterial
+                color={COPPER}
+                emissive={COPPER}
+                emissiveIntensity={0.18}
+                roughness={0.55}
+              />
+            </mesh>
+          </group>
+        );
+      })}
+
+      <mesh position={[0, 0.28, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.72, 0.78, 0.56, 32]} />
+        <meshStandardMaterial
+          color={COPPER}
+          emissive={COPPER}
+          emissiveIntensity={0.12}
+          metalness={0.72}
+          roughness={0.32}
+        />
+      </mesh>
+      <mesh position={[0, 0.57, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.64, 32]} />
+        <meshStandardMaterial
+          ref={water}
+          color={WATER}
+          emissive={WATER}
+          emissiveIntensity={0.25}
+          transparent
+          opacity={0.82}
+          roughness={0.24}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0, 1.02, 0]} castShadow>
+        <tetrahedronGeometry args={[0.48, 0]} />
+        <meshStandardMaterial
+          color={COPPER}
+          emissive={COPPER}
+          emissiveIntensity={0.2}
+          metalness={0.62}
+          roughness={0.28}
+          wireframe
+        />
+      </mesh>
+
+      <GardenSignal motionEnabled={motionEnabled} />
+      <Html
+        position={[0, 1.78, 0]}
+        center
+        distanceFactor={11}
+        className="dome-scene-label"
+        style={{ pointerEvents: "none" }}
+      >
+        TETRAHEDRON GARDEN / CENTRAL WATER HUB
+      </Html>
+    </group>
+  );
+}
+
+function DiamondPath({
+  start,
+  end,
+}: {
+  start: [number, number];
+  end: [number, number];
+}) {
+  const deltaX = end[0] - start[0];
+  const deltaZ = end[1] - start[1];
+  const length = Math.hypot(deltaX, deltaZ);
+  const angle = -Math.atan2(deltaZ, deltaX);
+
+  return (
+    <group
+      position={[(start[0] + end[0]) / 2, 0.018, (start[1] + end[1]) / 2]}
+      rotation={[0, angle, 0]}
+    >
+      <mesh receiveShadow>
+        <boxGeometry args={[length, 0.045, 0.22]} />
+        <meshStandardMaterial color={HARDWOOD} roughness={0.92} />
+      </mesh>
+      <mesh position={[0, 0.032, 0]}>
+        <boxGeometry args={[length, 0.018, 0.035]} />
+        <meshStandardMaterial
+          color={FIELD_GREEN}
+          emissive={FIELD_GREEN}
+          emissiveIntensity={0.26}
+          transparent
+          opacity={0.68}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function DomeCampus({ motionEnabled }: { motionEnabled: boolean }) {
+  const model = useMemo(() => buildDomeStructure(), []);
+  useEffect(() => () => model.panels.dispose(), [model]);
+
+  const domes = [
+    { element: "EARTH", accent: FIELD_GREEN, position: [0, 0, -6.2] },
+    { element: "FIRE", accent: "#c98245", position: [6.2, 0, 0] },
+    { element: "AIR", accent: BONE, position: [0, 0, 6.2] },
+    { element: "WATER", accent: WATER, position: [-6.2, 0, 0] },
+  ] as const;
+
+  const diamond = [
+    [[0, -6.2], [6.2, 0]],
+    [[6.2, 0], [0, 6.2]],
+    [[0, 6.2], [-6.2, 0]],
+    [[-6.2, 0], [0, -6.2]],
+  ] as const;
+
+  return (
+    <group>
+      {diamond.map(([start, end], index) => (
+        <DiamondPath key={index} start={[...start]} end={[...end]} />
+      ))}
+      <TetrahedronGarden motionEnabled={motionEnabled} />
+      {domes.map(dome => (
+        <group
+          key={dome.element}
+          position={[...dome.position]}
+          scale={0.62}
+        >
+          <WoodIsolationPlatform accent={dome.accent} />
+          <DomeStructure
+            model={model}
+            motionEnabled={motionEnabled}
+            element={dome.element}
+            accent={dome.accent}
+          />
+        </group>
+      ))}
     </group>
   );
 }
@@ -270,7 +602,7 @@ function KeyboardCamera({
 
   useEffect(() => {
     if (!command) return;
-    const target = new THREE.Vector3(0, 1.3, 0);
+    const target = new THREE.Vector3(0, 1.15, 0);
     const offset = camera.position.clone().sub(target);
     const spherical = new THREE.Spherical().setFromVector3(offset);
 
@@ -282,7 +614,7 @@ function KeyboardCamera({
     if (command.key === "-") spherical.radius *= 1.1;
 
     spherical.phi = THREE.MathUtils.clamp(spherical.phi, 0.3, 1.46);
-    spherical.radius = THREE.MathUtils.clamp(spherical.radius, 5.2, 16);
+    spherical.radius = THREE.MathUtils.clamp(spherical.radius, 8.5, 34);
     camera.position.copy(
       new THREE.Vector3().setFromSpherical(spherical).add(target),
     );
@@ -311,31 +643,36 @@ function DomeScene({
       <ambientLight intensity={0.42} />
       <hemisphereLight args={["#d7d0bd", "#11170d", 0.62]} />
       <directionalLight
-        position={[5, 9, 5]}
-        intensity={1}
+        position={[8, 12, 7]}
+        intensity={1.15}
         color="#d4a017"
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
       <pointLight
-        position={[-4, 2.5, -4]}
-        intensity={0.5}
+        position={[-8, 4.5, -5]}
+        intensity={0.62}
         color={FIELD_GREEN}
+      />
+      <pointLight
+        position={[7, 2.5, 6]}
+        intensity={0.34}
+        color={COPPER}
       />
 
       <mesh
-        position={[0, -0.05, 0]}
+        position={[0, -0.19, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
         receiveShadow
       >
-        <circleGeometry args={[6, 80]} />
+        <circleGeometry args={[13, 96]} />
         <meshStandardMaterial color={OBSIDIAN} roughness={0.93} />
       </mesh>
-      {[3.35, 4.15, 5.1].map(radius => (
+      {[3.4, 6.2, 8.8, 11.2].map(radius => (
         <mesh
           key={radius}
-          position={[0, -0.035, 0]}
+          position={[0, -0.175, 0]}
           rotation={[-Math.PI / 2, 0, 0]}
         >
           <ringGeometry args={[radius, radius + 0.012, 96]} />
@@ -350,13 +687,13 @@ function DomeScene({
         </mesh>
       ))}
 
-      <DomeStructure motionEnabled={motionEnabled} />
+      <DomeCampus motionEnabled={motionEnabled} />
       <ContactShadows
-        position={[0, -0.02, 0]}
-        scale={8}
-        opacity={0.58}
-        blur={2.4}
-        far={4.5}
+        position={[0, -0.17, 0]}
+        scale={25}
+        opacity={0.62}
+        blur={2.8}
+        far={9}
         resolution={512}
         color="#000000"
       />
@@ -364,16 +701,16 @@ function DomeScene({
       <OrbitControls
         ref={controls}
         makeDefault
-        target={[0, 1.3, 0]}
-        minDistance={5.2}
-        maxDistance={16}
+        target={[0, 1.15, 0]}
+        minDistance={8.5}
+        maxDistance={34}
         maxPolarAngle={1.47}
         enableZoom
         enablePan={false}
         enableDamping
         dampingFactor={0.06}
         autoRotate={autoRotate}
-        autoRotateSpeed={0.25}
+        autoRotateSpeed={0.16}
         onStart={onControlStart}
         touches={{
           ONE: THREE.TOUCH.ROTATE,
@@ -459,11 +796,11 @@ export default function FieldDome() {
       className={`field-dome-viewer ${expanded ? "is-expanded" : ""}`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      aria-label="Interactive three-dimensional 2V wooden field dome. Drag or use arrow keys to orbit. Scroll or use plus and minus keys to zoom."
+      aria-label="Interactive three-dimensional campus of four 2V wooden elemental domes on raised wood platforms, arranged in a diamond around the Tetrahedron Garden. Drag or use arrow keys to orbit. Scroll or use plus and minus keys to zoom."
     >
       <div className="dome-model-id" aria-hidden="true">
-        <span>ELEMENTAL DOME / STRUCTURAL MODEL</span>
-        <b>DOUGLAS FIR / DOWEL JOINERY</b>
+        <span>FOUR ELEMENTAL DOMES / DIAMOND CAMPUS</span>
+        <b>4 × 65 CONNECTED STRUTS / WOOD ISOLATION PLATFORMS</b>
       </div>
       <button
         type="button"
@@ -480,8 +817,8 @@ export default function FieldDome() {
         <span>ARROWS +/−</span>
       </div>
       <Canvas
-        camera={{ position: [5.9, 3.7, 7], fov: 42, near: 0.1, far: 80 }}
-        dpr={[1, 2]}
+        camera={{ position: [13.5, 10.5, 15.5], fov: 39, near: 0.1, far: 120 }}
+        dpr={[1, 1.75]}
         frameloop="always"
         shadows="basic"
         gl={{

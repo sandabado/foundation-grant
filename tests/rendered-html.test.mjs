@@ -311,6 +311,16 @@ test("integrates all four interactive architectural models inside their sections
   assert.match(garden, /EXPAND MODEL/);
   assert.match(dome, /65 CONNECTED STRUTS/);
   assert.match(dome, /EXPAND MODEL/);
+  assert.match(dome, /function WoodIsolationPlatform/);
+  assert.match(dome, /function TetrahedronGarden/);
+  assert.match(dome, /function DiamondPath/);
+  assert.match(dome, /element: "EARTH"/);
+  assert.match(dome, /element: "FIRE"/);
+  assert.match(dome, /element: "AIR"/);
+  assert.match(dome, /element: "WATER"/);
+  assert.match(dome, /TETRAHEDRON GARDEN \/ CENTRAL WATER HUB/);
+  assert.match(dome, /4 × 65 CONNECTED STRUTS \/ WOOD ISOLATION PLATFORMS/);
+  assert.match(experience, /Four domes\. Four wood isolation platforms\. One living garden at the center\./);
   assert.match(dome, /struts\.length !== 65/);
   assert.match(dome, /joints\.length !== 26/);
   assert.match(dome, /baseJoints !== 10/);
