@@ -53,14 +53,32 @@ const ResidentialClustersModel = dynamic(
   },
 );
 
-const nav = [
-  ["site-context", "Site"],
-  ["method", "Method"],
-  ["phase-1-tet-garden", "Architecture"],
-  ["equipment", "Equipment"],
-  ["budget", "Budget"],
-  ["timeline", "Roadmap"],
-  ["people", "Team"],
+type NavItem = {
+  id: string;
+  label: string;
+  sections: readonly string[];
+  cta?: boolean;
+};
+
+const nav: NavItem[] = [
+  { id: "site-context", label: "Site", sections: ["site-context"] },
+  { id: "method", label: "Method", sections: ["method"] },
+  {
+    id: "phase-1-tet-garden",
+    label: "Architecture",
+    sections: [
+      "phase-1-tet-garden",
+      "phase-2-elemental-domes",
+      "phase-3-great-hall",
+      "phase-4-quincunx",
+    ],
+  },
+  { id: "equipment", label: "Equipment", sections: ["equipment"] },
+  { id: "budget", label: "Budget", sections: ["budget"] },
+  { id: "timeline", label: "Roadmap", sections: ["timeline"] },
+  { id: "people", label: "Team", sections: ["people"] },
+  { id: "library", label: "Library", sections: ["library"] },
+  { id: "contact", label: "Contact", sections: ["contact"], cta: true },
 ];
 
 const fundingMix = [
@@ -71,12 +89,12 @@ const fundingMix = [
 
 const budgetLines = [
   ["Personnel", 45000, "#84a66e"],
-  ["Equipment", 8000, "#b87333"],
-  ["Sponsor fee", 7500, "#a58b6c"],
+  ["Equipment", 8000, "#9ab58a"],
+  ["Sponsor fee", 7500, "#718c65"],
   ["Travel", 6000, "#6f8f65"],
-  ["Data + hosting", 4000, "#d7d0bd"],
-  ["Legal + insurance", 3500, "#8b6b4f"],
-  ["Contingency", 1000, "#607657"],
+  ["Data + hosting", 4000, "#b7c5aa"],
+  ["Legal + insurance", 3500, "#5f7656"],
+  ["Contingency", 1000, "#40523b"],
 ] as const;
 
 const milestones = [
@@ -139,8 +157,23 @@ export default function FoundationExperience() {
   const [progress, setProgress] = useState(0);
   const [cursor, setCursor] = useState({ x: -50, y: -50, ring: false });
   useEffect(() => {
-    const observer = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setActive(e.target.id)), { rootMargin: "-35% 0px -55%" });
-    nav.forEach(([id]) => { const el = document.getElementById(id); if (el) observer.observe(el); });
+    const observer = new IntersectionObserver(
+      entries =>
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const item = nav.find(candidate =>
+            candidate.sections.includes(entry.target.id),
+          );
+          if (item) setActive(item.id);
+        }),
+      { rootMargin: "-35% 0px -55%" },
+    );
+    nav.forEach(item =>
+      item.sections.forEach(sectionId => {
+        const element = document.getElementById(sectionId);
+        if (element) observer.observe(element);
+      }),
+    );
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
@@ -149,9 +182,9 @@ export default function FoundationExperience() {
     const move = (e: MouseEvent) => setCursor({ x: e.clientX, y: e.clientY, ring: !!(e.target as Element)?.closest("a,button") });
     const keys = (e: KeyboardEvent) => {
       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      const index = nav.findIndex(([id]) => id === active);
+      const index = nav.findIndex(item => item.id === active);
       const next = e.key === "ArrowRight" ? Math.min(nav.length - 1, index + 1) : Math.max(0, index - 1);
-      document.getElementById(nav[next][0])?.scrollIntoView();
+      document.getElementById(nav[next].id)?.scrollIntoView();
     };
     scroll();
     window.addEventListener("scroll", scroll, { passive: true });
@@ -165,11 +198,28 @@ export default function FoundationExperience() {
       <div className={`loader ${loaded ? "gone" : ""}`} aria-hidden="true"><i /><span>WHOLE BODY FOUNDATION</span></div>
       <div className={`custom-cursor ${cursor.ring ? "ring" : ""}`} style={{ transform: `translate(${cursor.x}px, ${cursor.y}px)` }} aria-hidden="true" />
       <div className="scroll-progress" style={{ transform: `scaleX(${progress})` }} />
-      <nav className="topnav">
-        <a href="#top" className="brand"><span>W/B</span> WHOLE BODY FOUNDATION</a>
-        <button className="menu-button" onClick={() => setMenu(!menu)} aria-expanded={menu}>MENU <i>{menu ? "×" : "+"}</i></button>
-        <div className={`navlinks ${menu ? "open" : ""}`}>
-          {nav.map(([id, label], i) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)} className={active === id ? "active" : ""}><small>0{i + 1}</small>{label}</a>)}
+      <nav className="topnav" aria-label="Primary navigation">
+        <a href="#top" className="brand" onClick={() => setMenu(false)}><span>W/B</span> WHOLE BODY FOUNDATION</a>
+        <button
+          className="menu-button"
+          onClick={() => setMenu(!menu)}
+          aria-expanded={menu}
+          aria-controls="primary-navigation"
+        >
+          NAVIGATION <i aria-hidden="true">{menu ? "×" : "+"}</i>
+        </button>
+        <div id="primary-navigation" className={`navlinks ${menu ? "open" : ""}`}>
+          {nav.map(item => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={() => setMenu(false)}
+              className={`${active === item.id ? "active" : ""} ${item.cta ? "nav-cta" : ""}`.trim()}
+              aria-current={active === item.id ? "location" : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
         </div>
       </nav>
 
@@ -187,7 +237,7 @@ export default function FoundationExperience() {
             <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, dryland agriculture, mycelial network surveys, and community health monitoring converge at the Old Glory Peak field station.</p>
           </div>
           <div className="hero-actions" aria-label="Explore the fieldwork">
-            <a href="#site-context">ENTER THE FIELD ↓</a>
+            <a className="button button-primary" href="#site-context">ENTER THE FIELD ↓</a>
           </div>
         </div>
         <div className="hero-stats">
@@ -358,7 +408,7 @@ export default function FoundationExperience() {
                 sizes="(max-width: 800px) 88vw, 40vw"
               />
             </div>
-            <div><span className="eyebrow">FOUNDER AND FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Jesse Gawlik — Independent researcher based in Morongo Valley, California. Coordinating ecological research at the Old Glory Peak field station, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
+            <div><span className="eyebrow">FOUNDER AND FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Jesse Gawlik — Independent researcher based in Morongo Valley, California. Coordinating ecological research at the Old Glory Peak field station, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a className="text-link" href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
           </article>
           <div className="public-grid">
             <article className="science-commitment">
@@ -375,11 +425,11 @@ export default function FoundationExperience() {
               <span className="eyebrow">ADVISORY BOARD</span>
               <h3>In formation.</h3>
               <p>Seeking mission-aligned scientists and practitioners in environmental geophysics, desert ecology, and community health.</p>
-              <a href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Advisory%20Inquiry">START A CONVERSATION ↗</a>
+              <a className="text-link" href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Advisory%20Inquiry">START A CONVERSATION ↗</a>
             </article>
           </div>
           <div className="public-links">
-            <a href="mailto:jesse@wholebody.foundation">CONTACT JESSE</a>
+            <a className="button button-secondary" href="mailto:jesse@wholebody.foundation">CONTACT JESSE</a>
             <span aria-disabled="true">OSF PROFILE / COMING SOON</span>
             <span aria-disabled="true">FIELD LOG / COMING SOON</span>
           </div>
@@ -406,19 +456,20 @@ export default function FoundationExperience() {
               </>
             );
             return document.href ? (
-              <a className="document-card" href={document.href} target="_blank" rel="noreferrer" key={document.title}>{card}</a>
+              <a className="document-card document-card-link" href={document.href} target="_blank" rel="noreferrer" key={document.title}>{card}</a>
             ) : (
-              <article className="document-card" key={document.title}>{card}</article>
+              <article className="document-card document-card-static" key={document.title}>{card}</article>
             );
           })}
         </div>
       </section>
 
-      <footer>
+      <footer id="contact" className="site-footer">
         <div><span className="eyebrow">WHOLE BODY FOUNDATION</span><h2>Old Glory Peak<br /><em>Field Station.</em></h2></div>
         <div className="footer-side">
           <p>Field research station · Open data · Public-interest science</p>
-          <a href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Inquiry">JESSE@WHOLEBODY.FOUNDATION ↗</a>
+          <a className="button button-primary" href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Inquiry">EMAIL THE FOUNDATION ↗</a>
+          <a className="footer-email" href="mailto:jesse@wholebody.foundation">JESSE@WHOLEBODY.FOUNDATION</a>
           <address>Old Glory Peak Field Station<br />Morongo Valley, San Bernardino County, California<br /><br />OSF profile · coming soon<br />Field log · coming soon</address>
         </div>
         <small>© 2026 WHOLE BODY FOUNDATION · ALL RESEARCH OUTPUTS PUBLISHED UNDER CC-BY LICENSE UNLESS OTHERWISE NOTED</small>

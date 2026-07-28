@@ -52,6 +52,11 @@ test("server-renders the Old Glory Peak field station experience", async () => {
   assert.match(html, /PROTOCOL \/ IN PREPARATION/);
   assert.match(html, /\/documents\/project-summary\.pdf/);
   assert.match(html, /DOWNLOAD WORKING DRAFT/);
+  assert.match(html, /aria-label="Primary navigation"/);
+  assert.match(html, /href="#library"/);
+  assert.match(html, /href="#contact"/);
+  assert.match(html, /id="contact" class="site-footer"/);
+  assert.match(html, /EMAIL THE FOUNDATION/);
   assert.doesNotMatch(html, /OSF RELEASE \/ IN PREPARATION/);
   assert.doesNotMatch(html, /Fiscal sponsorship active/i);
   assert.doesNotMatch(html, /IRB-approved\. Pre-registered/i);
@@ -69,6 +74,7 @@ test("server-renders the Old Glory Peak field station experience", async () => {
     'id="timeline"',
     'id="people"',
     'id="library"',
+    'id="contact"',
   ];
   let previousIndex = -1;
   for (const section of orderedSections) {
@@ -76,6 +82,36 @@ test("server-renders the Old Glory Peak field station experience", async () => {
     assert.ok(sectionIndex > previousIndex, `${section} should follow the prior section`);
     previousIndex = sectionIndex;
   }
+});
+
+test("navigation maps every top-level experience and groups all architecture phases", async () => {
+  const source = await readFile(
+    new URL("../app/FoundationExperience.tsx", import.meta.url),
+    "utf8",
+  );
+
+  for (const id of [
+    "site-context",
+    "method",
+    "phase-1-tet-garden",
+    "equipment",
+    "budget",
+    "timeline",
+    "people",
+    "library",
+    "contact",
+  ]) {
+    assert.match(source, new RegExp(`id: "${id}"`));
+  }
+
+  assert.match(
+    source,
+    /sections:\s*\[\s*"phase-1-tet-garden",\s*"phase-2-elemental-domes",\s*"phase-3-great-hall",\s*"phase-4-quincunx",\s*\]/,
+  );
+  assert.match(source, /sections\.includes\(entry\.target\.id\)/);
+  assert.match(source, /className="button button-primary" href="#site-context"/);
+  assert.match(source, /className="document-card document-card-link"/);
+  assert.match(source, /className="document-card document-card-static"/);
 });
 
 test("ships all seven linked research and investor PDF working drafts", async () => {
