@@ -28,22 +28,22 @@ const budget = [
 ] as const;
 
 const milestones = [
-  ["01", "BASELINE", "Map the baseline", "Fiscal sponsorship active · First 50 GPS-tagged survey points across the Old Glory Peak ridge transect · Public field log on OSF · Magnetometer transects A–D complete · Mineral identification catalog published"],
-  ["02", "INFRASTRUCTURE", "Build the system", "First grant awarded · Dome fabrication at the Old Glory Peak site · Garden earthworks complete · 150 survey points collected · Water quality baseline established · Offline field computer operational"],
-  ["03", "EXPERIMENT", "Run the experiment", "Full sensor network deployed · IRB-approved psychophysiology protocol active · First harvest from the Old Glory Peak garden · Annual open dataset published · Alpha Node vs. Control Node comparison begins"],
-  ["04", "REPLICATION", "Share the method", "Second survey cycle across the San Gorgonio–San Jacinto corridor · Workshop series for land managers · 501(c)(3) transition · Replication protocol published · Peer-reviewed manuscript submitted"],
+  ["01", "NOW – DEC 2026", "Phase 1", "Fiscal sponsorship active · First 50 GPS-tagged survey points across the Old Glory Peak ridge transect · Public field log on OSF · Magnetometer transects A–D complete · Mineral identification catalog published"],
+  ["02", "JAN 2027 – JUN 2027", "Phase 2", "First grant awarded · Dome fabrication at the Old Glory Peak site · Garden earthworks complete · 150 survey points collected · Water quality baseline established · Moss patch monitoring stations installed · Camera trap network operational · Offline field computer operational"],
+  ["03", "JUL 2027 +", "Phase 3", "Full sensor network deployed · IRB-approved psychophysiology protocol active · First harvest from the Old Glory Peak garden · Annual open dataset published (geology + biology + psychology) · Alpha Node vs. Control Node comparison begins"],
+  ["04", "YEAR 2 +", "Phase 4", "Second survey cycle across the San Gorgonio–San Jacinto corridor · Workshop series for land managers · 501(c)(3) transition · Replication protocol published · Peer-reviewed manuscript submitted"],
 ];
 
 const methods = [
   {
     number: "01",
     title: "Environmental geophysics",
-    body: "Smartphone magnetometer transects calibrated against USGS aeromagnetic data. Four survey lines cross the Old Glory Peak ridge: Transect A (Pinto Fault Crossing), Transect B (Morongo Valley Fault Crossing), Transect C (Old Glory Peak Ridge Crest), and Transect D (Mine Area Grid near historical adits). Rock sampling uses standard field methods: Mohs hardness, streak plate, HCl reaction, and magnetic susceptibility. Water quality testing covers ORP, pH, heavy metals, and mineral content.",
+    body: "Smartphone magnetometer transects calibrated against USGS aeromagnetic data. Four survey lines crossing the Old Glory Peak ridge: Transect A (Pinto Fault Crossing), Transect B (Morongo Valley Fault Crossing), Transect C (Old Glory Peak Ridge Crest), Transect D (Mine Area Grid near historical adits). Rock sampling with standard field methods: Mohs hardness, streak plate, HCl reaction, magnetic susceptibility. Water quality testing: ORP, pH, heavy metals, mineral content.",
   },
   {
     number: "02",
     title: "Community psychophysiology",
-    body: "Polar H10 chest straps for 5-minute RMSSD recordings three times weekly. Salivary cortisol via Salivette tubes, morning and evening, monthly. Quasi-experimental design with a matched control community. Repeated-measures ANOVA, Bonferroni-corrected for six supplementary outcomes. IRB-approved. Pre-registered on OSF before data collection.",
+    body: "Polar H10 chest straps for 5-minute RMSSD recordings (3× weekly). Salivary cortisol via Salivette tubes (morning/evening, monthly). Quasi-experimental design with matched control community. Repeated-measures ANOVA, Bonferroni-corrected for six supplementary outcomes. IRB-approved. Pre-registered on OSF before data collection.",
   },
   {
     number: "03",
@@ -53,13 +53,13 @@ const methods = [
 ];
 
 const documents = [
-  ["PDF", "Project Summary", "Mission, research questions, methods, Old Glory Peak site justification, budget, and timeline."],
-  ["PDF", "Magnetometer Survey Protocol", "Transect A–D design, including the Old Glory Peak ridge survey, station log template, quality control checklist, data export format, and field safety protocols."],
-  ["PDF", "BIO-001 Psychophysiology Protocol", "HRV measurement specifications, cortisol assay protocol, control node matching criteria, statistical analysis plan, Bonferroni correction, and the three-outcome framework."],
-  ["PDF", "Phase 1 Action Plan", "Week-by-week implementation: legal setup, equipment acquisition, Old Glory Peak field survey execution, and grant submissions."],
-  ["PDF", "Annual Budget Breakdown", "Line-item budget with justification: personnel, data stewardship, construction, field collection, documentation, and contingency."],
-  ["PDF", "Informed Consent Template", "IRB-ready consent form for HRV and cortisol study participants."],
-  ["CSV", "Open Dataset — Survey Points", "GPS coordinates, magnetometer readings, lithology, mineral identification, and Old Glory Peak transect identifiers. Published when field data is available."],
+  { type: "PDF", title: "Project Summary", description: "Mission, research questions, methods, Old Glory Peak site justification, budget, and timeline.", href: "/documents/project-summary.pdf" },
+  { type: "PDF", title: "Magnetometer Survey Protocol", description: "Transect A–D design, including the Old Glory Peak ridge survey, station log template, quality control checklist, data export format, and field safety protocols.", href: "/documents/magnetometer-survey-protocol.pdf" },
+  { type: "PDF", title: "BIO-001 Psychophysiology Protocol", description: "HRV measurement specifications, cortisol assay protocol, control node matching criteria, statistical analysis plan, and Bonferroni correction.", href: "/documents/bio-001-psychophysiology-protocol.pdf" },
+  { type: "PDF", title: "Phase 1 Action Plan", description: "Week-by-week implementation: legal setup, equipment acquisition, Old Glory Peak field survey execution, and grant submissions.", href: "/documents/phase-1-action-plan.pdf" },
+  { type: "PDF", title: "Annual Budget Breakdown", description: "Line-item budget with justification: personnel, data stewardship, construction, field collection, documentation, and contingency.", href: "/documents/annual-budget-breakdown.pdf" },
+  { type: "PDF", title: "Informed Consent Template", description: "IRB-ready consent form for HRV and cortisol study participants.", href: "/documents/informed-consent-template.pdf" },
+  { type: "CSV", title: "Open Dataset — Survey Points", description: "GPS coordinates, magnetometer readings, lithology, mineral identification, and Old Glory Peak transect identifiers. Published when field data is available.", href: null },
 ];
 
 function Dome() {
@@ -232,7 +232,9 @@ export default function FoundationExperience() {
         <div className="survey-copy">
           <span className="eyebrow">OPEN-ACCESS BASELINE</span>
           <h2>Make the invisible<br />legible.</h2>
-          <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline for geological change across the Old Glory Peak transect corridor. Four transects cross the fault lines. Historical gold mining confirms mineralized quartz vein systems.</p>
+          <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline for geological change across the Old Glory Peak transect corridor — spanning the Pinto Mountain Fault (northern boundary of DWR Basin 7-20), the Morongo Valley Fault (documented “rising water and marshy conditions”), and the Emerson Fault / 1992 Landers rupture zone.</p>
+          <p>Four transects cross these fault lines, including a dedicated high-resolution grid along the Old Glory Peak ridge itself. The peak sits directly between the San Gorgonio and San Jacinto fault zones — making it a natural laboratory for studying how hydrothermal processes and crustal stress interact.</p>
+          <p>Historical gold mining in the Morongo District (1890s–1940s, including the Morongo King Mine with a 10-stamp mill producing $400 in gold on its first day) confirms mineralized quartz vein systems along these structures.</p>
           <p>Every station links field strength to lithology, mineral assemblage, and photographic documentation. Every dataset is published on the Open Science Framework under a CC-BY license before analysis begins.</p>
           <div className="research-standard">
             <span>THE STANDARD</span>
@@ -246,7 +248,10 @@ export default function FoundationExperience() {
         <div className="section-number light">03 / BUILD THE INSTRUMENT</div>
         <div className="section-head light">
           <div><span className="eyebrow">ACOUSTIC + FIELD RESEARCH</span><h2>A room with<br />no interference.</h2></div>
-          <p>Ten feet across. Sixty-five Douglas fir struts. Zero metal fasteners. The 2V geodesic dome creates a controlled acoustic space without distorting electromagnetic readings—a replicable prototype for natural-material research structures. Located on the Old Glory Peak ridge transect corridor, the dome serves as the central field station for all survey operations.</p>
+          <div className="section-copy">
+            <p>Ten feet across. Sixty-five Douglas fir struts. Zero metal fasteners. The 2V geodesic dome creates a controlled acoustic space without distorting electromagnetic readings — a replicable prototype for natural-material research structures.</p>
+            <p>Located on the Old Glory Peak ridge transect corridor, the dome serves as the central field station for all survey operations.</p>
+          </div>
         </div>
         <div className="dome-layout">
           <Dome />
@@ -271,7 +276,7 @@ export default function FoundationExperience() {
         </div>
         <div className="water-note">
           <span className="eyebrow">WATER AS EVIDENCE</span>
-          <p>A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content—baseline data for the Living River system and a verifiable record of what this land produces without synthetic inputs.</p>
+          <p>A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content — baseline data for the Living River system and a verifiable record of what this land produces without synthetic inputs.</p>
         </div>
         <div className="offline-panel">
           <div>
@@ -327,17 +332,24 @@ export default function FoundationExperience() {
         <div className="section-number light">08 / DOCUMENT LIBRARY</div>
         <div className="section-head light">
           <div><span className="eyebrow">THE FULL RESEARCH PACKAGE</span><h2>Read the method.<br />Trace the evidence.</h2></div>
-          <p>Every document is versioned and updated as the project evolves. Permanent OSF links will replace the release markers as each document is published.</p>
+          <p>Download the full research package. Every document is updated as the project evolves.</p>
         </div>
         <div className="document-grid">
-          {documents.map(([type, title, description], index) => (
-            <article className="document-card" key={title}>
-              <div><span>{type}</span><small>0{index + 1}</small></div>
-              <h3>{title}</h3>
-              <p>{description}</p>
-              <span className="document-status">OSF RELEASE / IN PREPARATION</span>
-            </article>
-          ))}
+          {documents.map((document, index) => {
+            const card = (
+              <>
+                <div><span>{document.type}</span><small>0{index + 1}</small></div>
+                <h3>{document.title}</h3>
+                <p>{document.description}</p>
+                <span className="document-status">{document.href ? "DOWNLOAD WORKING DRAFT ↘" : "DATASET / PENDING FIELD COLLECTION"}</span>
+              </>
+            );
+            return document.href ? (
+              <a className="document-card" href={document.href} target="_blank" rel="noreferrer" key={document.title}>{card}</a>
+            ) : (
+              <article className="document-card" key={document.title}>{card}</article>
+            );
+          })}
         </div>
       </section>
 
@@ -350,14 +362,14 @@ export default function FoundationExperience() {
         <div className="team-grid">
           <article className="lead-card">
             <div className="portrait-placeholder"><span>JG</span><small>MORONGO VALLEY / CA</small></div>
-            <div><span className="eyebrow">FOUNDER &amp; FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Independent researcher based in Morongo Valley, California. Coordinating ecological research at the Old Glory Peak field station, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
+            <div><span className="eyebrow">FOUNDER &amp; FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Jesse Gawlik — Independent researcher based in Morongo Valley, California. Coordinating ecological research at the Old Glory Peak field station, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
           </article>
           <div className="public-grid">
             <article className="science-commitment">
               <span className="eyebrow">OPEN SCIENCE COMMITMENT</span>
               <ul>
                 <li>Pre-registration on OSF before data collection</li>
-                <li>Open data on OSF or Zenodo under CC-BY license</li>
+                <li>Open data on OSF/Zenodo under CC-BY license</li>
                 <li>Negative results published</li>
                 <li>Full replication protocol available</li>
                 <li>Annual financial summary published</li>
@@ -383,9 +395,9 @@ export default function FoundationExperience() {
         <div className="footer-side">
           <p>Field research station · Open data · Public-interest science</p>
           <a href="mailto:jesse@wholebody.foundation?subject=Whole%20Body%20Foundation%20Inquiry">JESSE@WHOLEBODY.FOUNDATION ↗</a>
-          <address>Old Glory Peak Field Station<br />Morongo Valley<br />San Bernardino County, California<br /><br />OSF profile · coming soon<br />Field log · coming soon</address>
+          <address>Old Glory Peak Field Station<br />Morongo Valley, San Bernardino County, California<br /><br />OSF profile · coming soon<br />Field log · coming soon</address>
         </div>
-        <small>© 2026 WHOLE BODY FOUNDATION · RESEARCH OUTPUTS PUBLISHED UNDER CC-BY UNLESS OTHERWISE NOTED</small>
+        <small>© 2026 WHOLE BODY FOUNDATION · ALL RESEARCH OUTPUTS PUBLISHED UNDER CC-BY LICENSE UNLESS OTHERWISE NOTED</small>
       </footer>
     </main>
   );
