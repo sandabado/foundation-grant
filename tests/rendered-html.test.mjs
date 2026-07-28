@@ -219,6 +219,9 @@ test("ships the optimized Jesse Gawlik founder portrait", async () => {
   assert.match(source, /src="\/images\/jesse-gawlik\.jpg"/);
   assert.match(source, /width=\{1600\}/);
   assert.match(source, /height=\{1200\}/);
+  assert.match(source, /loading="eager"/);
+  assert.match(source, /decoding="async"/);
+  assert.doesNotMatch(source, /from "next\/image"/);
   assert.doesNotMatch(source, /className="portrait-placeholder"/);
   assert.equal(portrait[0], 0xff);
   assert.equal(portrait[1], 0xd8);
