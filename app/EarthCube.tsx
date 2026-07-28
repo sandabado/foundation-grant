@@ -21,6 +21,10 @@ const CLOUDS: GeoPoint[][] = [
   [[78,52],[106,49],[136,54],[160,50]],
 ];
 
+const FIELD_NODES: GeoPoint[] = [
+  [-118, 35], [-74, 41], [-46, -15], [2, 48], [31, -2], [78, 22], [121, 31], [151, -33],
+];
+
 function project(lon: number, lat: number, rotation: number, cx: number, cy: number, radius: number) {
   const lambda = (lon * Math.PI) / 180 + rotation;
   const phi = (lat * Math.PI) / 180;
@@ -90,10 +94,11 @@ export default function EarthCube() {
       const cy = height / 2 + pointer.current.y * 5;
       const radius = Math.min(width, height) * 0.305;
       const rotation = reduceMotion ? -0.55 : -0.55 + (now - start) * 0.000035;
+      const pulse = reduceMotion ? 0 : Math.sin((now - start) * 0.0014);
       context.clearRect(0, 0, width, height);
 
       const outerGlow = context.createRadialGradient(cx, cy, radius * 0.65, cx, cy, radius * 1.5);
-      outerGlow.addColorStop(0, "rgba(132,166,110,.18)");
+      outerGlow.addColorStop(0, `rgba(132,166,110,${0.18 + pulse * 0.025})`);
       outerGlow.addColorStop(0.55, "rgba(132,166,110,.055)");
       outerGlow.addColorStop(1, "rgba(132,166,110,0)");
       context.fillStyle = outerGlow;
@@ -146,6 +151,30 @@ export default function EarthCube() {
         context.stroke();
       }
 
+      const visibleNodes = FIELD_NODES
+        .map(([lon, lat]) => project(lon, lat, rotation, cx, cy, radius))
+        .filter((point) => point.z > 0.08);
+      context.strokeStyle = "rgba(184,115,51,.2)";
+      context.lineWidth = 0.7;
+      for (let i = 1; i < visibleNodes.length; i++) {
+        context.beginPath();
+        context.moveTo(visibleNodes[i - 1].x, visibleNodes[i - 1].y);
+        context.quadraticCurveTo(cx, cy - radius * 0.22, visibleNodes[i].x, visibleNodes[i].y);
+        context.stroke();
+      }
+      for (let i = 0; i < visibleNodes.length; i++) {
+        const point = visibleNodes[i];
+        const nodePulse = 2.2 + Math.sin((now - start) * 0.002 + i) * 0.8;
+        context.fillStyle = "rgba(215,208,189,.88)";
+        context.beginPath();
+        context.arc(point.x, point.y, 1.25, 0, Math.PI * 2);
+        context.fill();
+        context.strokeStyle = "rgba(132,166,110,.48)";
+        context.beginPath();
+        context.arc(point.x, point.y, nodePulse, 0, Math.PI * 2);
+        context.stroke();
+      }
+
       const night = context.createLinearGradient(cx - radius, cy, cx + radius, cy);
       night.addColorStop(0, "rgba(0,0,0,0)");
       night.addColorStop(0.57, "rgba(0,0,0,.06)");
@@ -164,6 +193,19 @@ export default function EarthCube() {
       context.beginPath();
       context.arc(cx, cy, radius + 5, 0, Math.PI * 2);
       context.stroke();
+
+      context.save();
+      context.translate(cx, cy);
+      context.rotate(-0.18);
+      context.scale(1, 0.32);
+      context.strokeStyle = "rgba(184,115,51,.22)";
+      context.lineWidth = 0.8;
+      context.setLineDash([4, 8]);
+      context.beginPath();
+      context.arc(0, 0, radius * 1.28, 0, Math.PI * 2);
+      context.stroke();
+      context.setLineDash([]);
+      context.restore();
 
       if (!reduceMotion) frame = requestAnimationFrame(draw);
     };
@@ -211,6 +253,11 @@ export default function EarthCube() {
         <i className="cube-face cube-right" />
         <i className="cube-face cube-top" />
         <i className="cube-face cube-bottom" />
+      </div>
+      <div className="earth-field" aria-hidden="true">
+        {Array.from({ length: 12 }, (_, index) => (
+          <i key={index} style={{ "--particle-index": index } as React.CSSProperties} />
+        ))}
       </div>
       <span className="earth-readout earth-readout-top">ORBITAL BODY / 03</span>
       <span className="earth-readout earth-readout-bottom">EARTH · LIVE ROTATION</span>
