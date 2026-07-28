@@ -22,6 +22,8 @@ const HARDWOOD = "#5f3b27";
 const FOUNDATION_STONE = "#45463f";
 const COPPER = "#b87333";
 const WATER = "#4f8583";
+const FIRE = "#c98245";
+const AIR = "#e8ecd8";
 const DOME_RADIUS = 3;
 const GROUND_EPSILON = 0.0001;
 
@@ -550,14 +552,341 @@ function DiamondPath({
   );
 }
 
+function FirePit({ motionEnabled }: { motionEnabled: boolean }) {
+  const flames = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
+    if (!flames.current) return;
+    const elapsed = clock.getElapsedTime();
+    flames.current.children.forEach((child, index) => {
+      const flame = child as THREE.Mesh<
+        THREE.ConeGeometry,
+        THREE.MeshStandardMaterial
+      >;
+      const pulse = motionEnabled
+        ? Math.sin(elapsed * (4.2 + index * 0.45) + index * 1.8)
+        : 0;
+      flame.scale.set(
+        0.9 + pulse * 0.08,
+        0.92 + pulse * 0.16,
+        0.9 + pulse * 0.08,
+      );
+      flame.rotation.y = elapsed * (motionEnabled ? 0.38 : 0) + index;
+      flame.material.emissiveIntensity = 0.9 + pulse * 0.2;
+    });
+  });
+
+  return (
+    <group>
+      <mesh position={[0, 0.255, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.8, 0.84, 0.18, 24]} />
+        <meshStandardMaterial color="#17120f" roughness={0.95} />
+      </mesh>
+      {Array.from({ length: 12 }, (_, index) => {
+        const angle = (index / 12) * Math.PI * 2;
+        return (
+          <mesh
+            key={angle}
+            position={[Math.cos(angle) * 0.77, 0.37, Math.sin(angle) * 0.77]}
+            rotation={[0, -angle, 0]}
+            castShadow
+            receiveShadow
+          >
+            <dodecahedronGeometry args={[0.22, 0]} />
+            <meshStandardMaterial
+              color={FOUNDATION_STONE}
+              roughness={0.96}
+              metalness={0}
+            />
+          </mesh>
+        );
+      })}
+      {[-Math.PI / 4, Math.PI / 4].map(rotation => (
+        <mesh
+          key={rotation}
+          position={[0, 0.49, 0]}
+          rotation={[Math.PI / 2, 0, rotation]}
+          castShadow
+        >
+          <cylinderGeometry args={[0.1, 0.12, 1.1, 8]} />
+          <meshStandardMaterial color={HARDWOOD} roughness={0.92} />
+        </mesh>
+      ))}
+      <group ref={flames} position={[0, 0.7, 0]}>
+        {[
+          { x: -0.18, z: 0.08, height: 0.74, color: "#d46b34" },
+          { x: 0.16, z: 0.05, height: 0.88, color: FIRE },
+          { x: 0, z: -0.14, height: 1.08, color: "#f0a64b" },
+          { x: 0.05, z: 0.16, height: 0.58, color: "#f4cc72" },
+        ].map((flame, index) => (
+          <mesh
+            key={index}
+            position={[flame.x, flame.height / 2, flame.z]}
+            rotation={[0, index * 1.3, index % 2 === 0 ? -0.08 : 0.08]}
+          >
+            <coneGeometry args={[0.22, flame.height, 8]} />
+            <meshStandardMaterial
+              color={flame.color}
+              emissive={flame.color}
+              emissiveIntensity={1}
+              transparent
+              opacity={0.86}
+              roughness={0.3}
+              depthWrite={false}
+            />
+          </mesh>
+        ))}
+      </group>
+      <pointLight
+        position={[0, 1.05, 0]}
+        color="#f0a050"
+        intensity={motionEnabled ? 3.1 : 2.4}
+        distance={5.5}
+        decay={2}
+      />
+    </group>
+  );
+}
+
+function WaterFeature({ motionEnabled }: { motionEnabled: boolean }) {
+  const water = useRef<THREE.MeshStandardMaterial>(null);
+  const droplets = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
+    const elapsed = clock.getElapsedTime();
+    if (water.current) {
+      water.current.emissiveIntensity = motionEnabled
+        ? 0.34 + Math.sin(elapsed * 1.8) * 0.1
+        : 0.34;
+    }
+    if (!droplets.current) return;
+    droplets.current.children.forEach((child, index) => {
+      const phase = motionEnabled
+        ? (elapsed * 0.34 + index / droplets.current!.children.length) % 1
+        : index / droplets.current!.children.length;
+      child.position.y = 0.76 + Math.sin(phase * Math.PI) * 0.92;
+      child.position.x = Math.cos(index * 2.1) * phase * 0.42;
+      child.position.z = Math.sin(index * 2.1) * phase * 0.42;
+      child.scale.setScalar(0.72 + (1 - phase) * 0.28);
+    });
+  });
+
+  return (
+    <group>
+      <mesh position={[0, 0.34, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.98, 1.08, 0.28, 32]} />
+        <meshStandardMaterial
+          color={FOUNDATION_STONE}
+          roughness={0.88}
+          metalness={0}
+        />
+      </mesh>
+      <mesh position={[0, 0.495, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.86, 48]} />
+        <meshStandardMaterial
+          ref={water}
+          color={WATER}
+          emissive={WATER}
+          emissiveIntensity={0.34}
+          transparent
+          opacity={0.88}
+          roughness={0.18}
+          metalness={0.1}
+          depthWrite={false}
+        />
+      </mesh>
+      {[0.28, 0.52, 0.74].map(radius => (
+        <mesh
+          key={radius}
+          position={[0, 0.505, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
+          <ringGeometry args={[radius, radius + 0.018, 48]} />
+          <meshStandardMaterial
+            color={AIR}
+            emissive={WATER}
+            emissiveIntensity={0.55}
+            transparent
+            opacity={0.52}
+            depthWrite={false}
+          />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.78, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.16, 0.56, 12]} />
+        <meshStandardMaterial color={COPPER} roughness={0.42} metalness={0.62} />
+      </mesh>
+      <group ref={droplets}>
+        {Array.from({ length: 9 }, (_, index) => (
+          <mesh key={index}>
+            <sphereGeometry args={[0.055, 10, 10]} />
+            <meshStandardMaterial
+              color={AIR}
+              emissive={WATER}
+              emissiveIntensity={0.8}
+              transparent
+              opacity={0.82}
+              depthWrite={false}
+            />
+          </mesh>
+        ))}
+      </group>
+      <pointLight
+        position={[0, 1.05, 0]}
+        color={WATER}
+        intensity={motionEnabled ? 2.2 : 1.7}
+        distance={5}
+        decay={2}
+      />
+    </group>
+  );
+}
+
+function EarthTree() {
+  const branches = [
+    { position: [-0.18, 1.3, 0], rotation: [0, 0, -0.48], length: 1.05 },
+    { position: [0.23, 1.48, 0.03], rotation: [0, 0, 0.56], length: 1.18 },
+    { position: [0.03, 1.62, -0.16], rotation: [0.5, 0, 0.12], length: 0.94 },
+  ] as const;
+
+  return (
+    <group>
+      <mesh position={[0, 0.94, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.18, 0.3, 1.48, 9]} />
+        <meshStandardMaterial color={HARDWOOD} roughness={0.94} />
+      </mesh>
+      <mesh position={[0, 0.27, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.32, 1.08, 28]} />
+        <meshStandardMaterial color="#2a2c20" roughness={1} />
+      </mesh>
+      {branches.map((branch, index) => (
+        <mesh
+          key={index}
+          position={[...branch.position]}
+          rotation={[...branch.rotation]}
+          castShadow
+        >
+          <cylinderGeometry
+            args={[0.09, 0.15, branch.length, 8]}
+          />
+          <meshStandardMaterial color={HARDWOOD} roughness={0.94} />
+        </mesh>
+      ))}
+      {[
+        [-0.62, 1.78, 0.04, 0.62],
+        [0.65, 1.94, 0.04, 0.72],
+        [0.05, 2.22, -0.24, 0.68],
+        [-0.12, 1.9, 0.42, 0.58],
+      ].map(([x, y, z, scale], index) => (
+        <mesh
+          key={index}
+          position={[x, y, z]}
+          scale={[scale, scale * 0.68, scale]}
+          castShadow
+          receiveShadow
+        >
+          <icosahedronGeometry args={[0.72, 1]} />
+          <meshStandardMaterial
+            color={index % 2 === 0 ? MINERAL_GREEN : FIELD_GREEN}
+            emissive={MINERAL_GREEN}
+            emissiveIntensity={0.08}
+            roughness={0.98}
+            flatShading
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function AirLightTunnel({ motionEnabled }: { motionEnabled: boolean }) {
+  const tunnel = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
+    if (!tunnel.current) return;
+    const elapsed = clock.getElapsedTime();
+    tunnel.current.children.forEach((child, index) => {
+      if (!(child instanceof THREE.Mesh)) return;
+      const ring = child as THREE.Mesh<
+        THREE.TorusGeometry,
+        THREE.MeshStandardMaterial
+      >;
+      const pulse = motionEnabled
+        ? (Math.sin(elapsed * 1.5 - index * 0.78) + 1) / 2
+        : 0.45;
+      ring.material.opacity = 0.34 + pulse * 0.48;
+      ring.material.emissiveIntensity = 0.5 + pulse * 0.75;
+      ring.scale.setScalar(0.96 + pulse * 0.045);
+    });
+  });
+
+  return (
+    <group>
+      <group ref={tunnel} position={[0, 1.18, 0]}>
+        {Array.from({ length: 9 }, (_, index) => {
+          const z = (index - 4) * 0.38;
+          const radius = 0.7 + Math.abs(index - 4) * 0.035;
+          return (
+            <mesh key={index} position={[0, 0, z]}>
+              <torusGeometry args={[radius, 0.035, 10, 64]} />
+              <meshStandardMaterial
+                color={AIR}
+                emissive={FIELD_GREEN}
+                emissiveIntensity={0.8}
+                transparent
+                opacity={0.65}
+                roughness={0.24}
+                depthWrite={false}
+              />
+            </mesh>
+          );
+        })}
+      </group>
+      <mesh position={[0, 0.235, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.8, 3.35]} />
+        <meshStandardMaterial
+          color={AIR}
+          emissive={FIELD_GREEN}
+          emissiveIntensity={0.34}
+          transparent
+          opacity={0.22}
+          depthWrite={false}
+        />
+      </mesh>
+      <pointLight
+        position={[0, 1.18, 0]}
+        color={AIR}
+        intensity={motionEnabled ? 2.6 : 1.9}
+        distance={5.2}
+        decay={2}
+      />
+    </group>
+  );
+}
+
+function ElementalCenterpiece({
+  element,
+  motionEnabled,
+}: {
+  element: "EARTH" | "FIRE" | "AIR" | "WATER";
+  motionEnabled: boolean;
+}) {
+  if (element === "FIRE") return <FirePit motionEnabled={motionEnabled} />;
+  if (element === "WATER") {
+    return <WaterFeature motionEnabled={motionEnabled} />;
+  }
+  if (element === "EARTH") return <EarthTree />;
+  return <AirLightTunnel motionEnabled={motionEnabled} />;
+}
+
 function DomeCampus({ motionEnabled }: { motionEnabled: boolean }) {
   const model = useMemo(() => buildDomeStructure(), []);
   useEffect(() => () => model.panels.dispose(), [model]);
 
   const domes = [
     { element: "EARTH", accent: FIELD_GREEN, position: [0, 0, -6.2] },
-    { element: "FIRE", accent: "#c98245", position: [6.2, 0, 0] },
-    { element: "AIR", accent: BONE, position: [0, 0, 6.2] },
+    { element: "FIRE", accent: FIRE, position: [6.2, 0, 0] },
+    { element: "AIR", accent: AIR, position: [0, 0, 6.2] },
     { element: "WATER", accent: WATER, position: [-6.2, 0, 0] },
   ] as const;
 
@@ -581,6 +910,10 @@ function DomeCampus({ motionEnabled }: { motionEnabled: boolean }) {
           scale={0.62}
         >
           <WoodIsolationPlatform accent={dome.accent} />
+          <ElementalCenterpiece
+            element={dome.element}
+            motionEnabled={motionEnabled}
+          />
           <DomeStructure
             model={model}
             motionEnabled={motionEnabled}

@@ -319,8 +319,8 @@ export default function FoundationExperience() {
           <div className="architecture-copy">
             <span className="eyebrow">PHASE 2</span>
             <h2>Four elemental domes.</h2>
-            <p>Earth, Fire, Air, and Water form a precise diamond around the Tetrahedron Garden. Each 2V dome rests on its own raised all-wood platform, reducing ground-borne vibration and supporting controlled acoustic recording. Douglas fir struts, hardwood dowels, and hide glue keep every structure free of metal interference.</p>
-            <strong>Four domes. Four wood isolation platforms. One living garden at the center.</strong>
+            <p>Earth, Fire, Air, and Water form a precise diamond around the Tetrahedron Garden. A desert tree, contained fire pit, moving water feature, and luminous passage give each dome its elemental center. Every 2V structure rests on a raised all-wood platform, reducing ground-borne vibration and supporting controlled acoustic recording.</p>
+            <strong>Fire. Water. Tree. Light. One living garden at the center.</strong>
           </div>
           <FieldDome />
         </div>
