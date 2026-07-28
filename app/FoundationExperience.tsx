@@ -151,7 +151,8 @@ export default function FoundationExperience() {
         <a href="#top" className="brand"><span>W/B</span> WHOLE BODY FOUNDATION</a>
         <button className="menu-button" onClick={() => setMenu(!menu)} aria-expanded={menu}>MENU <i>{menu ? "×" : "+"}</i></button>
         <div className={`navlinks ${menu ? "open" : ""}`}>
-          {nav.map(([id, label], i) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)} className={active === id ? "active" : ""}><small>0{i + 1}</small>{label}</a>)}
+          {nav.map(([id, label], i) => <a key={id} href={id === "mission" ? "/vision" : id === "survey" ? "/survey" : id === "team" ? "/team" : `#${id}`} onClick={() => setMenu(false)} className={active === id ? "active" : ""}><small>0{i + 1}</small>{label}</a>)}
+          <a href="/contact"><small>08</small>Contact</a>
         </div>
       </nav>
 
