@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import EarthCube from "./EarthCube";
 
 const nav = [
   ["mission", "Mission"],
@@ -163,8 +164,8 @@ export default function FoundationExperience() {
           <p>A community research station mapping the unseen forces that shape desert ecology—and testing practical systems for life in a hotter, drier world.</p>
           <a href="#mission" className="cta">ENTER THE FIELD <span>↓</span></a>
         </div>
-        <div className="hero-mark" aria-hidden="true">
-          <div className="sun"><i /><i /><i /></div>
+        <div className="hero-mark">
+          <EarthCube />
           <span>WHOLE / BODY</span>
         </div>
         <div className="hero-stats">
