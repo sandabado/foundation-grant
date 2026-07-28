@@ -25,6 +25,33 @@ const FieldDome = dynamic(() => import("./FieldDome"), {
   ),
 });
 
+const GreatHallModel = dynamic(
+  () => import("./ArchitecturalModels").then(module => module.GreatHallModel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="architecture-model-viewer architecture-model-loading" aria-label="Loading the interactive Great Hall">
+        <span>ASSEMBLING THE GREAT HALL</span>
+      </div>
+    ),
+  },
+);
+
+const ResidentialClustersModel = dynamic(
+  () =>
+    import("./ArchitecturalModels").then(
+      module => module.ResidentialClustersModel,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="architecture-model-viewer architecture-model-loading" aria-label="Loading the interactive residential clusters">
+        <span>ASSEMBLING THE RESIDENTIAL CAMPUS</span>
+      </div>
+    ),
+  },
+);
+
 const nav = [
   ["site-context", "Site"],
   ["method", "Method"],
@@ -266,10 +293,7 @@ export default function FoundationExperience() {
             <p>A nine-sided hall gathers the community around a central stage. A twelve-faced, copper-paneled dodecahedral ceiling shapes the acoustic field. Concentric wooden seating holds 50–75 people. Stained glass carries desert light into a completely wooden structure.</p>
             <strong>The village speaks to the sky.</strong>
           </div>
-          <div className="architecture-plan hall-plan" aria-label="Abstract plan of the nine-sided Great Hall">
-            <span>9 SIDES / 12 CEILING FACETS</span>
-            <div className="hall-geometry">{[0, 1, 2].map(ring => <i key={ring} style={{ inset: `${ring * 13 + 12}%` }} />)}<b>50–75</b><small>SEATS / CENTRAL STAGE</small></div>
-          </div>
+          <GreatHallModel />
         </div>
       </section>
 
@@ -282,15 +306,7 @@ export default function FoundationExperience() {
             <p>Two residential clusters, each with six wooden dome homes arranged around a central swimming pool. Dense forest vegetation surrounds each cluster for privacy. The modular design adds clusters as the community grows.</p>
             <strong>12 homes total. Forest privacy. Community life.</strong>
           </div>
-          <div className="architecture-plan homes-plan" aria-label="Abstract plan of two residential clusters">
-            {[0, 1].map(cluster => (
-              <div className={`home-cluster cluster-${cluster + 1}`} key={cluster}>
-                <b>POOL</b>
-                {Array.from({ length: 6 }, (_, home) => <i key={home} style={{ transform: `rotate(${home * 60}deg) translateY(-72px)` }} />)}
-              </div>
-            ))}
-            <span>JOSHUA TREES / GRANITE / DENSE VEGETATION</span>
-          </div>
+          <ResidentialClustersModel />
         </div>
       </section>
 

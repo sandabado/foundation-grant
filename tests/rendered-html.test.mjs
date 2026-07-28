@@ -101,15 +101,19 @@ test("ships all seven linked research and investor PDF working drafts", async ()
   assert.match(source, /PROTOCOL \/ IN PREPARATION/);
 });
 
-test("integrates the procedural garden and dome inside their existing sections", async () => {
-  const [experience, garden, dome] = await Promise.all([
+test("integrates all four interactive architectural models inside their sections", async () => {
+  const [experience, garden, dome, architecture] = await Promise.all([
     readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/TetrahedronGarden.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/FieldDome.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/ArchitecturalModels.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(experience, /function Garden\(\) \{\s*return <TetrahedronGarden \/>;/);
   assert.match(experience, /<FieldDome \/>/);
+  assert.match(experience, /<GreatHallModel \/>/);
+  assert.match(experience, /<ResidentialClustersModel \/>/);
+  assert.doesNotMatch(experience, /Abstract plan/);
   assert.match(garden, /ENHANCE DETAIL/);
   assert.match(garden, /EXPAND MODEL/);
   assert.match(dome, /65 CONNECTED STRUTS/);
@@ -121,4 +125,10 @@ test("integrates the procedural garden and dome inside their existing sections",
   assert.match(dome, /shortStruts !== 30/);
   assert.doesNotMatch(dome, /segments\.push\(\[\s*new THREE\.Vector3\(Math\.cos/);
   assert.doesNotMatch(dome, /<torusGeometry args=\{\[3,/);
+  assert.match(architecture, /function GreatHall/);
+  assert.match(architecture, /dodecahedronGeometry args=\{\[0\.95, 0\]\}/);
+  assert.match(architecture, /function ResidentialClusters/);
+  assert.match(architecture, /Array\.from\(\{ length: 6 \}/);
+  assert.match(architecture, /<OrbitControls/);
+  assert.match(architecture, /requestFullscreen/);
 });
