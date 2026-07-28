@@ -51,7 +51,7 @@ function Dome() {
       const count = ri === 0 ? 1 : ri * 5;
       return Array.from({ length: count }, (_, i) => {
         const a = (Math.PI * 2 * i) / count + (ri % 2 ? 0 : Math.PI / count);
-        return { x: Number((Math.cos(a) * radius).toFixed(4)), y: Number((-Math.sin(a) * radius).toFixed(4)), z, ring: ri, index: i };
+        return { x: Math.cos(a) * radius, y: -Math.sin(a) * radius, z, ring: ri, index: i };
       });
     });
   }, []);
