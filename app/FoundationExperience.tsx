@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import InteractiveTerrain from "./InteractiveTerrain";
 
 const nav = [
   ["mission", "Mission"],
@@ -181,14 +182,7 @@ export default function FoundationExperience() {
       </nav>
 
       <header className="hero" id="top">
-        <picture className="hero-media">
-          <source media="(max-width: 768px)" srcSet="/hero-images/mojave-hero-mobile.jpg" />
-          <img
-            src="/hero-images/mojave-hero-desktop.jpg"
-            alt="Aerial view of the angular Sawtooth Mountains terrain north of Morongo Valley"
-            fetchPriority="high"
-          />
-        </picture>
+        <InteractiveTerrain />
         <div className="hero-scrim" />
         <div className="hero-grid" />
         <div className="hero-copy">
@@ -238,14 +232,12 @@ export default function FoundationExperience() {
         <div className="survey-copy">
           <span className="eyebrow">OPEN-ACCESS BASELINE</span>
           <h2>Make the invisible<br />legible.</h2>
-          <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline for geological change across the Old Glory Peak transect corridor—spanning the Pinto Mountain Fault, the northern boundary of DWR Basin 7-20; the Morongo Valley Fault, documented for rising water and marshy conditions; and the Emerson Fault and 1992 Landers rupture zone.</p>
-          <p>Four transects cross these fault lines, including a dedicated high-resolution grid along the Old Glory Peak ridge itself. The peak sits directly between the San Gorgonio and San Jacinto fault zones, making it a natural laboratory for studying how hydrothermal processes and crustal stress interact.</p>
-          <p>Historical gold mining in the Morongo District from the 1890s through the 1940s—including the Morongo King Mine, whose 10-stamp mill produced $400 in gold on its first day—confirms mineralized quartz vein systems along these structures.</p>
+          <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline for geological change across the Old Glory Peak transect corridor. Four transects cross the fault lines. Historical gold mining confirms mineralized quartz vein systems.</p>
           <p>Every station links field strength to lithology, mineral assemblage, and photographic documentation. Every dataset is published on the Open Science Framework under a CC-BY license before analysis begins.</p>
           <div className="research-standard">
             <span>THE STANDARD</span>
             <p>We pre-register our hypotheses. We publish negative results.</p>
-            <strong>We do not claim magic. We claim optimized physics.</strong>
+            <strong>Every claim backed by a mechanism.<br />Every measurement tied to a GPS coordinate.</strong>
           </div>
         </div>
       </section>
@@ -309,8 +301,8 @@ export default function FoundationExperience() {
           ))}
         </div>
         <div className="method-manifesto">
-          <strong>We do not claim magic. We claim optimized physics.</strong>
-          <p>Every claim backed by a mechanism. Every measurement tied to a GPS coordinate. Every dataset open and reproducible.</p>
+          <strong>Every claim backed by a mechanism.<br />Every measurement tied to a GPS coordinate.</strong>
+          <p>Every dataset open and reproducible.</p>
         </div>
       </section>
 

@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og.png",
-        width: 1733,
-        height: 907,
-        alt: "Fieldwork for a Living Planet over the Sawtooth Mountains terrain",
+        url: "/og.jpg",
+        width: 1672,
+        height: 941,
+        alt: "Fieldwork for a Living Planet over Old Glory Peak terrain with green computational field lines",
       },
     ],
   },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Fieldwork for a Living Planet",
     description: "Whole Body Foundation — public-interest field science at the Old Glory Peak transect corridor.",
-    images: ["/og.png"],
+    images: ["/og.jpg"],
   },
 };
 
