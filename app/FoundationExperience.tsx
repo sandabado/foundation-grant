@@ -334,39 +334,11 @@ export default function FoundationExperience() {
         </div>
       </section>
 
-      <section id="library" className="section library-section">
-        <div className="section-number light">10 / DOCUMENT LIBRARY</div>
-        <div className="section-head light">
-          <div><span className="eyebrow">THE FULL RESEARCH PACKAGE</span><h2>Read the method.<br />Trace the evidence.</h2></div>
-          <div className="section-copy">
-            <p>Download the full research package. Every document is updated as the project evolves.</p>
-            <p>All documents will be hosted on the Open Science Framework. Until the OSF project is established, documents are available for download directly from this site.</p>
-          </div>
-        </div>
-        <div className="document-grid">
-          {documents.map((document, index) => {
-            const card = (
-              <>
-                <div><span>{document.type}</span><small>0{index + 1}</small></div>
-                <h3>{document.title}</h3>
-                <p>{document.description}</p>
-                <span className="document-status">{document.status}</span>
-              </>
-            );
-            return document.href ? (
-              <a className="document-card" href={document.href} target="_blank" rel="noreferrer" key={document.title}>{card}</a>
-            ) : (
-              <article className="document-card" key={document.title}>{card}</article>
-            );
-          })}
-        </div>
-      </section>
-
       <section id="people" className="section team-section">
-        <div className="section-number">11 / WHO WE ARE</div>
+        <div className="section-number">10 / WHO WE ARE</div>
         <div className="section-head">
           <div><span className="eyebrow">LED FROM THE FIELD</span><h2>Built in public.<br />Led from the field.</h2></div>
-          <p>Whole Body Foundation operates on a simple standard: observe deeply, document honestly, and build only what the land can support.</p>
+          <p>Whole Body Foundation is assembling a practical, interdisciplinary team around a simple standard: observe deeply, document honestly, and build only what the land can support.</p>
         </div>
         <div className="team-grid">
           <article className="lead-card">
@@ -396,6 +368,34 @@ export default function FoundationExperience() {
             <span aria-disabled="true">OSF PROFILE / COMING SOON</span>
             <span aria-disabled="true">FIELD LOG / COMING SOON</span>
           </div>
+        </div>
+      </section>
+
+      <section id="library" className="section library-section">
+        <div className="section-number light">11 / DOCUMENT LIBRARY</div>
+        <div className="section-head light">
+          <div><span className="eyebrow">THE FULL RESEARCH PACKAGE</span><h2>Read the method.<br />Trace the evidence.</h2></div>
+          <div className="section-copy">
+            <p>Download the full research package. Every document is updated as the project evolves.</p>
+            <p>All documents will be hosted on the Open Science Framework. Until the OSF project is established, documents are available for download directly from this site.</p>
+          </div>
+        </div>
+        <div className="document-grid">
+          {documents.map((document, index) => {
+            const card = (
+              <>
+                <div><span>{document.type}</span><small>0{index + 1}</small></div>
+                <h3>{document.title}</h3>
+                <p>{document.description}</p>
+                <span className="document-status">{document.status}</span>
+              </>
+            );
+            return document.href ? (
+              <a className="document-card" href={document.href} target="_blank" rel="noreferrer" key={document.title}>{card}</a>
+            ) : (
+              <article className="document-card" key={document.title}>{card}</article>
+            );
+          })}
         </div>
       </section>
 

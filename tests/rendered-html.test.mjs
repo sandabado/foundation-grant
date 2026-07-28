@@ -68,6 +68,7 @@ test("server-renders the Old Glory Peak field station experience", async () => {
     'id="budget"',
     'id="timeline"',
     'id="people"',
+    'id="library"',
   ];
   let previousIndex = -1;
   for (const section of orderedSections) {
