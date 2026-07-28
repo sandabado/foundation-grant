@@ -910,12 +910,12 @@ function ArchitecturalModelViewer({ variant }: { variant: ModelVariant }) {
       onKeyDown={handleKeyDown}
       aria-label={
         isHomes
-          ? "Interactive three-dimensional model of two six-home geodesic residential clusters. Drag or use arrow keys to orbit. Scroll or use plus and minus keys to zoom."
+          ? "Interactive three-dimensional model of Clover Homes: two six-home geodesic residential clusters. Drag or use arrow keys to orbit. Scroll or use plus and minus keys to zoom."
           : "Interactive three-dimensional model of the nine-sided timber Great Hall and twelve-faced acoustic ceiling. Drag or use arrow keys to orbit. Scroll or use plus and minus keys to zoom."
       }
     >
       <div className="architecture-model-id" aria-hidden="true">
-        <span>{isHomes ? "PHASE 4 / RESIDENTIAL CAMPUS" : "PHASE 3 / GREAT HALL"}</span>
+        <span>{isHomes ? "PHASE 4 / CLOVER HOMES" : "PHASE 3 / GREAT HALL"}</span>
         <b>{isHomes ? "12 DOMES / 2 POOLS / LIVE MODEL" : "9 SIDES / 12 FACETS / LIVE MODEL"}</b>
       </div>
       <button

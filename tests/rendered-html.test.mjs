@@ -49,7 +49,7 @@ test("server-renders the Old Glory Peak field station experience", async () => {
   assert.match(html, /Fiscal sponsorship inquiry active/i);
   assert.match(html, /Four elemental[\s\S]*domes/i);
   assert.match(html, /The Great Hall/i);
-  assert.match(html, /Quincunx residential clusters/i);
+  assert.match(html, /Clover Homes/i);
   assert.match(html, /FIELD EQUIPMENT \/ V2\.0/i);
   assert.match(html, /45,000/);
   assert.match(html, /PROTOCOL \/ IN PREPARATION/);
@@ -204,11 +204,14 @@ test("maps the real Morongo Valley terrain without inventing finalized transect 
   assert.match(experience, /import SurveyMap from "\.\/SurveyMap"/);
   assert.match(experience, /<SurveyMap \/>/);
   assert.match(experience, /MORONGO VALLEY \/ OLD GLORY PEAK CORRIDOR/);
+  assert.match(experience, /<h2>Old Glory Peak\.<\/h2>/);
   assert.match(experience, /Pinto Mountain fault zone, which includes the Morongo Valley fault/);
   assert.match(experience, /400 M \/ 9 STATIONS \/ 50 M SPACING/);
   assert.match(experience, /PLANNING CORRIDOR \/ ENDPOINTS PENDING/);
   assert.match(experience, /BOUNDARY PENDING ACCESS \+ SAFETY/);
   assert.doesNotMatch(experience, /34\.969° N, 116\.419° W/);
+  assert.doesNotMatch(experience, /Old Glory Peak<br \/>transect\./);
+  assert.doesNotMatch(experience, /Transect C is the current metric survey specification/);
   assert.doesNotMatch(experience, /className="contours"/);
   assert.doesNotMatch(experience, /04 LINES/);
 
@@ -318,6 +321,9 @@ test("integrates all four interactive architectural models inside their sections
   assert.match(architecture, /function GreatHall/);
   assert.match(architecture, /dodecahedronGeometry args=\{\[0\.95, 0\]\}/);
   assert.match(architecture, /function ResidentialClusters/);
+  assert.match(experience, /<h2>Clover Homes\.<\/h2>/);
+  assert.doesNotMatch(experience, /Quincunx residential clusters/);
+  assert.match(architecture, /PHASE 4 \/ CLOVER HOMES/);
   assert.match(architecture, /Array\.from\(\{ length: 6 \}/);
   assert.match(architecture, /<OrbitControls/);
   assert.match(architecture, /requestFullscreen/);

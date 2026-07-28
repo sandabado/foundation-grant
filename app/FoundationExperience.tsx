@@ -46,8 +46,8 @@ const ResidentialClustersModel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="architecture-model-viewer architecture-model-loading" aria-label="Loading the interactive residential clusters">
-        <span>ASSEMBLING THE RESIDENTIAL CAMPUS</span>
+      <div className="architecture-model-viewer architecture-model-loading" aria-label="Loading the interactive Clover Homes">
+        <span>ASSEMBLING CLOVER HOMES</span>
       </div>
     ),
   },
@@ -254,7 +254,7 @@ export default function FoundationExperience() {
         <SurveyMap />
         <div className="survey-copy">
           <span className="eyebrow">SITE CONTEXT</span>
-          <h2>Old Glory Peak<br />transect.</h2>
+          <h2>Old Glory Peak.</h2>
           <p>The locally named Old Glory ridge rises on the western edge of Morongo Valley within the San Gorgonio Wilderness landscape. USGS mapping places it between two branches of the Pinto Mountain fault zone, which includes the Morongo Valley fault.</p>
           <p>The map separates fixed survey specifications from alignments that still require access reconnaissance:</p>
           <div className="transect-list">
@@ -271,7 +271,6 @@ export default function FoundationExperience() {
               </div>
             ))}
           </div>
-          <p>Transect C is the current metric survey specification. A, B, and D remain working field corridors; final GPS endpoints, station spacing, land access, and safety exclusions will be published only after on-site verification.</p>
           <div className="research-standard">
             <span>PUBLIC-INTEREST FIELD SCIENCE</span>
             <p>Measurable, repeatable, and shared openly with the people who steward the land.</p>
@@ -345,7 +344,7 @@ export default function FoundationExperience() {
         <div className="architecture-layout">
           <div className="architecture-copy">
             <span className="eyebrow">PHASE 4</span>
-            <h2>Quincunx residential clusters.</h2>
+            <h2>Clover Homes.</h2>
             <p>Two residential clusters, each with six wooden dome homes arranged around a central swimming pool. Dense forest vegetation surrounds each cluster for privacy. The modular design adds clusters as the community grows.</p>
             <strong>12 homes total. Forest privacy. Community life.</strong>
           </div>
