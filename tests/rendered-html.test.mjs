@@ -189,6 +189,42 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
   assert.match(terrain, /TRANSECT C \/ SOLAR CYCLE/);
 });
 
+test("maps the real Morongo Valley terrain without inventing finalized transect endpoints", async () => {
+  const [experience, map, mapAsset] = await Promise.all([
+    readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/SurveyMap.tsx", import.meta.url), "utf8"),
+    readFile(
+      new URL(
+        "../public/maps/morongo-valley-usgs-imagery-topo.jpg",
+        import.meta.url,
+      ),
+    ),
+  ]);
+
+  assert.match(experience, /import SurveyMap from "\.\/SurveyMap"/);
+  assert.match(experience, /<SurveyMap \/>/);
+  assert.match(experience, /MORONGO VALLEY \/ OLD GLORY PEAK CORRIDOR/);
+  assert.match(experience, /Pinto Mountain fault zone, which includes the Morongo Valley fault/);
+  assert.match(experience, /400 M \/ 9 STATIONS \/ 50 M SPACING/);
+  assert.match(experience, /PLANNING CORRIDOR \/ ENDPOINTS PENDING/);
+  assert.match(experience, /BOUNDARY PENDING ACCESS \+ SAFETY/);
+  assert.doesNotMatch(experience, /34\.969° N, 116\.419° W/);
+  assert.doesNotMatch(experience, /className="contours"/);
+  assert.doesNotMatch(experience, /04 LINES/);
+
+  assert.match(map, /morongo-valley-usgs-imagery-topo\.jpg/);
+  assert.match(map, /USGS The National Map/);
+  assert.match(map, /USGS Quaternary Fault and Fold Database/);
+  assert.match(map, /faultTraces\.map/);
+  assert.match(map, /Array\.from\(\{ length: 9 \}/);
+  assert.match(map, /400 M · 9 STATIONS · 50 M/);
+  assert.match(map, /FIELD SITING PENDING/);
+  assert.match(map, /Not for navigation/);
+  assert.equal(mapAsset[0], 0xff);
+  assert.equal(mapAsset[1], 0xd8);
+  assert.ok(mapAsset.byteLength < 1_000_000);
+});
+
 test("ships all seven linked research and investor PDF working drafts", async () => {
   const documentsRoot = new URL("../public/documents/", import.meta.url);
   const files = (await readdir(documentsRoot))

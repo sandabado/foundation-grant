@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import InteractiveTerrain from "./InteractiveTerrain";
+import SurveyMap from "./SurveyMap";
 
 const TetrahedronGarden = dynamic(() => import("./TetrahedronGarden"), {
   ssr: false,
@@ -229,7 +230,7 @@ export default function FoundationExperience() {
         <div className="hero-scrim" />
         <div className="hero-grid" />
         <div className="hero-copy">
-          <span className="eyebrow reveal">MOJAVE DESERT / 34.969° N, 116.419° W</span>
+          <span className="eyebrow reveal">MORONGO VALLEY / OLD GLORY PEAK CORRIDOR</span>
           <h1><span className="hero-kicker">FIELDWORK FOR A</span><em>Living Planet</em></h1>
           <div className="hero-deck">
             <p>Mapping the geological and ecological systems of the Old Glory Peak transect corridor.</p>
@@ -250,27 +251,27 @@ export default function FoundationExperience() {
 
       <section id="site-context" className="section survey-section">
         <div className="section-number light">01 / THE GROUND TRUTH</div>
-        <div className="survey-map">
-          <div className="contours">{Array.from({length: 11}, (_, i) => <i key={i} style={{ inset: `${i * 3.7 + 8}% ${i * 4.3 + 7}%`, transform: `rotate(${i * 7 - 28}deg)` }} />)}</div>
-          {Array.from({length: 38}, (_, i) => <b key={i} style={{ left: `${8 + ((i * 37) % 84)}%`, top: `${9 + ((i * 53) % 76)}%`, animationDelay: `${(i % 8) * .14}s` }} />)}
-          <div className="map-callout"><span>OLD GLORY PEAK</span><strong>04 LINES</strong><small>34.969° N / 116.419° W</small></div>
-        </div>
+        <SurveyMap />
         <div className="survey-copy">
           <span className="eyebrow">SITE CONTEXT</span>
           <h2>Old Glory Peak<br />transect.</h2>
-          <p>Old Glory Peak sits directly between the San Gorgonio and San Jacinto fault zones — making it a natural laboratory for studying how hydrothermal processes and crustal stress interact.</p>
-          <p>Four transects cross these fault lines:</p>
+          <p>The locally named Old Glory ridge rises on the western edge of Morongo Valley within the San Gorgonio Wilderness landscape. USGS mapping places it between two branches of the Pinto Mountain fault zone, which includes the Morongo Valley fault.</p>
+          <p>The map separates fixed survey specifications from alignments that still require access reconnaissance:</p>
           <div className="transect-list">
             {[
-              ["A", "Pinto Fault Crossing"],
-              ["B", "Morongo Valley Fault Crossing"],
-              ["C", "Old Glory Peak Ridge Crest"],
-              ["D", "Mine Area Grid near historical adits"],
-            ].map(([letter, label]) => (
-              <div key={letter}><span>TRANSECT {letter}</span><strong>{label}</strong></div>
+              ["A", "Pinto Fault Crossing", "PLANNING CORRIDOR / ENDPOINTS PENDING"],
+              ["B", "Morongo Valley Fault Crossing", "PLANNING CORRIDOR / ENDPOINTS PENDING"],
+              ["C", "Old Glory Peak Ridge Crest", "400 M / 9 STATIONS / 50 M SPACING"],
+              ["D", "Mine Area Grid near historical adits", "BOUNDARY PENDING ACCESS + SAFETY"],
+            ].map(([letter, label, status]) => (
+              <div key={letter}>
+                <span>TRANSECT {letter}</span>
+                <strong>{label}</strong>
+                <small>{status}</small>
+              </div>
             ))}
           </div>
-          <p>Historical gold mining in the Morongo District (1890s–1940s) confirms mineralized quartz vein systems along these structures.</p>
+          <p>Transect C is the current metric survey specification. A, B, and D remain working field corridors; final GPS endpoints, station spacing, land access, and safety exclusions will be published only after on-site verification.</p>
           <div className="research-standard">
             <span>PUBLIC-INTEREST FIELD SCIENCE</span>
             <p>Measurable, repeatable, and shared openly with the people who steward the land.</p>
