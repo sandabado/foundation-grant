@@ -131,7 +131,11 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
   );
   assert.equal(hero.match(/<p>/g)?.length, 1);
   assert.doesNotMatch(hero, /hero-stats/);
-  assert.match(hero, /FIELDWORK FOR A<br \/><em>Living Planet<\/em>/);
+  assert.match(hero, /className="hero-kicker">FIELDWORK FOR A<\/span><em>Living Planet<\/em>/);
+  assert.match(
+    experience,
+    /className="mission-line">The desert is not empty\.<\/span><em>It is information-dense\.<\/em>/,
+  );
 
   assert.match(terrain, /float solarPhase = fract\(time \* 0\.0225\)/);
   assert.match(terrain, /vec3 nightTerrain/);

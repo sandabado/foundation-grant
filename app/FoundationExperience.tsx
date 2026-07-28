@@ -230,7 +230,7 @@ export default function FoundationExperience() {
         <div className="hero-grid" />
         <div className="hero-copy">
           <span className="eyebrow reveal">MOJAVE DESERT / 34.969° N, 116.419° W</span>
-          <h1>FIELDWORK FOR A<br /><em>Living Planet</em></h1>
+          <h1><span className="hero-kicker">FIELDWORK FOR A</span><em>Living Planet</em></h1>
           <div className="hero-deck">
             <p>Mapping the geological and ecological systems of the Old Glory Peak transect corridor.</p>
           </div>
@@ -243,7 +243,7 @@ export default function FoundationExperience() {
       <section id="mission" className="section mission-statement">
         <div>
           <span className="eyebrow">WHY THIS WORK</span>
-          <h2>The desert is not empty.<br /><em>It is information-dense.</em></h2>
+          <h2><span className="mission-line">The desert is not empty.</span><em>It is information-dense.</em></h2>
         </div>
         <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, dryland agriculture, mycelial network surveys, and community health monitoring converge at the Old Glory Peak field station.</p>
       </section>
