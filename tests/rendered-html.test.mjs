@@ -41,11 +41,17 @@ test("server-renders the Old Glory Peak field station experience", async () => {
   const html = await response.text();
   assert.match(html, /Whole Body Foundation — Old Glory Peak Field Station/i);
   assert.match(html, /Make the invisible/);
+  assert.match(html, /Mycelial and ecological networks/i);
+  assert.match(html, /IRB approval pending/i);
+  assert.match(html, /Fiscal sponsorship inquiry active/i);
   assert.match(html, /Moss patch monitoring stations installed/);
   assert.match(html, /Camera trap network operational/);
+  assert.match(html, /PROTOCOL \/ IN PREPARATION/);
   assert.match(html, /\/documents\/project-summary\.pdf/);
   assert.match(html, /DOWNLOAD WORKING DRAFT/);
   assert.doesNotMatch(html, /OSF RELEASE \/ IN PREPARATION/);
+  assert.doesNotMatch(html, /Fiscal sponsorship active/i);
+  assert.doesNotMatch(html, /IRB-approved\. Pre-registered/i);
 });
 
 test("ships all seven linked research and investor PDF working drafts", async () => {
@@ -67,6 +73,8 @@ test("ships all seven linked research and investor PDF working drafts", async ()
   }
 
   assert.match(source, /DATASET \/ PENDING FIELD COLLECTION/);
+  assert.match(source, /Mycelial and Ecological Network Survey Protocol/);
+  assert.match(source, /PROTOCOL \/ IN PREPARATION/);
 });
 
 test("integrates the procedural garden and dome inside their existing sections", async () => {

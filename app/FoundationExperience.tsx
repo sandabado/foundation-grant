@@ -43,10 +43,10 @@ const budget = [
 ] as const;
 
 const milestones = [
-  ["01", "NOW – DEC 2026", "Phase 1", "Fiscal sponsorship active · First 50 GPS-tagged survey points across the Old Glory Peak ridge transect · Public field log on OSF · Magnetometer transects A–D complete · Mineral identification catalog published"],
-  ["02", "JAN 2027 – JUN 2027", "Phase 2", "First grant awarded · Dome fabrication at the Old Glory Peak site · Garden earthworks complete · 150 survey points collected · Water quality baseline established · Moss patch monitoring stations installed · Camera trap network operational · Offline field computer operational"],
-  ["03", "JUL 2027 +", "Phase 3", "Full sensor network deployed · IRB-approved psychophysiology protocol active · First harvest from the Old Glory Peak garden · Annual open dataset published (geology + biology + psychology) · Alpha Node vs. Control Node comparison begins"],
-  ["04", "YEAR 2 +", "Phase 4", "Second survey cycle across the San Gorgonio–San Jacinto corridor · Workshop series for land managers · 501(c)(3) transition · Replication protocol published · Peer-reviewed manuscript submitted"],
+  ["01", "NOW – DEC 2026", "Phase 1", "Fiscal sponsorship inquiry active · First 50 GPS-tagged survey points across the Old Glory Peak ridge transect · Public field log on OSF · Magnetometer transects A–D complete · Mineral identification catalog published · Baseline ecological survey initiated (moss patches, bird observation, ant colony census)"],
+  ["02", "JAN 2027 – JUN 2027", "Phase 2", "First grant awarded · Tetrahedron Garden construction · Four elemental domes fabricated · 150 survey points collected · Water quality baseline established · Moss patch monitoring stations installed · Camera trap network operational · Mycelial network mapping initiated · Offline field computer operational · First harvest"],
+  ["03", "JUL 2027 +", "Phase 3", "Great Hall construction · Full sensor network deployed · IRB-approved psychophysiology protocol active · Annual open dataset published (geology + biology + psychology) · First residential cluster built · Alpha Node vs. Control Node comparison begins"],
+  ["04", "YEAR 2 +", "Phase 4", "Second residential cluster built · Second survey cycle across the San Gorgonio–San Jacinto corridor · Workshop series for land managers on mycelial ecology · 501(c)(3) transition · Replication protocol published · Peer-reviewed manuscript submitted"],
 ];
 
 const methods = [
@@ -57,25 +57,54 @@ const methods = [
   },
   {
     number: "02",
-    title: "Community psychophysiology",
-    body: "Polar H10 chest straps for 5-minute RMSSD recordings (3× weekly). Salivary cortisol via Salivette tubes (morning/evening, monthly). Quasi-experimental design with matched control community. Repeated-measures ANOVA, Bonferroni-corrected for six supplementary outcomes. IRB-approved. Pre-registered on OSF before data collection.",
+    title: "Mycelial and ecological networks",
+    body: "Soil sampling at GPS-stamped locations across all transects. Documentation of fungal hyphae networks via microscopy, identification of mycorrhizal associations, mapping of underground communication pathways. Moss patches monitored as distributed bio-sensors for air quality, moisture retention, and microclimate variation. Ant colony locations mapped and behavioral observations recorded at 15-minute intervals. Animal presence detected via camera traps, citizen science reports, and direct observation (birds, mammals, domestic cats). These biological networks are not separate from our geophysical measurements. They are the Earth’s way of reporting its own state. We are reading the data streams.",
   },
   {
     number: "03",
-    title: "Network & systems science",
-    body: "Decision latency analysis from governance meeting timestamps. Local economic velocity tracking. Fractal scaling analysis of community network structures.",
+    title: "Community psychophysiology",
+    body: "Polar H10 chest straps for 5-minute RMSSD recordings (3x weekly). Salivary cortisol via Salivette tubes (morning/evening, monthly). Quasi-experimental design with matched control community. Repeated-measures ANOVA, Bonferroni-corrected for six supplementary outcomes. IRB approval pending. Pre-registration on OSF before data collection begins.",
+  },
+  {
+    number: "04",
+    title: "Network and systems science",
+    body: "Decision latency analysis from governance meeting timestamps. Local economic velocity tracking. Fractal scaling analysis of community network structures. Comparison of biological networks (mycelial, ant colonies) against human social networks for common organizational principles.",
   },
 ];
 
 const documents = [
-  { type: "PDF", title: "Investor One-Pager", description: "The opportunity, four-phase campus plan, research model, current status, and funding requirements in one concise planning brief.", href: "/documents/investor-one-pager.pdf" },
-  { type: "PDF", title: "Project Summary", description: "Mission, research questions, methods, Old Glory Peak site justification, budget, and timeline.", href: "/documents/project-summary.pdf" },
-  { type: "PDF", title: "Magnetometer Survey Protocol", description: "Transect A–D design, including the Old Glory Peak ridge survey, station log template, quality control checklist, data export format, and field safety protocols.", href: "/documents/magnetometer-survey-protocol.pdf" },
-  { type: "PDF", title: "BIO-001 Psychophysiology Protocol", description: "HRV measurement specifications, cortisol assay protocol, control node matching criteria, statistical analysis plan, and Bonferroni correction.", href: "/documents/bio-001-psychophysiology-protocol.pdf" },
-  { type: "PDF", title: "Phase 1 Action Plan", description: "Week-by-week implementation: legal setup, equipment acquisition, Old Glory Peak field survey execution, and grant submissions.", href: "/documents/phase-1-action-plan.pdf" },
-  { type: "PDF", title: "Annual Budget Breakdown", description: "Line-item budget with justification: personnel, data stewardship, construction, field collection, documentation, and contingency.", href: "/documents/annual-budget-breakdown.pdf" },
-  { type: "PDF", title: "Informed Consent Template", description: "IRB-ready consent form for HRV and cortisol study participants.", href: "/documents/informed-consent-template.pdf" },
-  { type: "CSV", title: "Open Dataset — Survey Points", description: "GPS coordinates, magnetometer readings, lithology, mineral identification, and Old Glory Peak transect identifiers. Published when field data is available.", href: null },
+  { type: "PDF", title: "Investor One-Pager", description: "The opportunity, four-phase campus plan, research model, current status, and funding requirements in one concise planning brief.", href: "/documents/investor-one-pager.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
+  { type: "PDF", title: "Project Summary", description: "Mission, research questions, methods, Old Glory Peak site justification, budget, and timeline.", href: "/documents/project-summary.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
+  { type: "PDF", title: "Magnetometer Survey Protocol", description: "Transect A–D design, including the Old Glory Peak ridge survey, station log template, quality control checklist, data export format, and field safety protocols.", href: "/documents/magnetometer-survey-protocol.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
+  { type: "PDF", title: "Mycelial and Ecological Network Survey Protocol", description: "Soil sampling methodology, microscopy techniques, mycorrhizal identification guide, moss patch documentation, ant colony census procedures, and camera trap placement protocols.", href: null, status: "PROTOCOL / IN PREPARATION" },
+  { type: "PDF", title: "BIO-001 Psychophysiology Protocol", description: "HRV measurement specifications, cortisol assay protocol, control node matching criteria, statistical analysis plan, and Bonferroni correction. IRB approval pending.", href: "/documents/bio-001-psychophysiology-protocol.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
+  { type: "PDF", title: "Phase 1 Action Plan", description: "Week-by-week implementation: legal setup, equipment acquisition, Old Glory Peak field survey execution, and grant submissions.", href: "/documents/phase-1-action-plan.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
+  { type: "PDF", title: "Annual Budget Breakdown", description: "Line-item budget with justification: personnel, data stewardship, construction, field collection, documentation, and contingency.", href: "/documents/annual-budget-breakdown.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
+  { type: "PDF", title: "Informed Consent Template", description: "IRB-ready consent form for HRV and cortisol study participants.", href: "/documents/informed-consent-template.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
+  { type: "CSV", title: "Open Dataset — Survey Points", description: "GPS coordinates, magnetometer readings, lithology, mineral identification, Old Glory Peak transect identifiers, and ecological observations. Published when field data is available.", href: null, status: "DATASET / PENDING FIELD COLLECTION" },
+];
+
+const campusPrograms = [
+  {
+    number: "01",
+    title: "Four elements. One observer.",
+    body: "Four geodesic domes hold Earth, Fire, Air, and Water practices around the central garden. The five-point field ties shelter, practice, and community into one village pattern. Each dome is built entirely of Douglas fir, joined with hardwood dowels and hide glue. No metal. No interference.",
+  },
+  {
+    number: "02",
+    title: "The hall speaks. The village listens.",
+    body: "A nine-sided Great Hall gathers the community around a central stage. Twelve-faced copper-paneled dodecahedral acoustic dome ceiling. Concentric wooden seating for 50–75 people. Tuned copper panels on the interior walls. Stained glass windows carrying light into the space. Completely wooden structure.",
+  },
+  {
+    number: "03",
+    title: "The garden floats.",
+    body: "The Tetrahedron Garden repeats. Twelve beds. Flower of Life. Copper cistern. Every residential cluster gets its own food system. We all need food.",
+  },
+  {
+    number: "04",
+    title: "Six homes. One pool. Lush forest privacy.",
+    body: "Two quincunx residential clusters, each with six wooden dome homes arranged around a central swimming pool. Dense forest vegetation surrounds each cluster for privacy. Each home sits on a wooden deck platform. Central fire pit. Picnic tables. Desert landscaping with Joshua Trees and granite boulders. Modular design — add clusters as the community grows.",
+  },
 ];
 
 function Garden() {
@@ -131,7 +160,7 @@ export default function FoundationExperience() {
           <span className="eyebrow reveal">MOJAVE FIELD RESEARCH / 34.969° N, 116.419° W</span>
           <h1><span>FIELDWORK</span><br />FOR A LIVING<br /><em>PLANET.</em></h1>
           <span className="hero-location">OLD GLORY PEAK TRANSECT CORRIDOR</span>
-          <p>Mapping where the Pinto Mountain and Morongo Valley fault traces intersect between the San Gorgonio and San Jacinto fault zones.</p>
+          <p>Mapping the Old Glory Peak transect corridor — where the Pinto Mountain and Morongo Valley Fault traces intersect between the San Gorgonio and San Jacinto fault zones.</p>
           <div className="hero-actions" aria-label="Explore the fieldwork">
             <a href="#map">MAP</a>
             <a href="#build">BUILD</a>
@@ -139,8 +168,8 @@ export default function FoundationExperience() {
           </div>
         </div>
         <div className="hero-stats">
-          <div><strong>50</strong><span>SQUARE MILES</span></div>
           <div><strong>04</strong><span>FAULT TRANSECTS</span></div>
+          <div><strong>04</strong><span>RESEARCH DISCIPLINES</span></div>
           <div><strong>CC</strong><span>BY OPEN DATA</span></div>
         </div>
       </header>
@@ -152,7 +181,7 @@ export default function FoundationExperience() {
           <h2>The desert is not empty.<br />It is <em>information-dense.</em></h2>
         </div>
         <div className="mission-copy">
-          <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, and dryland agriculture meet at the Old Glory Peak field station.</p>
+          <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, dryland agriculture, mycelial network surveys, and community health monitoring converge at the Old Glory Peak field station.</p>
           <p>This is public-interest field science: measurable, repeatable, and shared openly with the people who steward the land.</p>
         </div>
         <div className="pillars">
@@ -176,8 +205,14 @@ export default function FoundationExperience() {
           <h2>Make the invisible<br />legible.</h2>
           <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline for geological change across the Old Glory Peak transect corridor — spanning the Pinto Mountain Fault (northern boundary of DWR Basin 7-20), the Morongo Valley Fault (documented “rising water and marshy conditions”), and the Emerson Fault / 1992 Landers rupture zone.</p>
           <p>Four transects cross these fault lines, including a dedicated high-resolution grid along the Old Glory Peak ridge itself. The peak sits directly between the San Gorgonio and San Jacinto fault zones — making it a natural laboratory for studying how hydrothermal processes and crustal stress interact.</p>
-          <p>Historical gold mining in the Morongo District (1890s–1940s, including the Morongo King Mine with a 10-stamp mill producing $400 in gold on its first day) confirms mineralized quartz vein systems along these structures.</p>
-          <p>Every station links field strength to lithology, mineral assemblage, and photographic documentation. Every dataset is published on the Open Science Framework under a CC-BY license before analysis begins.</p>
+          <p>But the geological data is only one layer. We map multiple overlapping networks:</p>
+          <div className="network-layers">
+            <article><span>SUBSURFACE</span><p>Mycelial communication pathways, mineralized quartz veins, hydrothermal fluid flow.</p></article>
+            <article><span>SURFACE</span><p>Moss patches as bio-indicators, ant colony locations, bird migration corridors, domestic animal movement patterns.</p></article>
+            <article><span>ATMOSPHERIC</span><p>Air quality gradients, temperature microclimates, humidity retention in vegetated zones.</p></article>
+          </div>
+          <p>Historical gold mining in the Morongo District (1890s–1940s, including the Morongo King Mine with a 10-stamp mill producing $400 in gold on its first day) confirms mineralized quartz vein systems along these structures. Ecological succession patterns (moss, lichen, invasive grasses) track recovery rates following human disturbance.</p>
+          <p>Every station links geophysics to biology. Every dataset is published on the Open Science Framework under a CC-BY license before analysis begins.</p>
           <div className="research-standard">
             <span>THE STANDARD</span>
             <p>We pre-register our hypotheses. We publish negative results.</p>
@@ -209,16 +244,31 @@ export default function FoundationExperience() {
         <div className="section-number">04 / LIVING SYSTEM</div>
         <div className="section-head">
           <div><span className="eyebrow">TETRAHEDRON GARDEN</span><h2>Grow food.<br />Measure everything.</h2></div>
-          <p>Three productive spirals orbit one water hub. Each element performs twice: sustaining a crop while collecting evidence about desert growing systems.</p>
+          <p>The Tetrahedron Garden is the centerpiece of the Whole Body training grounds. Twelve triangular raised beds arranged in a Flower of Life geometric pattern orbit a central copper cistern pool. A solar-calibrated copper gnomon tracks time and season. An orchard ring and six cold frames complete the perimeter.</p>
         </div>
         <Garden />
         <div className="metric-row">
-          <div><strong>1K</strong><span>GALLON CISTERN</span></div><div><strong>03</strong><span>PRODUCTIVE SPIRALS</span></div><div><strong>ORP</strong><span>PH + MINERAL TESTING</span></div>
+          <div><strong>1K</strong><span>GALLON CISTERN</span></div><div><strong>12</strong><span>TRIANGULAR BEDS</span></div><div><strong>ORP</strong><span>PH + MINERAL TESTING</span></div>
           <small>Every water reading becomes part of the Living River baseline.</small>
         </div>
         <div className="water-note">
           <span className="eyebrow">WATER AS EVIDENCE</span>
-          <p>A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content — baseline data for the Living River system and a verifiable record of what this land produces without synthetic inputs.</p>
+          <p>Each bed performs twice: sustaining a crop while collecting evidence about desert growing systems. A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content — baseline data for the Living River system and a verifiable record of what this land produces without synthetic inputs.</p>
+        </div>
+        <div className="campus-plan">
+          <div className="campus-plan-head">
+            <span className="eyebrow">CAMPUS PLAN / FUTURE BUILD</span>
+            <p>The field station expands in phases as evidence and support grow.</p>
+          </div>
+          <div className="campus-program-grid">
+            {campusPrograms.map(program => (
+              <article key={program.number}>
+                <span>{program.number}</span>
+                <h3>{program.title}</h3>
+                <p>{program.body}</p>
+              </article>
+            ))}
+          </div>
         </div>
         <div className="offline-panel">
           <div>
@@ -236,7 +286,7 @@ export default function FoundationExperience() {
         <div className="section-number light">05 / METHOD</div>
         <div className="section-head light">
           <div><span className="eyebrow">MECHANISM BEFORE CLAIM</span><h2>How we work.</h2></div>
-          <p>Our methodology sits at the intersection of three disciplines. Every measurement is tied to a mechanism, a protocol, and a place.</p>
+          <p>Our methodology sits at the intersection of four disciplines. Every measurement is tied to a mechanism, a protocol, and a place.</p>
         </div>
         <div className="method-grid">
           {methods.map(method => (
@@ -274,7 +324,10 @@ export default function FoundationExperience() {
         <div className="section-number light">08 / DOCUMENT LIBRARY</div>
         <div className="section-head light">
           <div><span className="eyebrow">THE FULL RESEARCH PACKAGE</span><h2>Read the method.<br />Trace the evidence.</h2></div>
-          <p>Download the full research package. Every document is updated as the project evolves.</p>
+          <div className="section-copy">
+            <p>Download the full research package. Every document is updated as the project evolves.</p>
+            <p>All documents will be hosted on the Open Science Framework. Until the OSF project is established, documents are available for download directly from this site.</p>
+          </div>
         </div>
         <div className="document-grid">
           {documents.map((document, index) => {
@@ -283,7 +336,7 @@ export default function FoundationExperience() {
                 <div><span>{document.type}</span><small>0{index + 1}</small></div>
                 <h3>{document.title}</h3>
                 <p>{document.description}</p>
-                <span className="document-status">{document.href ? "DOWNLOAD WORKING DRAFT ↘" : "DATASET / PENDING FIELD COLLECTION"}</span>
+                <span className="document-status">{document.status}</span>
               </>
             );
             return document.href ? (
@@ -304,7 +357,7 @@ export default function FoundationExperience() {
         <div className="team-grid">
           <article className="lead-card">
             <div className="portrait-placeholder"><span>JG</span><small>MORONGO VALLEY / CA</small></div>
-            <div><span className="eyebrow">FOUNDER &amp; FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Jesse Gawlik — Independent researcher based in Morongo Valley, California. Coordinating ecological research at the Old Glory Peak field station, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
+            <div><span className="eyebrow">FOUNDER AND FIELD LEAD</span><h3>Jesse Gawlik</h3><p>Jesse Gawlik — Independent researcher based in Morongo Valley, California. Coordinating ecological research at the Old Glory Peak field station, site systems, public documentation, and community partnerships across the eastern Mojave.</p><a href="mailto:jesse@wholebody.foundation">CONTACT JESSE ↗</a></div>
           </article>
           <div className="public-grid">
             <article className="science-commitment">
@@ -313,7 +366,7 @@ export default function FoundationExperience() {
                 <li>Pre-registration on OSF before data collection</li>
                 <li>Open data on OSF/Zenodo under CC-BY license</li>
                 <li>Negative results published</li>
-                <li>Full replication protocol available</li>
+                <li>Full replication protocol will be made available</li>
                 <li>Annual financial summary published</li>
               </ul>
             </article>
