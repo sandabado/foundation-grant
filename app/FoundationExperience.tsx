@@ -74,6 +74,7 @@ const nav: NavItem[] = [
       "phase-4-quincunx",
     ],
   },
+  { id: "land-stewardship", label: "Land", sections: ["land-stewardship"] },
   { id: "equipment", label: "Equipment", sections: ["equipment"] },
   { id: "budget", label: "Budget", sections: ["budget"] },
   { id: "timeline", label: "Roadmap", sections: ["timeline"] },
@@ -100,8 +101,8 @@ const budgetLines = [
 
 const milestones = [
   ["01", "MONTHS 1–3", "Map the baseline", "Fiscal sponsorship inquiry active · First 50 GPS-tagged survey points · Magnetometer transects A–D · Baseline ecological survey · Public field log prepared for OSF"],
-  ["02", "MONTHS 4–6", "Build the system", "First grant target · Tetrahedron Garden construction · Four elemental domes fabricated · 150 survey points · Water quality baseline · Mycelial network mapping initiated"],
-  ["03", "MONTHS 7–12", "Run the experiment", "Full sensor network · First harvest · Camera trap network · Annual open dataset · Psychophysiology study begins only after IRB approval"],
+  ["02", "MONTHS 4–6", "Build the system", "First grant target · Tetrahedron Garden construction · Four elemental domes fabricated · 150 survey points · Water quality baseline · Mycelial network mapping initiated · Psychophysiology protocol preparation and ethics-review submission"],
+  ["03", "MONTHS 7–12", "Run the experiment", "Full sensor network · First harvest · Camera trap network · Annual open dataset · Psychophysiology protocol activates only if IRB approval has been received"],
   ["04", "MONTHS 13–18", "Share the method", "Second survey cycle · Mycelial ecology workshops for land managers · 501(c)(3) transition · Replication protocol · Peer-reviewed manuscript preparation"],
 ];
 
@@ -124,7 +125,7 @@ const methods = [
   {
     number: "04",
     title: "Network and systems science",
-    body: "Decision latency analysis. Local economic velocity tracking. Fractal scaling of community network structures. Biological networks are compared with human social networks for common organizational principles.",
+    body: "Decision latency measures elapsed time from a documented issue to a recorded community decision. Local economic velocity measures the frequency and value of participant transactions recirculating within the defined study boundary. Fractal scaling compares biological and human network structures for common organizational principles.",
   },
 ];
 
@@ -352,8 +353,42 @@ export default function FoundationExperience() {
         </div>
       </section>
 
+      <section id="land-stewardship" className="section land-section">
+        <div className="section-number light">07 / LAND + LEGAL</div>
+        <div className="land-head">
+          <div>
+            <span className="eyebrow">PRECONDITION TO BUILD</span>
+            <h2>Secure the ground.<br /><em>Then build.</em></h2>
+            <p>Permanent infrastructure depends on legally durable access to an appropriate site. Land acquisition and long-term stewardship are therefore a separate capital and due-diligence track—not an assumption hidden inside the operating plan.</p>
+          </div>
+          <aside className="land-status">
+            <span>STATUS / PLANNING TRACK</span>
+            <strong>Permanent site control remains a project dependency.</strong>
+            <p>No property is represented here as acquired, under contract, or approved for construction. Property-specific claims will be published only after documentary review.</p>
+          </aside>
+        </div>
+        <div className="land-grid">
+          {[
+            ["01", "Site due diligence", "Identify a candidate site, then verify boundaries, title, legal access, zoning, water rights, environmental constraints, and permitted research uses."],
+            ["02", "Stewardship structure", "Evaluate purchase, long-term lease, conservation easement, or land-trust structures with qualified legal and land-use counsel."],
+            ["03", "Capital plan", "Establish a property-specific acquisition target only after appraisal, survey, title review, legal analysis, and closing-cost estimates."],
+            ["04", "Public record", "Publish the selected legal structure, material constraints, acquisition status, and construction permissions before permanent building begins."],
+          ].map(([number, title, body]) => (
+            <article key={number}>
+              <span>{number}</span>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
+        </div>
+        <div className="land-budget-line">
+          <div><span>YEAR-ONE OPERATING PLAN</span><strong>$75,000</strong></div>
+          <p>Land acquisition is excluded from the operating budget. A separate capital target will be established only after a real property and its verified costs are identified.</p>
+        </div>
+      </section>
+
       <section id="equipment" className="section equipment-section">
-        <div className="section-number">07 / TOOLKIT</div>
+        <div className="section-number">08 / TOOLKIT</div>
         <div className="section-head">
           <div><span className="eyebrow">FIELD EQUIPMENT / V2.0</span><h2>Measure what<br />the land reports.</h2></div>
           <div className="section-copy">
@@ -373,8 +408,8 @@ export default function FoundationExperience() {
       </section>
 
       <section id="budget" className="section budget-section">
-        <div className="section-number">08 / YEAR ONE</div>
-        <div className="budget-head"><div><span className="eyebrow">LEAN FIRST YEAR</span><h2>$75,000</h2></div><p>A lean first year funds people before objects: field collection, data stewardship, construction, insurance, and public documentation.</p></div>
+        <div className="section-number">09 / YEAR ONE</div>
+        <div className="budget-head"><div><span className="eyebrow">LEAN FIRST YEAR</span><h2>$75,000</h2><small className="budget-scope-note">OPERATING BUDGET / LAND EXCLUDED</small></div><p>A lean first year funds people before objects: field collection, data stewardship, construction, insurance, and public documentation.</p></div>
         <div className="budget-table">
           {budgetLines.map(([name, amount, color], i) => <div key={name} className="budget-row"><span className="rank">0{i + 1}</span><span>{name}</span><div className="budget-bar"><i style={{ width: `${(amount / 45000) * 100}%`, background: color }} /></div><b>${amount.toLocaleString()}</b></div>)}
         </div>
@@ -385,7 +420,7 @@ export default function FoundationExperience() {
       </section>
 
       <section id="timeline" className="section roadmap-section">
-        <div className="section-number light">09 / ROADMAP</div>
+        <div className="section-number light">10 / ROADMAP</div>
         <div className="section-head light"><div><span className="eyebrow">STAGED FOR EVIDENCE</span><h2>From first point<br />to public method.</h2></div><p>A staged path that makes early work useful immediately, then adds infrastructure as evidence and support grow.</p></div>
         <div className="timeline">
           {milestones.map(m => <article key={m[0]}><span className="milestone">{m[0]}</span><small>{m[1]}</small><h3>{m[2]}</h3><p>{m[3]}</p></article>)}
@@ -393,7 +428,7 @@ export default function FoundationExperience() {
       </section>
 
       <section id="people" className="section team-section">
-        <div className="section-number">10 / WHO WE ARE</div>
+        <div className="section-number">11 / WHO WE ARE</div>
         <div className="section-head">
           <div><span className="eyebrow">LED FROM THE FIELD</span><h2>Built in public.<br />Led from the field.</h2></div>
           <p>Whole Body Foundation is assembling a practical, interdisciplinary team around a simple standard: observe deeply, document honestly, and build only what the land can support.</p>
@@ -438,7 +473,7 @@ export default function FoundationExperience() {
       </section>
 
       <section id="library" className="section library-section">
-        <div className="section-number light">11 / DOCUMENT LIBRARY</div>
+        <div className="section-number light">12 / DOCUMENT LIBRARY</div>
         <div className="section-head light">
           <div><span className="eyebrow">THE FULL RESEARCH PACKAGE</span><h2>Read the method.<br />Trace the evidence.</h2></div>
           <div className="section-copy">

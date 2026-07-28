@@ -73,6 +73,7 @@ test("server-renders the Old Glory Peak field station experience", async () => {
     'id="phase-2-elemental-domes"',
     'id="phase-3-great-hall"',
     'id="phase-4-quincunx"',
+    'id="land-stewardship"',
     'id="equipment"',
     'id="budget"',
     'id="timeline"',
@@ -99,6 +100,7 @@ test("navigation maps every top-level experience and groups all architecture pha
     "site-context",
     "method",
     "phase-1-tet-garden",
+    "land-stewardship",
     "equipment",
     "budget",
     "timeline",
@@ -117,6 +119,26 @@ test("navigation maps every top-level experience and groups all architecture pha
   assert.match(source, /className="button button-primary" href="#site-context"/);
   assert.match(source, /className="document-card document-card-link"/);
   assert.match(source, /className="document-card document-card-static"/);
+});
+
+test("adds a truthful land-access track without publishing unverified property claims", async () => {
+  const source = await readFile(
+    new URL("../app/FoundationExperience.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /07 \/ LAND \+ LEGAL/);
+  assert.match(source, /Permanent site control remains a project dependency/);
+  assert.match(source, /No property is represented here as acquired, under contract, or approved for construction/);
+  assert.match(source, /Land acquisition is excluded from the operating budget/);
+  assert.match(source, /OPERATING BUDGET \/ LAND EXCLUDED/);
+  assert.match(source, /Psychophysiology protocol activates only if IRB approval has been received/);
+  assert.doesNotMatch(source, /50 acres adjacent/);
+  assert.doesNotMatch(source, /Existing well permit/);
+  assert.doesNotMatch(source, /no liens/);
+  assert.doesNotMatch(source, /transfer pending/i);
+  assert.doesNotMatch(source, /99-year renewable/);
+  assert.doesNotMatch(source, /\$170,000/);
 });
 
 test("keeps the hero concise while the terrain moves through a solar cycle", async () => {
