@@ -115,6 +115,8 @@ test("navigation maps every top-level experience and groups all architecture pha
     source,
     /sections:\s*\[\s*"phase-1-tet-garden",\s*"phase-2-elemental-domes",\s*"phase-3-great-hall",\s*"phase-4-quincunx",\s*\]/,
   );
+  assert.match(source, /id: "phase-1-tet-garden",\s*label: "Build"/);
+  assert.doesNotMatch(source, /label: "Architecture"/);
   assert.match(source, /sections\.includes\(entry\.target\.id\)/);
   assert.match(source, /className="button button-primary" href="#site-context"/);
   assert.match(source, /className="document-card document-card-link"/);

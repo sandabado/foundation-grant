@@ -65,7 +65,7 @@ const nav: NavItem[] = [
   { id: "method", label: "Method", sections: ["method"] },
   {
     id: "phase-1-tet-garden",
-    label: "Architecture",
+    label: "Build",
     sections: [
       "phase-1-tet-garden",
       "phase-2-elemental-domes",
