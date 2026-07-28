@@ -1,7 +1,7 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import {
   ACESFilmicToneMapping,
   AdditiveBlending,
@@ -435,13 +435,11 @@ export default function InteractiveTerrain() {
       ref={stageRef}
       aria-label="Interactive computational terrain model of the Old Glory Peak transect corridor"
     >
-      <Image
+      <img
         className="terrain-fallback"
         src={TERRAIN_TEXTURE}
         alt="Dry San Jacinto ridgeline and Old Glory Peak terrain in warm sunlight with green computational survey paths"
-        fill
-        priority
-        sizes="100vw"
+        fetchPriority="high"
       />
       <div className="terrain-readout" aria-hidden="true">
         <span>TRANSECT C / LIVE FIELD</span>
