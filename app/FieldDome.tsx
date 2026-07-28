@@ -1,6 +1,6 @@
 "use client";
 
-import { Html, OrbitControls } from "@react-three/drei";
+import { ContactShadows, Html, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   type ComponentRef,
@@ -13,11 +13,14 @@ import {
 import * as THREE from "three";
 
 const OBSIDIAN = "#080a08";
-const BONE = "#f5f0e1";
 const FIELD_GREEN = "#84a66e";
 const MINERAL_GREEN = "#2d4f3a";
 const DOUGLAS_FIR = "#8a5a38";
-const COPPER = "#b87333";
+const DOUGLAS_FIR_LIGHT = "#a7754d";
+const HARDWOOD = "#5f3b27";
+const FOUNDATION_STONE = "#45463f";
+const DOME_RADIUS = 3;
+const GROUND_EPSILON = 0.0001;
 
 type CameraCommand = {
   id: number;
@@ -25,48 +28,55 @@ type CameraCommand = {
 };
 
 function buildDomeStructure() {
-  const source = new THREE.IcosahedronGeometry(3, 1);
-  source.scale(1, 0.82, 1);
+  const basis = new THREE.IcosahedronGeometry(1, 0);
+  const pole = new THREE.Vector3()
+    .fromBufferAttribute(basis.attributes.position, 0)
+    .normalize();
+  const rotation = new THREE.Quaternion().setFromUnitVectors(
+    pole,
+    new THREE.Vector3(0, 1, 0),
+  );
+  const source = new THREE.IcosahedronGeometry(DOME_RADIUS, 1);
+  source.applyQuaternion(rotation);
   const edges = new THREE.EdgesGeometry(source, 1);
   const positions = edges.attributes.position.array;
   const segments: [THREE.Vector3, THREE.Vector3][] = [];
 
+  const snapToGround = (point: THREE.Vector3) => {
+    if (Math.abs(point.y) <= GROUND_EPSILON) point.y = 0;
+    return point;
+  };
+
   for (let index = 0; index < positions.length; index += 6) {
-    const start = new THREE.Vector3(
+    const start = snapToGround(new THREE.Vector3(
       positions[index],
       positions[index + 1],
       positions[index + 2],
-    );
-    const end = new THREE.Vector3(
+    ));
+    const end = snapToGround(new THREE.Vector3(
       positions[index + 3],
       positions[index + 4],
       positions[index + 5],
-    );
-    if (start.y >= 0.1 && end.y >= 0.1) {
+    ));
+    if (start.y >= 0 && end.y >= 0) {
       segments.push([start, end]);
     }
-  }
-
-  for (let index = 0; index < 5; index += 1) {
-    const angle = (index / 5) * Math.PI * 2;
-    segments.push([
-      new THREE.Vector3(Math.cos(angle) * 3, 0.04, Math.sin(angle) * 3),
-      new THREE.Vector3(
-        Math.cos(angle) * 2.48,
-        0.82,
-        Math.sin(angle) * 2.48,
-      ),
-    ]);
   }
 
   const struts = segments.map(([start, end]) => {
     const direction = end.clone().sub(start);
     const midpoint = start.clone().add(end).multiplyScalar(0.5);
+    const length = direction.length();
     const quaternion = new THREE.Quaternion().setFromUnitVectors(
       new THREE.Vector3(0, 1, 0),
       direction.clone().normalize(),
     );
-    return { midpoint, quaternion, length: direction.length() };
+    return {
+      midpoint,
+      quaternion,
+      length,
+      type: length > DOME_RADIUS * 0.58 ? "A" : "B",
+    };
   });
 
   const jointMap = new Map<string, THREE.Vector3>();
@@ -77,12 +87,56 @@ function buildDomeStructure() {
     });
   });
 
+  const joints = Array.from(jointMap.values()).map(position => ({
+    position,
+    isBase: position.y === 0,
+  }));
+  const shellSource = source.index ? source.toNonIndexed() : source.clone();
+  const shellPositions = shellSource.attributes.position;
+  const panelPositions: number[] = [];
+
+  for (let index = 0; index < shellPositions.count; index += 3) {
+    const triangle = [0, 1, 2].map(offset =>
+      snapToGround(
+        new THREE.Vector3().fromBufferAttribute(shellPositions, index + offset),
+      ),
+    );
+    if (triangle.every(point => point.y >= 0)) {
+      triangle.forEach(point => panelPositions.push(point.x, point.y, point.z));
+    }
+  }
+
+  const panels = new THREE.BufferGeometry();
+  panels.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(panelPositions, 3),
+  );
+  panels.computeVertexNormals();
+
+  const longStruts = struts.filter(strut => strut.type === "A").length;
+  const shortStruts = struts.length - longStruts;
+  const baseJoints = joints.filter(joint => joint.isBase).length;
+
+  if (
+    struts.length !== 65 ||
+    joints.length !== 26 ||
+    baseJoints !== 10 ||
+    longStruts !== 35 ||
+    shortStruts !== 30 ||
+    panelPositions.length / 9 !== 40
+  ) {
+    throw new Error("Invalid 2V dome topology");
+  }
+
+  basis.dispose();
+  shellSource.dispose();
   edges.dispose();
   source.dispose();
 
   return {
     struts,
-    joints: Array.from(jointMap.values()),
+    joints,
+    panels,
   };
 }
 
@@ -126,26 +180,18 @@ function AcousticField({ motionEnabled }: { motionEnabled: boolean }) {
 
 function DomeStructure({ motionEnabled }: { motionEnabled: boolean }) {
   const model = useMemo(() => buildDomeStructure(), []);
-  const dome = useRef<THREE.Group>(null);
-
-  useFrame(({ clock }) => {
-    if (!dome.current) return;
-    dome.current.rotation.y = motionEnabled
-      ? Math.sin(clock.getElapsedTime() * 0.12) * 0.035
-      : 0;
-  });
+  useEffect(() => () => model.panels.dispose(), [model]);
 
   return (
-    <group ref={dome}>
-      <mesh position={[0, 0, 0]} scale={[1, 0.82, 1]} receiveShadow>
-        <icosahedronGeometry args={[3, 1]} />
+    <group>
+      <mesh geometry={model.panels} receiveShadow>
         <meshPhysicalMaterial
-          color={BONE}
+          color={FIELD_GREEN}
           transparent
-          opacity={0.055}
-          roughness={0.5}
-          transmission={0.12}
-          thickness={0.12}
+          opacity={0.035}
+          roughness={0.72}
+          transmission={0.08}
+          thickness={0.08}
           depthWrite={false}
           side={THREE.DoubleSide}
         />
@@ -157,46 +203,59 @@ function DomeStructure({ motionEnabled }: { motionEnabled: boolean }) {
           position={strut.midpoint}
           quaternion={strut.quaternion}
           castShadow
+          receiveShadow
         >
-          <cylinderGeometry args={[0.035, 0.035, strut.length, 7]} />
-          <meshStandardMaterial color={DOUGLAS_FIR} roughness={0.72} />
+          <boxGeometry args={[0.095, strut.length + 0.045, 0.075]} />
+          <meshStandardMaterial
+            color={strut.type === "A" ? DOUGLAS_FIR_LIGHT : DOUGLAS_FIR}
+            roughness={0.78}
+            metalness={0}
+          />
         </mesh>
       ))}
 
       {model.joints.map((joint, index) => (
-        <mesh key={index} position={joint} castShadow>
-          <sphereGeometry args={[0.065, 8, 6]} />
-          <meshStandardMaterial color="#d1a06c" roughness={0.68} />
+        <mesh key={index} position={joint.position} castShadow receiveShadow>
+          <dodecahedronGeometry args={[joint.isBase ? 0.12 : 0.1, 0]} />
+          <meshStandardMaterial color={HARDWOOD} roughness={0.82} metalness={0} />
         </mesh>
       ))}
 
-      <mesh position={[0, 0.035, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[3, 0.055, 7, 72]} />
-        <meshStandardMaterial color={DOUGLAS_FIR} roughness={0.72} />
-      </mesh>
-
-      <mesh position={[0, 0.82, 0]} castShadow>
-        <cylinderGeometry args={[0.07, 0.11, 1.55, 8]} />
-        <meshStandardMaterial color={COPPER} metalness={0.72} roughness={0.28} />
-      </mesh>
-      <mesh position={[0, 1.62, 0]} castShadow>
-        <octahedronGeometry args={[0.13, 0]} />
-        <meshStandardMaterial
-          color={FIELD_GREEN}
-          emissive={FIELD_GREEN}
-          emissiveIntensity={0.5}
-        />
-      </mesh>
+      {model.joints
+        .filter(joint => joint.isBase)
+        .map((joint, index) => (
+          <group
+            key={`foundation-${index}`}
+            position={[joint.position.x, 0, joint.position.z]}
+          >
+            <mesh position={[0, -0.065, 0]} castShadow receiveShadow>
+              <cylinderGeometry args={[0.15, 0.18, 0.1, 10]} />
+              <meshStandardMaterial
+                color={FOUNDATION_STONE}
+                roughness={0.96}
+                metalness={0}
+              />
+            </mesh>
+            <mesh position={[0, -0.005, 0]} castShadow receiveShadow>
+              <cylinderGeometry args={[0.09, 0.1, 0.045, 10]} />
+              <meshStandardMaterial
+                color={HARDWOOD}
+                roughness={0.84}
+                metalness={0}
+              />
+            </mesh>
+          </group>
+        ))}
 
       <AcousticField motionEnabled={motionEnabled} />
       <Html
-        position={[0, 3.35, 0]}
+        position={[0, 3.42, 0]}
         center
         distanceFactor={8}
         className="dome-scene-label"
         style={{ pointerEvents: "none" }}
       >
-        10 FT / 2V / 65 STRUTS / ZERO METAL
+        10 FT / 2V / 65 CONNECTED STRUTS / 26 WOOD HUBS
       </Html>
     </group>
   );
@@ -211,7 +270,7 @@ function KeyboardCamera({
 
   useEffect(() => {
     if (!command) return;
-    const target = new THREE.Vector3(0, 1.1, 0);
+    const target = new THREE.Vector3(0, 1.3, 0);
     const offset = camera.position.clone().sub(target);
     const spherical = new THREE.Spherical().setFromVector3(offset);
 
@@ -223,7 +282,7 @@ function KeyboardCamera({
     if (command.key === "-") spherical.radius *= 1.1;
 
     spherical.phi = THREE.MathUtils.clamp(spherical.phi, 0.3, 1.46);
-    spherical.radius = THREE.MathUtils.clamp(spherical.radius, 4, 16);
+    spherical.radius = THREE.MathUtils.clamp(spherical.radius, 5.2, 16);
     camera.position.copy(
       new THREE.Vector3().setFromSpherical(spherical).add(target),
     );
@@ -249,7 +308,8 @@ function DomeScene({
   return (
     <>
       <color attach="background" args={[OBSIDIAN]} />
-      <ambientLight intensity={0.55} />
+      <ambientLight intensity={0.42} />
+      <hemisphereLight args={["#d7d0bd", "#11170d", 0.62]} />
       <directionalLight
         position={[5, 9, 5]}
         intensity={1}
@@ -291,13 +351,23 @@ function DomeScene({
       ))}
 
       <DomeStructure motionEnabled={motionEnabled} />
+      <ContactShadows
+        position={[0, -0.02, 0]}
+        scale={8}
+        opacity={0.58}
+        blur={2.4}
+        far={4.5}
+        resolution={512}
+        color="#000000"
+      />
       <KeyboardCamera command={command} />
       <OrbitControls
         ref={controls}
         makeDefault
-        target={[0, 1.1, 0]}
-        minDistance={4}
+        target={[0, 1.3, 0]}
+        minDistance={5.2}
         maxDistance={16}
+        maxPolarAngle={1.47}
         enableZoom
         enablePan={false}
         enableDamping
@@ -410,7 +480,7 @@ export default function FieldDome() {
         <span>ARROWS +/−</span>
       </div>
       <Canvas
-        camera={{ position: [5.6, 3.3, 6.8], fov: 45, near: 0.1, far: 80 }}
+        camera={{ position: [5.9, 3.7, 7], fov: 42, near: 0.1, far: 80 }}
         dpr={[1, 2]}
         frameloop="always"
         shadows="basic"

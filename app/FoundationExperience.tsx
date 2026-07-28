@@ -234,7 +234,7 @@ export default function FoundationExperience() {
           <FieldDome />
           <aside>
             <span className="eyebrow">BUILD SPEC / 2V</span>
-            {[["DIAMETER", "10 FT"], ["A STRUTS", "35 × 54.75″"], ["B STRUTS", "30 × 56.25″"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}
+            {[["DIAMETER", "10 FT"], ["A STRUTS", "35 × 54.75″"], ["B STRUTS", "30 × 56.25″"], ["HUBS", "26 × HARDWOOD"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}
             <p>Designed as a replicable prototype for natural-material research structures.</p>
           </aside>
         </div>

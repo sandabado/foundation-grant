@@ -88,6 +88,13 @@ test("integrates the procedural garden and dome inside their existing sections",
   assert.match(experience, /<FieldDome \/>/);
   assert.match(garden, /ENHANCE DETAIL/);
   assert.match(garden, /EXPAND MODEL/);
-  assert.match(dome, /65 STRUTS/);
+  assert.match(dome, /65 CONNECTED STRUTS/);
   assert.match(dome, /EXPAND MODEL/);
+  assert.match(dome, /struts\.length !== 65/);
+  assert.match(dome, /joints\.length !== 26/);
+  assert.match(dome, /baseJoints !== 10/);
+  assert.match(dome, /longStruts !== 35/);
+  assert.match(dome, /shortStruts !== 30/);
+  assert.doesNotMatch(dome, /segments\.push\(\[\s*new THREE\.Vector3\(Math\.cos/);
+  assert.doesNotMatch(dome, /<torusGeometry args=\{\[3,/);
 });
