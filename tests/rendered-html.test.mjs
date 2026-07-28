@@ -40,18 +40,41 @@ test("server-renders the Old Glory Peak field station experience", async () => {
 
   const html = await response.text();
   assert.match(html, /Whole Body Foundation — Old Glory Peak Field Station/i);
-  assert.match(html, /Make the invisible/);
+  assert.match(html, /Old Glory Peak[\s\S]*transect/i);
   assert.match(html, /Mycelial and ecological networks/i);
   assert.match(html, /IRB approval pending/i);
   assert.match(html, /Fiscal sponsorship inquiry active/i);
-  assert.match(html, /Moss patch monitoring stations installed/);
-  assert.match(html, /Camera trap network operational/);
+  assert.match(html, /Four elemental[\s\S]*domes/i);
+  assert.match(html, /The Great Hall/i);
+  assert.match(html, /Quincunx residential clusters/i);
+  assert.match(html, /FIELD EQUIPMENT \/ V2\.0/i);
+  assert.match(html, /45,000/);
   assert.match(html, /PROTOCOL \/ IN PREPARATION/);
   assert.match(html, /\/documents\/project-summary\.pdf/);
   assert.match(html, /DOWNLOAD WORKING DRAFT/);
   assert.doesNotMatch(html, /OSF RELEASE \/ IN PREPARATION/);
   assert.doesNotMatch(html, /Fiscal sponsorship active/i);
   assert.doesNotMatch(html, /IRB-approved\. Pre-registered/i);
+  assert.doesNotMatch(html, /ACOUSTIC \+ FIELD RESEARCH/i);
+
+  const orderedSections = [
+    'id="site-context"',
+    'id="method"',
+    'id="phase-1-tet-garden"',
+    'id="phase-2-elemental-domes"',
+    'id="phase-3-great-hall"',
+    'id="phase-4-quincunx"',
+    'id="equipment"',
+    'id="budget"',
+    'id="timeline"',
+    'id="people"',
+  ];
+  let previousIndex = -1;
+  for (const section of orderedSections) {
+    const sectionIndex = html.indexOf(section);
+    assert.ok(sectionIndex > previousIndex, `${section} should follow the prior section`);
+    previousIndex = sectionIndex;
+  }
 });
 
 test("ships all seven linked research and investor PDF working drafts", async () => {

@@ -462,7 +462,7 @@ export default function FieldDome() {
       aria-label="Interactive three-dimensional 2V wooden field dome. Drag or use arrow keys to orbit. Scroll or use plus and minus keys to zoom."
     >
       <div className="dome-model-id" aria-hidden="true">
-        <span>ACOUSTIC FIELD VOLUME</span>
+        <span>ELEMENTAL DOME / STRUCTURAL MODEL</span>
         <b>DOUGLAS FIR / DOWEL JOINERY</b>
       </div>
       <button

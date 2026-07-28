@@ -26,51 +26,67 @@ const FieldDome = dynamic(() => import("./FieldDome"), {
 });
 
 const nav = [
-  ["mission", "Mission"],
-  ["map", "Map"],
-  ["build", "Build"],
+  ["site-context", "Site"],
   ["method", "Method"],
-  ["phases", "Phases"],
+  ["phase-1-tet-garden", "Architecture"],
+  ["equipment", "Equipment"],
   ["budget", "Budget"],
-  ["library", "Library"],
-  ["public", "Public"],
+  ["timeline", "Roadmap"],
+  ["people", "Team"],
 ];
 
-const budget = [
+const fundingMix = [
   ["California climate investment", 50000, "#84a66e"],
   ["Foundation grants", 15000, "#b87333"],
   ["Community + workshops", 10000, "#d7d0bd"],
 ] as const;
 
+const budgetLines = [
+  ["Personnel", 45000, "#84a66e"],
+  ["Equipment", 8000, "#b87333"],
+  ["Sponsor fee", 7500, "#a58b6c"],
+  ["Travel", 6000, "#6f8f65"],
+  ["Data + hosting", 4000, "#d7d0bd"],
+  ["Legal + insurance", 3500, "#8b6b4f"],
+  ["Contingency", 1000, "#607657"],
+] as const;
+
 const milestones = [
-  ["01", "NOW – DEC 2026", "Phase 1", "Fiscal sponsorship inquiry active · First 50 GPS-tagged survey points across the Old Glory Peak ridge transect · Public field log on OSF · Magnetometer transects A–D complete · Mineral identification catalog published · Baseline ecological survey initiated (moss patches, bird observation, ant colony census)"],
-  ["02", "JAN 2027 – JUN 2027", "Phase 2", "First grant awarded · Tetrahedron Garden construction · Four elemental domes fabricated · 150 survey points collected · Water quality baseline established · Moss patch monitoring stations installed · Camera trap network operational · Mycelial network mapping initiated · Offline field computer operational · First harvest"],
-  ["03", "JUL 2027 +", "Phase 3", "Great Hall construction · Full sensor network deployed · IRB-approved psychophysiology protocol active · Annual open dataset published (geology + biology + psychology) · First residential cluster built · Alpha Node vs. Control Node comparison begins"],
-  ["04", "YEAR 2 +", "Phase 4", "Second residential cluster built · Second survey cycle across the San Gorgonio–San Jacinto corridor · Workshop series for land managers on mycelial ecology · 501(c)(3) transition · Replication protocol published · Peer-reviewed manuscript submitted"],
+  ["01", "MONTHS 1–3", "Map the baseline", "Fiscal sponsorship inquiry active · First 50 GPS-tagged survey points · Magnetometer transects A–D · Baseline ecological survey · Public field log prepared for OSF"],
+  ["02", "MONTHS 4–6", "Build the system", "First grant target · Tetrahedron Garden construction · Four elemental domes fabricated · 150 survey points · Water quality baseline · Mycelial network mapping initiated"],
+  ["03", "MONTHS 7–12", "Run the experiment", "Full sensor network · First harvest · Camera trap network · Annual open dataset · Psychophysiology study begins only after IRB approval"],
+  ["04", "MONTHS 13–18", "Share the method", "Second survey cycle · Mycelial ecology workshops for land managers · 501(c)(3) transition · Replication protocol · Peer-reviewed manuscript preparation"],
 ];
 
 const methods = [
   {
     number: "01",
     title: "Environmental geophysics",
-    body: "Smartphone magnetometer transects calibrated against USGS aeromagnetic data. Four survey lines crossing the Old Glory Peak ridge: Transect A (Pinto Fault Crossing), Transect B (Morongo Valley Fault Crossing), Transect C (Old Glory Peak Ridge Crest), Transect D (Mine Area Grid near historical adits). Rock sampling with standard field methods: Mohs hardness, streak plate, HCl reaction, magnetic susceptibility. Water quality testing: ORP, pH, heavy metals, mineral content.",
+    body: "Smartphone magnetometer transects calibrated against USGS aeromagnetic data. Rock sampling: Mohs hardness, streak plate, HCl reaction, and magnetic susceptibility. Water quality: ORP, pH, heavy metals, and mineral content.",
   },
   {
     number: "02",
     title: "Mycelial and ecological networks",
-    body: "Soil sampling at GPS-stamped locations across all transects. Documentation of fungal hyphae networks via microscopy, identification of mycorrhizal associations, mapping of underground communication pathways. Moss patches monitored as distributed bio-sensors for air quality, moisture retention, and microclimate variation. Ant colony locations mapped and behavioral observations recorded at 15-minute intervals. Animal presence detected via camera traps, citizen science reports, and direct observation (birds, mammals, domestic cats). These biological networks are not separate from our geophysical measurements. They are the Earth’s way of reporting its own state. We are reading the data streams.",
+    body: "Soil sampling at GPS-stamped locations. Fungal hyphae documented through microscopy. Moss patches serve as distributed bio-sensors. Ant colony behavior is mapped. Wildlife is tracked through camera traps: birds, mammals, and domestic cats. These biological networks are the Earth’s way of reporting its own state.",
   },
   {
     number: "03",
     title: "Community psychophysiology",
-    body: "Polar H10 chest straps for 5-minute RMSSD recordings (3x weekly). Salivary cortisol via Salivette tubes (morning/evening, monthly). Quasi-experimental design with matched control community. Repeated-measures ANOVA, Bonferroni-corrected for six supplementary outcomes. IRB approval pending. Pre-registration on OSF before data collection begins.",
+    body: "Polar H10 chest straps for HRV/RMSSD: five-minute recordings, three times weekly. Monthly salivary cortisol assays. IRB approval pending. Pre-registration on OSF will occur before data collection begins.",
   },
   {
     number: "04",
     title: "Network and systems science",
-    body: "Decision latency analysis from governance meeting timestamps. Local economic velocity tracking. Fractal scaling analysis of community network structures. Comparison of biological networks (mycelial, ant colonies) against human social networks for common organizational principles.",
+    body: "Decision latency analysis. Local economic velocity tracking. Fractal scaling of community network structures. Biological networks are compared with human social networks for common organizational principles.",
   },
 ];
+
+const equipment = [
+  ["01", "Geophysics", "Smartphone magnetometer, GPS reference, field notebook, streak plate, hardness picks, dilute HCl, and magnetic susceptibility tools."],
+  ["02", "Ecology", "Glass soil-sampling jars, paper envelopes, microscopy supplies, moss documentation tools, ant census forms, and camera traps."],
+  ["03", "Psychophysiology", "Polar H10 chest straps and Salivette cortisol kits held for use only after ethics review and informed consent approval."],
+  ["04", "Field computing", "Raspberry Pi 5, local reference library, GPS module, closed WiFi network, solar charging, and battery backup."],
+] as const;
 
 const documents = [
   { type: "PDF", title: "Investor One-Pager", description: "The opportunity, four-phase campus plan, research model, current status, and funding requirements in one concise planning brief.", href: "/documents/investor-one-pager.pdf", status: "DOWNLOAD WORKING DRAFT ↘" },
@@ -84,36 +100,13 @@ const documents = [
   { type: "CSV", title: "Open Dataset — Survey Points", description: "GPS coordinates, magnetometer readings, lithology, mineral identification, Old Glory Peak transect identifiers, and ecological observations. Published when field data is available.", href: null, status: "DATASET / PENDING FIELD COLLECTION" },
 ];
 
-const campusPrograms = [
-  {
-    number: "01",
-    title: "Four elements. One observer.",
-    body: "Four geodesic domes hold Earth, Fire, Air, and Water practices around the central garden. The five-point field ties shelter, practice, and community into one village pattern. Each dome is built entirely of Douglas fir, joined with hardwood dowels and hide glue. No metal. No interference.",
-  },
-  {
-    number: "02",
-    title: "The hall speaks. The village listens.",
-    body: "A nine-sided Great Hall gathers the community around a central stage. Twelve-faced copper-paneled dodecahedral acoustic dome ceiling. Concentric wooden seating for 50–75 people. Tuned copper panels on the interior walls. Stained glass windows carrying light into the space. Completely wooden structure.",
-  },
-  {
-    number: "03",
-    title: "The garden floats.",
-    body: "The Tetrahedron Garden repeats. Twelve beds. Flower of Life. Copper cistern. Every residential cluster gets its own food system. We all need food.",
-  },
-  {
-    number: "04",
-    title: "Six homes. One pool. Lush forest privacy.",
-    body: "Two quincunx residential clusters, each with six wooden dome homes arranged around a central swimming pool. Dense forest vegetation surrounds each cluster for privacy. Each home sits on a wooden deck platform. Central fire pit. Picnic tables. Desert landscaping with Joshua Trees and granite boulders. Modular design — add clusters as the community grows.",
-  },
-];
-
 function Garden() {
   return <TetrahedronGarden />;
 }
 
 export default function FoundationExperience() {
   const [menu, setMenu] = useState(false);
-  const [active, setActive] = useState("mission");
+  const [active, setActive] = useState("site-context");
   const [loaded, setLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [cursor, setCursor] = useState({ x: -50, y: -50, ring: false });
@@ -157,14 +150,16 @@ export default function FoundationExperience() {
         <div className="hero-scrim" />
         <div className="hero-grid" />
         <div className="hero-copy">
-          <span className="eyebrow reveal">MOJAVE FIELD RESEARCH / 34.969° N, 116.419° W</span>
-          <h1><span>FIELDWORK</span><br />FOR A LIVING<br /><em>PLANET.</em></h1>
+          <span className="eyebrow reveal">MOJAVE DESERT / 34.969° N, 116.419° W</span>
+          <h1>FIELDWORK FOR A<br /><em>LIVING PLANET.</em></h1>
           <span className="hero-location">OLD GLORY PEAK TRANSECT CORRIDOR</span>
-          <p>Mapping the Old Glory Peak transect corridor — where the Pinto Mountain and Morongo Valley Fault traces intersect between the San Gorgonio and San Jacinto fault zones.</p>
+          <div className="hero-deck">
+            <p>Mapping the Old Glory Peak transect corridor — where the Pinto Mountain and Morongo Valley Fault traces intersect between the San Gorgonio and San Jacinto fault zones.</p>
+            <p><strong>The desert is not empty. It is information-dense.</strong></p>
+            <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, dryland agriculture, mycelial network surveys, and community health monitoring converge at the Old Glory Peak field station.</p>
+          </div>
           <div className="hero-actions" aria-label="Explore the fieldwork">
-            <a href="#map">MAP</a>
-            <a href="#build">BUILD</a>
-            <a href="#library">SHARE</a>
+            <a href="#site-context">ENTER THE FIELD ↓</a>
           </div>
         </div>
         <div className="hero-stats">
@@ -174,119 +169,42 @@ export default function FoundationExperience() {
         </div>
       </header>
 
-      <section id="mission" className="section mission">
-        <div className="section-number">01 / THE PREMISE</div>
-        <div className="mission-lead">
-          <span className="eyebrow">PUBLIC-INTEREST FIELD SCIENCE</span>
-          <h2>The desert is not empty.<br />It is <em>information-dense.</em></h2>
-        </div>
-        <div className="mission-copy">
-          <p>We’re building a baseline ecological record where geomagnetic mapping, mineral identification, water quality testing, dryland agriculture, mycelial network surveys, and community health monitoring converge at the Old Glory Peak field station.</p>
-          <p>This is public-interest field science: measurable, repeatable, and shared openly with the people who steward the land.</p>
-        </div>
-        <div className="pillars">
-          {[
-            ["01", "MAP", "Link GPS-tagged field strength to lithology, mineral assemblage, and photographic documentation."],
-            ["02", "BUILD", "Test natural-material structures, desert agriculture, water systems, and offline field computing."],
-            ["03", "SHARE", "Pre-register hypotheses, publish negative results, and release data under a CC-BY license."],
-          ].map(p => <article key={p[0]}><span>{p[0]}</span><h3>{p[1]}</h3><p>{p[2]}</p></article>)}
-        </div>
-      </section>
-
-      <section id="map" className="section survey-section">
-        <div className="section-number light">02 / MAP THE BASELINE</div>
+      <section id="site-context" className="section survey-section">
+        <div className="section-number light">01 / THE GROUND TRUTH</div>
         <div className="survey-map">
           <div className="contours">{Array.from({length: 11}, (_, i) => <i key={i} style={{ inset: `${i * 3.7 + 8}% ${i * 4.3 + 7}%`, transform: `rotate(${i * 7 - 28}deg)` }} />)}</div>
           {Array.from({length: 38}, (_, i) => <b key={i} style={{ left: `${8 + ((i * 37) % 84)}%`, top: `${9 + ((i * 53) % 76)}%`, animationDelay: `${(i % 8) * .14}s` }} />)}
-          <div className="map-callout"><span>ANOMALY CLUSTER 07</span><strong>+184 nT</strong><small>34.9678° / −116.4012°</small></div>
+          <div className="map-callout"><span>OLD GLORY PEAK</span><strong>04 LINES</strong><small>34.969° N / 116.419° W</small></div>
         </div>
         <div className="survey-copy">
-          <span className="eyebrow">OPEN-ACCESS BASELINE</span>
-          <h2>Make the invisible<br />legible.</h2>
-          <p>A repeatable grid of GPS-tagged magnetometer readings creates a long-term baseline for geological change across the Old Glory Peak transect corridor — spanning the Pinto Mountain Fault (northern boundary of DWR Basin 7-20), the Morongo Valley Fault (documented “rising water and marshy conditions”), and the Emerson Fault / 1992 Landers rupture zone.</p>
-          <p>Four transects cross these fault lines, including a dedicated high-resolution grid along the Old Glory Peak ridge itself. The peak sits directly between the San Gorgonio and San Jacinto fault zones — making it a natural laboratory for studying how hydrothermal processes and crustal stress interact.</p>
-          <p>But the geological data is only one layer. We map multiple overlapping networks:</p>
-          <div className="network-layers">
-            <article><span>SUBSURFACE</span><p>Mycelial communication pathways, mineralized quartz veins, hydrothermal fluid flow.</p></article>
-            <article><span>SURFACE</span><p>Moss patches as bio-indicators, ant colony locations, bird migration corridors, domestic animal movement patterns.</p></article>
-            <article><span>ATMOSPHERIC</span><p>Air quality gradients, temperature microclimates, humidity retention in vegetated zones.</p></article>
+          <span className="eyebrow">SITE CONTEXT</span>
+          <h2>Old Glory Peak<br />transect.</h2>
+          <p>Old Glory Peak sits directly between the San Gorgonio and San Jacinto fault zones — making it a natural laboratory for studying how hydrothermal processes and crustal stress interact.</p>
+          <p>Four transects cross these fault lines:</p>
+          <div className="transect-list">
+            {[
+              ["A", "Pinto Fault Crossing"],
+              ["B", "Morongo Valley Fault Crossing"],
+              ["C", "Old Glory Peak Ridge Crest"],
+              ["D", "Mine Area Grid near historical adits"],
+            ].map(([letter, label]) => (
+              <div key={letter}><span>TRANSECT {letter}</span><strong>{label}</strong></div>
+            ))}
           </div>
-          <p>Historical gold mining in the Morongo District (1890s–1940s, including the Morongo King Mine with a 10-stamp mill producing $400 in gold on its first day) confirms mineralized quartz vein systems along these structures. Ecological succession patterns (moss, lichen, invasive grasses) track recovery rates following human disturbance.</p>
-          <p>Every station links geophysics to biology. Every dataset is published on the Open Science Framework under a CC-BY license before analysis begins.</p>
+          <p>Historical gold mining in the Morongo District (1890s–1940s) confirms mineralized quartz vein systems along these structures.</p>
           <div className="research-standard">
-            <span>THE STANDARD</span>
-            <p>We pre-register our hypotheses. We publish negative results.</p>
+            <span>PUBLIC-INTEREST FIELD SCIENCE</span>
+            <p>Measurable, repeatable, and shared openly with the people who steward the land.</p>
             <strong>Every claim backed by a mechanism.<br />Every measurement tied to a GPS coordinate.</strong>
           </div>
         </div>
       </section>
 
-      <section id="build" className="section dome-section">
-        <div className="section-number light">03 / BUILD THE INSTRUMENT</div>
-        <div className="section-head light">
-          <div><span className="eyebrow">ACOUSTIC + FIELD RESEARCH</span><h2>A room with<br />no interference.</h2></div>
-          <div className="section-copy">
-            <p>Ten feet across. Sixty-five Douglas fir struts. Zero metal fasteners. The 2V geodesic dome creates a controlled acoustic space without distorting electromagnetic readings — a replicable prototype for natural-material research structures.</p>
-            <p>Located on the Old Glory Peak ridge transect corridor, the dome serves as the central field station for all survey operations.</p>
-          </div>
-        </div>
-        <div className="dome-layout">
-          <FieldDome />
-          <aside>
-            <span className="eyebrow">BUILD SPEC / 2V</span>
-            {[["DIAMETER", "10 FT"], ["A STRUTS", "35 × 54.75″"], ["B STRUTS", "30 × 56.25″"], ["HUBS", "26 × HARDWOOD"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}
-            <p>Designed as a replicable prototype for natural-material research structures.</p>
-          </aside>
-        </div>
-      </section>
-
-      <section id="systems" className="section garden-section">
-        <div className="section-number">04 / LIVING SYSTEM</div>
-        <div className="section-head">
-          <div><span className="eyebrow">TETRAHEDRON GARDEN</span><h2>Grow food.<br />Measure everything.</h2></div>
-          <p>The Tetrahedron Garden is the centerpiece of the Whole Body training grounds. Twelve triangular raised beds arranged in a Flower of Life geometric pattern orbit a central copper cistern pool. A solar-calibrated copper gnomon tracks time and season. An orchard ring and six cold frames complete the perimeter.</p>
-        </div>
-        <Garden />
-        <div className="metric-row">
-          <div><strong>1K</strong><span>GALLON CISTERN</span></div><div><strong>12</strong><span>TRIANGULAR BEDS</span></div><div><strong>ORP</strong><span>PH + MINERAL TESTING</span></div>
-          <small>Every water reading becomes part of the Living River baseline.</small>
-        </div>
-        <div className="water-note">
-          <span className="eyebrow">WATER AS EVIDENCE</span>
-          <p>Each bed performs twice: sustaining a crop while collecting evidence about desert growing systems. A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content — baseline data for the Living River system and a verifiable record of what this land produces without synthetic inputs.</p>
-        </div>
-        <div className="campus-plan">
-          <div className="campus-plan-head">
-            <span className="eyebrow">CAMPUS PLAN / FUTURE BUILD</span>
-            <p>The field station expands in phases as evidence and support grow.</p>
-          </div>
-          <div className="campus-program-grid">
-            {campusPrograms.map(program => (
-              <article key={program.number}>
-                <span>{program.number}</span>
-                <h3>{program.title}</h3>
-                <p>{program.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-        <div className="offline-panel">
-          <div>
-            <span className="eyebrow">FIELD COMPUTER / AIR-GAPPED</span>
-            <h2>Offline by design.</h2>
-          </div>
-          <div>
-            <p>A self-contained field computer runs entirely without internet. Raspberry Pi 5 with a closed WiFi network, GPS module, and local AI reference system. Field notes are GPS-stamped and stored locally. No cloud dependency. No data leaving the site.</p>
-            <div className="offline-stats"><span>SOLAR-CHARGED</span><span>BATTERY-BACKED</span><span>AIR-GAPPED</span></div>
-          </div>
-        </div>
-      </section>
-
       <section id="method" className="section method-section">
-        <div className="section-number light">05 / METHOD</div>
+        <div className="section-number light">02 / HOW WE WORK</div>
         <div className="section-head light">
-          <div><span className="eyebrow">MECHANISM BEFORE CLAIM</span><h2>How we work.</h2></div>
-          <p>Our methodology sits at the intersection of four disciplines. Every measurement is tied to a mechanism, a protocol, and a place.</p>
+          <div><span className="eyebrow">MECHANISM BEFORE CLAIM</span><h2>Four disciplines.</h2></div>
+          <p>Our methodology connects geophysics, ecology, community health, and systems science. Every measurement is tied to a mechanism, a protocol, and a place.</p>
         </div>
         <div className="method-grid">
           {methods.map(method => (
@@ -303,25 +221,121 @@ export default function FoundationExperience() {
         </div>
       </section>
 
-      <section id="phases" className="section roadmap-section">
-        <div className="section-number light">06 / PHASES</div>
+      <section id="phase-1-tet-garden" className="section garden-section">
+        <div className="section-number">03 / ARCHITECTURE · PHASE 1</div>
+        <div className="section-head">
+          <div><span className="eyebrow">PHASE 1</span><h2>Tetrahedron<br />Garden.</h2></div>
+          <p>Twelve triangular raised beds arranged in a Flower of Life geometric pattern orbit a central copper cistern pool. A solar-calibrated copper gnomon tracks time and season. An orchard ring and six cold frames complete the perimeter.</p>
+        </div>
+        <Garden />
+        <div className="metric-row">
+          <div><strong>1K</strong><span>GALLON CISTERN</span></div><div><strong>12</strong><span>TRIANGULAR BEDS</span></div><div><strong>ORP</strong><span>PH + MINERAL TESTING</span></div>
+          <small>12 beds. One cistern. Food grows with the geometry of the land.</small>
+        </div>
+        <div className="water-note">
+          <span className="eyebrow">WATER AS EVIDENCE</span>
+          <p>Each bed performs twice: sustaining a crop while collecting evidence about desert growing systems. A 1,000-gallon copper cistern gravity-feeds every bed. Water quality is tested for ORP, pH, and mineral content.</p>
+        </div>
+      </section>
+
+      <section id="phase-2-elemental-domes" className="section dome-section">
+        <div className="section-number light">04 / ARCHITECTURE · PHASE 2</div>
+        <div className="section-head light">
+          <div><span className="eyebrow">PHASE 2</span><h2>Four elemental<br />domes.</h2></div>
+          <div className="section-copy">
+            <p>Four geodesic domes hold Earth, Fire, Air, and Water practices around the central garden. Each dome is built entirely of Douglas fir, joined with hardwood dowels and hide glue. No metal. No interference.</p>
+            <p><strong>2V geodesic geometry. 65 connected struts per dome. Zero metal fasteners.</strong></p>
+          </div>
+        </div>
+        <div className="dome-layout">
+          <FieldDome />
+          <aside>
+            <span className="eyebrow">STRUCTURAL MODEL / 2V</span>
+            {[["DIAMETER", "10 FT"], ["STRUTS", "65 × CONNECTED"], ["HUBS", "26 × HARDWOOD"], ["GEOMETRY", "2V ICOSAHEDRAL"], ["JOINERY", "DOWEL + HIDE GLUE"], ["METAL", "0"]].map(r => <div className="spec" key={r[0]}><span>{r[0]}</span><b>{r[1]}</b></div>)}
+            <p>A grounded, connected timber shell designed as a replicable natural-material structure.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section id="phase-3-great-hall" className="section architecture-phase architecture-hall">
+        <div className="section-number">05 / ARCHITECTURE · PHASE 3</div>
+        <div className="architecture-layout">
+          <div className="architecture-copy">
+            <span className="eyebrow">PHASE 3</span>
+            <h2>The Great Hall.</h2>
+            <p>A nine-sided hall gathers the community around a central stage. A twelve-faced, copper-paneled dodecahedral ceiling shapes the acoustic field. Concentric wooden seating holds 50–75 people. Stained glass carries desert light into a completely wooden structure.</p>
+            <strong>The village speaks to the sky.</strong>
+          </div>
+          <div className="architecture-plan hall-plan" aria-label="Abstract plan of the nine-sided Great Hall">
+            <span>9 SIDES / 12 CEILING FACETS</span>
+            <div className="hall-geometry">{[0, 1, 2].map(ring => <i key={ring} style={{ inset: `${ring * 13 + 12}%` }} />)}<b>50–75</b><small>SEATS / CENTRAL STAGE</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="phase-4-quincunx" className="section architecture-phase architecture-homes">
+        <div className="section-number light">06 / ARCHITECTURE · PHASE 4</div>
+        <div className="architecture-layout">
+          <div className="architecture-copy">
+            <span className="eyebrow">PHASE 4</span>
+            <h2>Quincunx residential clusters.</h2>
+            <p>Two residential clusters, each with six wooden dome homes arranged around a central swimming pool. Dense forest vegetation surrounds each cluster for privacy. The modular design adds clusters as the community grows.</p>
+            <strong>12 homes total. Forest privacy. Community life.</strong>
+          </div>
+          <div className="architecture-plan homes-plan" aria-label="Abstract plan of two residential clusters">
+            {[0, 1].map(cluster => (
+              <div className={`home-cluster cluster-${cluster + 1}`} key={cluster}>
+                <b>POOL</b>
+                {Array.from({ length: 6 }, (_, home) => <i key={home} style={{ transform: `rotate(${home * 60}deg) translateY(-72px)` }} />)}
+              </div>
+            ))}
+            <span>JOSHUA TREES / GRANITE / DENSE VEGETATION</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="equipment" className="section equipment-section">
+        <div className="section-number">07 / TOOLKIT</div>
+        <div className="section-head">
+          <div><span className="eyebrow">FIELD EQUIPMENT / V2.0</span><h2>Measure what<br />the land reports.</h2></div>
+          <div className="section-copy">
+            <p>One field kit supports all four research disciplines. Phase 1 startup estimate: $9,450, with a $260 priority kit allowing baseline collection to begin first.</p>
+            <p><strong>No plastic sample containers. Glass, paper, and cloth only.</strong></p>
+          </div>
+        </div>
+        <div className="equipment-grid">
+          {equipment.map(([number, title, description]) => (
+            <article key={number}><span>{number}</span><h3>{title}</h3><p>{description}</p></article>
+          ))}
+        </div>
+        <div className="offline-panel">
+          <div><span className="eyebrow">FIELD COMPUTER / AIR-GAPPED</span><h2>Offline by design.</h2></div>
+          <div><p>A self-contained field computer runs without internet. Field notes are GPS-stamped and stored locally. No cloud dependency. No data leaving the site.</p><div className="offline-stats"><span>SOLAR-CHARGED</span><span>BATTERY-BACKED</span><span>AIR-GAPPED</span></div></div>
+        </div>
+      </section>
+
+      <section id="budget" className="section budget-section">
+        <div className="section-number">08 / YEAR ONE</div>
+        <div className="budget-head"><div><span className="eyebrow">LEAN FIRST YEAR</span><h2>$75,000</h2></div><p>A lean first year funds people before objects: field collection, data stewardship, construction, insurance, and public documentation.</p></div>
+        <div className="budget-table">
+          {budgetLines.map(([name, amount, color], i) => <div key={name} className="budget-row"><span className="rank">0{i + 1}</span><span>{name}</span><div className="budget-bar"><i style={{ width: `${(amount / 45000) * 100}%`, background: color }} /></div><b>${amount.toLocaleString()}</b></div>)}
+        </div>
+        <div className="funding-mix">
+          {fundingMix.map(([name, amount]) => <div key={name}><strong>${Math.round(amount / 1000)}K</strong><span>{name}</span></div>)}
+        </div>
+        <div className="funding"><span>OPEN FINANCE STANDARD</span><p>Every dollar tracked. Every expense reported. <b>Open financial summary published annually.</b></p></div>
+      </section>
+
+      <section id="timeline" className="section roadmap-section">
+        <div className="section-number light">09 / ROADMAP</div>
         <div className="section-head light"><div><span className="eyebrow">STAGED FOR EVIDENCE</span><h2>From first point<br />to public method.</h2></div><p>A staged path that makes early work useful immediately, then adds infrastructure as evidence and support grow.</p></div>
         <div className="timeline">
           {milestones.map(m => <article key={m[0]}><span className="milestone">{m[0]}</span><small>{m[1]}</small><h3>{m[2]}</h3><p>{m[3]}</p></article>)}
         </div>
       </section>
 
-      <section id="budget" className="section budget-section">
-        <div className="section-number">07 / RESOURCES</div>
-        <div className="budget-head"><div><span className="eyebrow">LEAN FIRST YEAR</span><h2>$75,000</h2></div><p>A lean first year funds people before objects: field collection at the Old Glory Peak site, data stewardship, construction, insurance, and public documentation.</p></div>
-        <div className="budget-table">
-          {budget.map(([name, amount, color], i) => <div key={name} className="budget-row"><span className="rank">0{i + 1}</span><span>{name}</span><div className="budget-bar"><i style={{ width: `${(amount / 50000) * 100}%`, background: color }} /></div><b>${amount.toLocaleString()}</b></div>)}
-        </div>
-        <div className="funding"><span>OPEN FINANCE STANDARD</span><p>Every dollar tracked. Every expense reported. <b>Open financial summary published annually.</b></p></div>
-      </section>
-
       <section id="library" className="section library-section">
-        <div className="section-number light">08 / DOCUMENT LIBRARY</div>
+        <div className="section-number light">10 / DOCUMENT LIBRARY</div>
         <div className="section-head light">
           <div><span className="eyebrow">THE FULL RESEARCH PACKAGE</span><h2>Read the method.<br />Trace the evidence.</h2></div>
           <div className="section-copy">
@@ -348,8 +362,8 @@ export default function FoundationExperience() {
         </div>
       </section>
 
-      <section id="public" className="section team-section">
-        <div className="section-number">09 / BUILT IN PUBLIC</div>
+      <section id="people" className="section team-section">
+        <div className="section-number">11 / WHO WE ARE</div>
         <div className="section-head">
           <div><span className="eyebrow">LED FROM THE FIELD</span><h2>Built in public.<br />Led from the field.</h2></div>
           <p>Whole Body Foundation operates on a simple standard: observe deeply, document honestly, and build only what the land can support.</p>
