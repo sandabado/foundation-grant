@@ -20,13 +20,13 @@ const gardenNodes = [
 ];
 
 const budget = [
-  ["Personnel", 45000, "#e9ff8b"],
-  ["Equipment", 8000, "#9de5d0"],
-  ["Sponsor fee", 7500, "#ef8c62"],
-  ["Travel", 6000, "#d8c0ff"],
-  ["Data + hosting", 4000, "#87b8d8"],
-  ["Legal + insurance", 3500, "#f4cf79"],
-  ["Contingency", 1000, "#a9a49a"],
+  ["Personnel", 45000, "#84a66e"],
+  ["Equipment", 8000, "#b87333"],
+  ["Sponsor fee", 7500, "#c9a227"],
+  ["Travel", 6000, "#2e86ab"],
+  ["Data + hosting", 4000, "#6d4aff"],
+  ["Legal + insurance", 3500, "#d7d0bd"],
+  ["Contingency", 1000, "#888888"],
 ] as const;
 
 const milestones = [
