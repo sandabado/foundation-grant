@@ -8,12 +8,12 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://foundation-grant-j9uj.vercel.app"),
-  title: "Whole Body Foundation — Mojave Field Research",
-  description: "A community research station mapping the unseen forces that shape desert ecology and testing practical systems for life in a hotter, drier world.",
+  title: "Whole Body Foundation — Old Glory Peak Field Station",
+  description: "Public-interest field science mapping the Old Glory Peak transect corridor in Morongo Valley, California.",
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Fieldwork for a Living Planet",
-    description: "Whole Body Foundation — public-interest field research in the eastern Mojave.",
+    description: "Whole Body Foundation — public-interest field science at the Old Glory Peak transect corridor.",
     type: "website",
     images: [
       {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Fieldwork for a Living Planet",
-    description: "Whole Body Foundation — public-interest field research in the eastern Mojave.",
+    description: "Whole Body Foundation — public-interest field science at the Old Glory Peak transect corridor.",
     images: ["/og.png"],
   },
 };
