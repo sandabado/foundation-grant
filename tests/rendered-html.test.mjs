@@ -312,6 +312,12 @@ test("integrates all four interactive architectural models inside their sections
   assert.match(dome, /65 CONNECTED STRUTS/);
   assert.match(dome, /EXPAND MODEL/);
   assert.match(dome, /function WoodIsolationPlatform/);
+  assert.match(dome, /function OculusSunShade/);
+  assert.match(dome, /makeTimberBeam/);
+  assert.match(dome, /isApex/);
+  assert.match(dome, /VENTED OCULUS \+ SUN SHADE/);
+  assert.match(dome, /ringGeometry args=\{\[1\.02, 1\.58, 64\]\}/);
+  assert.match(dome, /cylinderGeometry args=\{\[1\.42, 1\.52, 0\.11, 48\]\}/);
   assert.match(dome, /function TetrahedronGarden/);
   assert.match(dome, /function DiamondPath/);
   assert.match(dome, /function FirePit/);
@@ -335,6 +341,7 @@ test("integrates all four interactive architectural models inside their sections
   assert.match(dome, /baseJoints !== 10/);
   assert.match(dome, /longStruts !== 35/);
   assert.match(dome, /shortStruts !== 30/);
+  assert.match(dome, /hemispherePanelCount !== 40/);
   assert.doesNotMatch(dome, /segments\.push\(\[\s*new THREE\.Vector3\(Math\.cos/);
   assert.doesNotMatch(dome, /<torusGeometry args=\{\[3,/);
   assert.match(architecture, /function GreatHall/);

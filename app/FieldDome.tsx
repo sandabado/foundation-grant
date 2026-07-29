@@ -83,6 +83,7 @@ function buildDomeStructure() {
       quaternion,
       length,
       type: length > DOME_RADIUS * 0.58 ? "A" : "B",
+      isApex: Math.max(start.y, end.y) > DOME_RADIUS - 0.01,
     };
   });
 
@@ -97,10 +98,12 @@ function buildDomeStructure() {
   const joints = Array.from(jointMap.values()).map(position => ({
     position,
     isBase: position.y === 0,
+    isApex: position.y > DOME_RADIUS - 0.01,
   }));
   const shellSource = source.index ? source.toNonIndexed() : source.clone();
   const shellPositions = shellSource.attributes.position;
   const panelPositions: number[] = [];
+  let hemispherePanelCount = 0;
 
   for (let index = 0; index < shellPositions.count; index += 3) {
     const triangle = [0, 1, 2].map(offset =>
@@ -109,7 +112,10 @@ function buildDomeStructure() {
       ),
     );
     if (triangle.every(point => point.y >= 0)) {
-      triangle.forEach(point => panelPositions.push(point.x, point.y, point.z));
+      hemispherePanelCount += 1;
+      if (triangle.every(point => point.y < DOME_RADIUS - 0.01)) {
+        triangle.forEach(point => panelPositions.push(point.x, point.y, point.z));
+      }
     }
   }
 
@@ -130,7 +136,7 @@ function buildDomeStructure() {
     baseJoints !== 10 ||
     longStruts !== 35 ||
     shortStruts !== 30 ||
-    panelPositions.length / 9 !== 40
+    hemispherePanelCount !== 40
   ) {
     throw new Error("Invalid 2V dome topology");
   }
@@ -264,6 +270,154 @@ function WoodIsolationPlatform({ accent }: { accent: string }) {
   );
 }
 
+function makeTimberBeam(start: THREE.Vector3, end: THREE.Vector3) {
+  const direction = end.clone().sub(start);
+  return {
+    midpoint: start.clone().add(end).multiplyScalar(0.5),
+    quaternion: new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      direction.clone().normalize(),
+    ),
+    length: direction.length(),
+  };
+}
+
+function OculusSunShade({
+  model,
+  accent,
+}: {
+  model: DomeModel;
+  accent: string;
+}) {
+  const assembly = useMemo(() => {
+    const upperRing = model.joints
+      .filter(joint => joint.position.y > 2.5 && joint.position.y < 2.6)
+      .map(joint => joint.position.clone())
+      .sort(
+        (first, second) =>
+          Math.atan2(first.z, first.x) - Math.atan2(second.z, second.x),
+      );
+
+    const innerNodes = upperRing.map(node => {
+      const angle = Math.atan2(node.z, node.x);
+      return new THREE.Vector3(
+        Math.cos(angle) * 1.02,
+        node.y,
+        Math.sin(angle) * 1.02,
+      );
+    });
+
+    return {
+      innerNodes,
+      oculusSpokes: upperRing.map((node, index) =>
+        makeTimberBeam(node, innerNodes[index]),
+      ),
+      canopySupports: upperRing.map(node => {
+        const angle = Math.atan2(node.z, node.x);
+        return makeTimberBeam(
+          node,
+          new THREE.Vector3(
+            Math.cos(angle) * 1.28,
+            3.28,
+            Math.sin(angle) * 1.28,
+          ),
+        );
+      }),
+    };
+  }, [model]);
+
+  return (
+    <group>
+      <mesh
+        position={[0, 2.545, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        receiveShadow
+      >
+        <ringGeometry args={[1.02, 1.58, 64]} />
+        <meshStandardMaterial
+          color={DOUGLAS_FIR}
+          roughness={0.84}
+          metalness={0}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      <mesh position={[0, 2.56, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.02, 0.085, 12, 64]} />
+        <meshStandardMaterial
+          color={HARDWOOD}
+          emissive={accent}
+          emissiveIntensity={0.12}
+          roughness={0.78}
+        />
+      </mesh>
+      {assembly.oculusSpokes.map((beam, index) => (
+        <mesh
+          key={`oculus-${index}`}
+          position={beam.midpoint}
+          quaternion={beam.quaternion}
+          castShadow
+          receiveShadow
+        >
+          <boxGeometry args={[0.09, beam.length + 0.04, 0.075]} />
+          <meshStandardMaterial
+            color={DOUGLAS_FIR_LIGHT}
+            roughness={0.8}
+          />
+        </mesh>
+      ))}
+      {assembly.innerNodes.map((node, index) => (
+        <mesh key={`oculus-hub-${index}`} position={node} castShadow>
+          <dodecahedronGeometry args={[0.09, 0]} />
+          <meshStandardMaterial color={HARDWOOD} roughness={0.82} />
+        </mesh>
+      ))}
+      {assembly.canopySupports.map((beam, index) => (
+        <mesh
+          key={`shade-support-${index}`}
+          position={beam.midpoint}
+          quaternion={beam.quaternion}
+          castShadow
+          receiveShadow
+        >
+          <boxGeometry args={[0.075, beam.length + 0.04, 0.065]} />
+          <meshStandardMaterial color={HARDWOOD} roughness={0.86} />
+        </mesh>
+      ))}
+      <mesh position={[0, 3.34, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[1.42, 1.52, 0.11, 48]} />
+        <meshStandardMaterial
+          color={DOUGLAS_FIR_LIGHT}
+          roughness={0.88}
+          metalness={0}
+        />
+      </mesh>
+      {Array.from({ length: 12 }, (_, index) => {
+        const angle = (index / 12) * Math.PI;
+        return (
+          <mesh
+            key={`shade-slat-${index}`}
+            position={[0, 3.405, 0]}
+            rotation={[0, angle, 0]}
+            castShadow
+          >
+            <boxGeometry args={[3.02, 0.035, 0.055]} />
+            <meshStandardMaterial color={HARDWOOD} roughness={0.9} />
+          </mesh>
+        );
+      })}
+      <mesh position={[0, 3.41, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.47, 0.055, 10, 64]} />
+        <meshStandardMaterial
+          color={accent}
+          emissive={accent}
+          emissiveIntensity={0.2}
+          roughness={0.7}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 function DomeStructure({
   model,
   motionEnabled,
@@ -290,7 +444,7 @@ function DomeStructure({
         />
       </mesh>
 
-      {model.struts.map((strut, index) => (
+      {model.struts.filter(strut => !strut.isApex).map((strut, index) => (
         <mesh
           key={index}
           position={strut.midpoint}
@@ -307,7 +461,7 @@ function DomeStructure({
         </mesh>
       ))}
 
-      {model.joints.map((joint, index) => (
+      {model.joints.filter(joint => !joint.isApex).map((joint, index) => (
         <mesh key={index} position={joint.position} castShadow receiveShadow>
           <dodecahedronGeometry args={[joint.isBase ? 0.12 : 0.1, 0]} />
           <meshStandardMaterial color={HARDWOOD} roughness={0.82} metalness={0} />
@@ -340,15 +494,16 @@ function DomeStructure({
           </group>
         ))}
 
+      <OculusSunShade model={model} accent={accent} />
       <AcousticField motionEnabled={motionEnabled} color={accent} />
       <Html
-        position={[0, 3.55, 0]}
+        position={[0, 4.05, 0]}
         center
         distanceFactor={10}
         className="dome-scene-label"
         style={{ pointerEvents: "none" }}
       >
-        {element} / WOOD ISOLATION PLATFORM
+        {element} / VENTED OCULUS + SUN SHADE
       </Html>
     </group>
   );
