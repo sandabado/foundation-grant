@@ -318,6 +318,9 @@ test("integrates all four interactive architectural models inside their sections
   assert.match(dome, /function WaterFeature/);
   assert.match(dome, /function EarthTree/);
   assert.match(dome, /function AirLightTunnel/);
+  assert.match(dome, /const y = 0\.46 \+ index \* 0\.27/);
+  assert.match(dome, /rotation=\{\[Math\.PI \/ 2, 0, 0\]\}/);
+  assert.doesNotMatch(dome, /const z = \(index - 4\) \* 0\.38/);
   assert.match(dome, /function ElementalCenterpiece/);
   assert.match(dome, /<ElementalCenterpiece/);
   assert.match(dome, /element: "EARTH"/);

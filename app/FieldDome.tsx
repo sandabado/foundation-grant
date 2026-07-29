@@ -822,12 +822,16 @@ function AirLightTunnel({ motionEnabled }: { motionEnabled: boolean }) {
 
   return (
     <group>
-      <group ref={tunnel} position={[0, 1.18, 0]}>
+      <group ref={tunnel}>
         {Array.from({ length: 9 }, (_, index) => {
-          const z = (index - 4) * 0.38;
-          const radius = 0.7 + Math.abs(index - 4) * 0.035;
+          const y = 0.46 + index * 0.27;
+          const radius = 0.8 - index * 0.025;
           return (
-            <mesh key={index} position={[0, 0, z]}>
+            <mesh
+              key={index}
+              position={[0, y, 0]}
+              rotation={[Math.PI / 2, 0, 0]}
+            >
               <torusGeometry args={[radius, 0.035, 10, 64]} />
               <meshStandardMaterial
                 color={AIR}
@@ -842,19 +846,31 @@ function AirLightTunnel({ motionEnabled }: { motionEnabled: boolean }) {
           );
         })}
       </group>
-      <mesh position={[0, 0.235, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.8, 3.35]} />
+      <mesh position={[0, 1.5, 0]}>
+        <cylinderGeometry args={[0.16, 0.44, 2.35, 32, 1, true]} />
         <meshStandardMaterial
           color={AIR}
           emissive={FIELD_GREEN}
-          emissiveIntensity={0.34}
+          emissiveIntensity={0.48}
           transparent
-          opacity={0.22}
+          opacity={0.16}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0, 0.245, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.86, 48]} />
+        <meshStandardMaterial
+          color={AIR}
+          emissive={FIELD_GREEN}
+          emissiveIntensity={0.48}
+          transparent
+          opacity={0.26}
           depthWrite={false}
         />
       </mesh>
       <pointLight
-        position={[0, 1.18, 0]}
+        position={[0, 1.5, 0]}
         color={AIR}
         intensity={motionEnabled ? 2.6 : 1.9}
         distance={5.2}
