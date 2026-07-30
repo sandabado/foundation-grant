@@ -7,28 +7,31 @@ const heading = Cormorant_Garamond({ subsets: ["latin"], variable: "--font-headi
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://foundation-grant-j9uj.vercel.app"),
+  metadataBase: new URL("https://wholebody.foundation"),
   title: "Whole Body Foundation — Old Glory Peak Field Station",
-  description: "Public-interest field science mapping the Old Glory Peak transect corridor in Morongo Valley, California.",
+  description: "Public-interest fieldwork connecting environmental observation, land stewardship, and community learning in the eastern Mojave.",
+  alternates: { canonical: "/" },
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Fieldwork for a Living Planet",
-    description: "Whole Body Foundation — public-interest field science at the Old Glory Peak transect corridor.",
+    description: "Observe the land. Test what works. Share what holds.",
+    url: "https://wholebody.foundation",
+    siteName: "Whole Body Foundation",
     type: "website",
     images: [
       {
-        url: "/og.jpg",
+        url: "/og.png",
         width: 1672,
         height: 941,
-        alt: "Fieldwork for a Living Planet over Old Glory Peak terrain with green computational field lines",
+        alt: "Whole Body Foundation — Fieldwork for a Living Planet over abstract desert terrain",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Fieldwork for a Living Planet",
-    description: "Whole Body Foundation — public-interest field science at the Old Glory Peak transect corridor.",
-    images: ["/og.jpg"],
+    description: "Observe the land. Test what works. Share what holds.",
+    images: ["/og.png"],
   },
 };
 

@@ -623,18 +623,18 @@ export default function InteractiveTerrain() {
     <div
       className={`hero-media terrain-stage ${ready ? "is-ready" : ""} ${paused ? "is-paused" : ""}`}
       ref={stageRef}
-      aria-label="Interactive computational terrain model of the Old Glory Peak transect corridor"
+      aria-label="Abstract computational desert terrain moving through a solar cycle"
     >
       <img
         className="terrain-fallback"
         src={TERRAIN_TEXTURE}
-        alt="Dry San Jacinto ridgeline and Old Glory Peak terrain in warm sunlight with green computational survey paths"
+        alt="Abstract desert ridgeline in warm sunlight with a subtle computational field signal"
         fetchPriority="high"
       />
       <div className="terrain-readout" aria-hidden="true">
-        <span>TRANSECT C / SOLAR CYCLE</span>
+        <span>FIELD SIGNAL / SOLAR CYCLE</span>
         <i />
-        <span>16 GPS STATIONS</span>
+        <span>OBSERVATION / NOT NAVIGATION</span>
       </div>
       <button
         className="terrain-motion"

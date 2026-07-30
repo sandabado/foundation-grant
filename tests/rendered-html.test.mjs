@@ -2,23 +2,45 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
-const documentNames = [
-  "annual-budget-breakdown.pdf",
+const publicDocumentNames = [
   "bio-001-psychophysiology-protocol.pdf",
   "informed-consent-template.pdf",
+];
+
+const protectedDocumentNames = [
+  "annual-budget-breakdown.pdf",
   "investor-one-pager.pdf",
   "magnetometer-survey-protocol.pdf",
   "phase-1-action-plan.pdf",
   "project-summary.pdf",
 ];
 
-async function render() {
+const forbiddenPublicTerms = [
+  /Living River/i,
+  /Tier 1/i,
+  /Tier 2/i,
+  /Tier 3/i,
+  /Tensor Ring/i,
+  /torsion field/i,
+  /structured water/i,
+  /vortex water/i,
+  /sacred geometry/i,
+  /Tetrahedron Garden/i,
+  /elemental domes/i,
+  /The Great Hall/i,
+  /Clover Homes/i,
+];
+
+async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
+  workerUrl.searchParams.set(
+    "test",
+    `${pathname}-${process.pid}-${Date.now()}-${Math.random()}`,
+  );
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${pathname}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -33,7 +55,7 @@ async function render() {
   );
 }
 
-test("server-renders the Old Glory Peak field station experience", async () => {
+test("renders a concise, mission-first public homepage", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
@@ -41,106 +63,95 @@ test("server-renders the Old Glory Peak field station experience", async () => {
   const html = await response.text();
   assert.match(html, /Whole Body Foundation — Old Glory Peak Field Station/i);
   assert.match(html, /FIELDWORK FOR A[\s\S]*Living Planet/);
+  assert.match(html, /Observe the land\. Test what works\. Share what holds\./);
   assert.match(html, /The desert is not empty\.[\s\S]*It is information-dense\./);
-  assert.match(html, /We’re building a baseline ecological record/);
-  assert.match(html, /Old Glory Peak[\s\S]*transect/i);
-  assert.match(html, /Mycelial and ecological networks/i);
-  assert.match(html, /IRB approval pending/i);
-  assert.match(html, /Fiscal sponsorship inquiry active/i);
-  assert.match(html, /Four elemental[\s\S]*domes/i);
-  assert.match(html, /The Great Hall/i);
-  assert.match(html, /Clover Homes/i);
-  assert.match(html, /FIELD EQUIPMENT \/ V2\.0/i);
-  assert.match(html, /45,000/);
-  assert.match(html, /PROTOCOL \/ IN PREPARATION/);
-  assert.match(html, /\/documents\/project-summary\.pdf/);
-  assert.match(html, /DOWNLOAD WORKING DRAFT/);
+  assert.match(html, /Start with the ground\.[\s\S]*Build from truth\./);
+  assert.match(html, /Public mission\.[\s\S]*Private working room\./);
+  assert.match(html, /For the people making it real\./);
+  assert.match(html, /No shared password or private plan is[\s\S]*shipped by this public page/);
+  assert.match(html, /https:\/\/www\.odin\.management\/login/);
   assert.match(html, /aria-label="Primary navigation"/);
-  assert.match(html, /href="#library"/);
-  assert.match(html, /href="#contact"/);
-  assert.match(html, /id="contact" class="site-footer"/);
-  assert.match(html, /EMAIL THE FOUNDATION/);
-  assert.doesNotMatch(html, /OSF RELEASE \/ IN PREPARATION/);
-  assert.doesNotMatch(html, /Fiscal sponsorship active/i);
-  assert.doesNotMatch(html, /IRB-approved\. Pre-registered/i);
-  assert.doesNotMatch(html, /ACOUSTIC \+ FIELD RESEARCH/i);
+  assert.match(html, /href="\/research"/);
+  assert.match(html, /href="\/about"/);
+  assert.match(html, /href="\/contact"/);
+  assert.match(html, /Partner Portal/);
 
-  const orderedSections = [
-    'id="mission"',
-    'id="site-context"',
-    'id="method"',
-    'id="phase-1-tet-garden"',
-    'id="phase-2-elemental-domes"',
-    'id="phase-3-great-hall"',
-    'id="phase-4-quincunx"',
-    'id="land-stewardship"',
-    'id="equipment"',
-    'id="budget"',
-    'id="timeline"',
-    'id="people"',
-    'id="library"',
-    'id="contact"',
+  for (const forbidden of forbiddenPublicTerms) {
+    assert.doesNotMatch(html, forbidden);
+  }
+
+  assert.doesNotMatch(html, /45,000/);
+  assert.doesNotMatch(html, /75,000/);
+  assert.doesNotMatch(html, /\/documents\/investor-one-pager\.pdf/);
+  assert.doesNotMatch(html, /\/documents\/annual-budget-breakdown\.pdf/);
+  assert.doesNotMatch(html, /\/documents\/phase-1-action-plan\.pdf/);
+});
+
+test("serves the four-page public architecture with one shared navigation", async () => {
+  const routeAssertions = [
+    ["/research", /Mechanism[\s\S]*before claim/i],
+    ["/about", /Led from[\s\S]*the field/i],
+    ["/contact", /Begin with[\s\S]*a real question/i],
   ];
-  let previousIndex = -1;
-  for (const section of orderedSections) {
-    const sectionIndex = html.indexOf(section);
-    assert.ok(sectionIndex > previousIndex, `${section} should follow the prior section`);
-    previousIndex = sectionIndex;
+
+  for (const [pathname, expected] of routeAssertions) {
+    const response = await render(pathname);
+    assert.equal(response.status, 200, pathname);
+    const html = await response.text();
+    assert.match(html, expected);
+    assert.match(html, /WHOLE BODY FOUNDATION/);
+    assert.match(html, /href="\/research"/);
+    assert.match(html, /href="\/about"/);
+    assert.match(html, /href="\/contact"/);
+    assert.match(html, /https:\/\/www\.odin\.management\/login/);
+
+    for (const forbidden of forbiddenPublicTerms) {
+      assert.doesNotMatch(html, forbidden, `${pathname} contains ${forbidden}`);
+    }
   }
 });
 
-test("navigation maps every top-level experience and groups all architecture phases", async () => {
-  const source = await readFile(
-    new URL("../app/FoundationExperience.tsx", import.meta.url),
-    "utf8",
+test("keeps all proprietary 3D components out of public route imports", async () => {
+  const publicSources = await Promise.all(
+    [
+      "../app/FoundationExperience.tsx",
+      "../app/PublicFieldMap.tsx",
+      "../app/research/page.tsx",
+      "../app/about/page.tsx",
+      "../app/contact/page.tsx",
+      "../app/SiteNav.tsx",
+      "../app/SiteFooter.tsx",
+      "../app/layout.tsx",
+      "../app/robots.ts",
+      "../app/sitemap.ts",
+    ].map((path) => readFile(new URL(path, import.meta.url), "utf8")),
   );
+  const publicSource = publicSources.join("\n");
 
-  for (const id of [
-    "mission",
-    "site-context",
-    "method",
-    "phase-1-tet-garden",
-    "land-stewardship",
-    "equipment",
-    "budget",
-    "timeline",
-    "people",
-    "library",
-    "contact",
+  assert.doesNotMatch(publicSource, /from "next\/dynamic"/);
+  assert.doesNotMatch(publicSource, /TetrahedronGarden/);
+  assert.doesNotMatch(publicSource, /FieldDome/);
+  assert.doesNotMatch(publicSource, /GreatHallModel/);
+  assert.doesNotMatch(publicSource, /ResidentialClustersModel/);
+  assert.doesNotMatch(publicSource, /ThreeModelViewer/);
+  assert.match(publicSource, /https:\/\/www\.odin\.management\/login/);
+
+  for (const forbidden of forbiddenPublicTerms) {
+    assert.doesNotMatch(publicSource, forbidden);
+  }
+
+  for (const privateSource of [
+    "../app/TetrahedronGarden.tsx",
+    "../app/FieldDome.tsx",
+    "../app/ArchitecturalModels.tsx",
+    "../app/SurveyMap.tsx",
   ]) {
-    assert.match(source, new RegExp(`id: "${id}"`));
+    await assert.rejects(
+      readFile(new URL(privateSource, import.meta.url)),
+      (error) => error?.code === "ENOENT",
+      `${privateSource} must not ship in the public repository`,
+    );
   }
-
-  assert.match(
-    source,
-    /sections:\s*\[\s*"phase-1-tet-garden",\s*"phase-2-elemental-domes",\s*"phase-3-great-hall",\s*"phase-4-quincunx",\s*\]/,
-  );
-  assert.match(source, /id: "phase-1-tet-garden",\s*label: "Build"/);
-  assert.doesNotMatch(source, /label: "Architecture"/);
-  assert.match(source, /sections\.includes\(entry\.target\.id\)/);
-  assert.match(source, /className="button button-primary" href="#site-context"/);
-  assert.match(source, /className="document-card document-card-link"/);
-  assert.match(source, /className="document-card document-card-static"/);
-});
-
-test("adds a truthful land-access track without publishing unverified property claims", async () => {
-  const source = await readFile(
-    new URL("../app/FoundationExperience.tsx", import.meta.url),
-    "utf8",
-  );
-
-  assert.match(source, /07 \/ LAND \+ LEGAL/);
-  assert.match(source, /Permanent site control remains a project dependency/);
-  assert.match(source, /No property is represented here as acquired, under contract, or approved for construction/);
-  assert.match(source, /Land acquisition is excluded from the operating budget/);
-  assert.match(source, /OPERATING BUDGET \/ LAND EXCLUDED/);
-  assert.match(source, /Psychophysiology protocol activates only if IRB approval has been received/);
-  assert.doesNotMatch(source, /50 acres adjacent/);
-  assert.doesNotMatch(source, /Existing well permit/);
-  assert.doesNotMatch(source, /no liens/);
-  assert.doesNotMatch(source, /transfer pending/i);
-  assert.doesNotMatch(source, /99-year renewable/);
-  assert.doesNotMatch(source, /\$170,000/);
 });
 
 test("keeps the hero concise while the terrain moves through a solar cycle", async () => {
@@ -155,10 +166,9 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
   );
   assert.equal(hero.match(/<p>/g)?.length, 1);
   assert.doesNotMatch(hero, /hero-stats/);
-  assert.match(hero, /className="hero-kicker">FIELDWORK FOR A<\/span><em>Living Planet<\/em>/);
   assert.match(
-    experience,
-    /className="mission-line">The desert is not empty\.<\/span><em>It is information-dense\.<\/em>/,
+    hero,
+    /className="hero-kicker">FIELDWORK FOR A<\/span>[\s\S]*<em>Living Planet<\/em>/,
   );
 
   assert.match(terrain, /float solarPhase = fract\(time \* 0\.0225 \+ 0\.75\)/);
@@ -170,29 +180,16 @@ test("keeps the hero concise while the terrain moves through a solar cycle", asy
   assert.match(terrain, /float lensGhost/);
   assert.match(terrain, /vec3 cottonSky/);
   assert.match(terrain, /float fieldSignal/);
-  assert.match(terrain, /float skyFade = 1\.0 - smoothstep\(0\.68, 0\.98, vUv\.y\)/);
-  assert.match(terrain, /world\.scale\.set\(horizontalScale, skyReveal, 1\)/);
-  assert.match(terrain, /dayColor: \{ value: FIELD_GREEN \}/);
-  assert.match(terrain, /sunsetColor: \{ value: SUNSET_COPPER \}/);
-  assert.match(terrain, /nightColor: \{ value: NIGHT_LAVENDER \}/);
-  assert.match(terrain, /particleMaterial\.color\.copy\(cycleColor\)/);
-  assert.match(terrain, /--hero-daylight/);
-  assert.match(terrain, /--hero-sun-x/);
   assert.match(terrain, /const starFragmentShader/);
-  assert.match(terrain, /float nightVisibility = pow\(1\.0 - daylight, 1\.7\)/);
-  assert.match(terrain, /const starCount = window\.innerWidth < 720 \? 100 : 210/);
-  assert.match(terrain, /const followsMilkyWay/);
-  assert.match(terrain, /starMaterial\.uniforms\.daylight\.value = daylight/);
-  assert.match(terrain, /new SphereGeometry\(0\.032, 12, 12\)/);
-  assert.match(terrain, /new RingGeometry\(0\.022, 0\.04, 24\)/);
-  assert.match(terrain, /size: 0\.012/);
-  assert.match(terrain, /TRANSECT C \/ SOLAR CYCLE/);
+  assert.match(terrain, /FIELD SIGNAL \/ SOLAR CYCLE/);
+  assert.match(terrain, /OBSERVATION \/ NOT NAVIGATION/);
+  assert.doesNotMatch(terrain, /16 GPS STATIONS/);
 });
 
-test("maps the real Morongo Valley terrain without inventing finalized transect endpoints", async () => {
-  const [experience, map, mapAsset] = await Promise.all([
-    readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/SurveyMap.tsx", import.meta.url), "utf8"),
+test("shows only public USGS field context and excludes the detailed working map", async () => {
+  const [research, publicMap, mapAsset] = await Promise.all([
+    readFile(new URL("../app/research/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/PublicFieldMap.tsx", import.meta.url), "utf8"),
     readFile(
       new URL(
         "../public/maps/morongo-valley-usgs-imagery-topo.jpg",
@@ -201,156 +198,115 @@ test("maps the real Morongo Valley terrain without inventing finalized transect 
     ),
   ]);
 
-  assert.match(experience, /import SurveyMap from "\.\/SurveyMap"/);
-  assert.match(experience, /<SurveyMap \/>/);
-  assert.match(experience, /MORONGO VALLEY \/ OLD GLORY PEAK CORRIDOR/);
-  assert.match(experience, /<h2>Old Glory Peak\.<\/h2>/);
-  assert.match(experience, /Pinto Mountain fault zone, which includes the Morongo Valley fault/);
-  assert.match(experience, /400 M \/ 9 STATIONS \/ 50 M SPACING/);
-  assert.match(experience, /PLANNING CORRIDOR \/ ENDPOINTS PENDING/);
-  assert.match(experience, /BOUNDARY PENDING ACCESS \+ SAFETY/);
-  assert.doesNotMatch(experience, /34\.969° N, 116\.419° W/);
-  assert.doesNotMatch(experience, /Old Glory Peak<br \/>transect\./);
-  assert.doesNotMatch(experience, /Transect C is the current metric survey specification/);
-  assert.doesNotMatch(experience, /className="contours"/);
-  assert.doesNotMatch(experience, /04 LINES/);
-
-  assert.match(map, /morongo-valley-usgs-imagery-topo\.jpg/);
-  assert.match(map, /USGS The National Map/);
-  assert.match(map, /USGS Quaternary Fault and Fold Database/);
-  assert.match(map, /faultTraces\.map/);
-  assert.match(map, /Array\.from\(\{ length: 9 \}/);
-  assert.match(map, /400 M · 9 STATIONS · 50 M/);
-  assert.match(map, /FIELD SITING PENDING/);
-  assert.match(map, /Not for navigation/);
+  assert.match(research, /import PublicFieldMap from "\.\.\/PublicFieldMap"/);
+  assert.match(research, /<PublicFieldMap \/>/);
+  assert.match(
+    research,
+    /Final station locations remain subject[\s\S]*to field reconnaissance/,
+  );
+  assert.match(publicMap, /morongo-valley-usgs-imagery-topo\.jpg/);
+  assert.match(publicMap, /USGS The National Map/);
+  assert.match(publicMap, /NO PROJECT SITING OVERLAYS/);
+  assert.match(publicMap, /station, transect, and construction-planning[\s\S]*intentionally omitted/);
+  assert.doesNotMatch(publicMap, /ridgeStations/);
+  assert.doesNotMatch(publicMap, /survey-proposed/);
+  assert.doesNotMatch(publicMap, /survey-fixed/);
+  assert.doesNotMatch(publicMap, /MINE GRID/);
+  await assert.rejects(
+    readFile(new URL("../app/SurveyMap.tsx", import.meta.url)),
+    (error) => error?.code === "ENOENT",
+    "The detailed working map must remain behind the ØDIN gate",
+  );
   assert.equal(mapAsset[0], 0xff);
   assert.equal(mapAsset[1], 0xd8);
   assert.ok(mapAsset.byteLength < 1_000_000);
 });
 
-test("ships all seven linked research and investor PDF working drafts", async () => {
+test("labels research maturity without turning methods into results", async () => {
+  const research = await readFile(
+    new URL("../app/research/page.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(research, /ESTABLISHED MEASUREMENT/);
+  assert.match(research, /ACTIVE PROTOCOL \/ PRE-DATA/);
+  assert.match(research, /PENDING ETHICS REVIEW/);
+  assert.match(research, /ACTIVE HYPOTHESIS/);
+  assert.match(research, /A status describes the maturity of the work—not a positive result/);
+  assert.match(research, /Design inspiration is kept separate from research claims/);
+});
+
+test("publishes clean metadata, crawl rules, sitemap, and social preview", async () => {
+  const [layout, robots, sitemap, social] = await Promise.all([
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/robots.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/sitemap.ts", import.meta.url), "utf8"),
+    readFile(new URL("../public/og.png", import.meta.url)),
+  ]);
+
+  assert.match(layout, /metadataBase: new URL\("https:\/\/wholebody\.foundation"\)/);
+  assert.match(layout, /url: "\/og\.png"/);
+  assert.match(layout, /Observe the land\. Test what works\. Share what holds\./);
+  assert.match(robots, /"\/presentation"/);
+  assert.match(robots, /"\/investors"/);
+  assert.match(robots, /"\/docs"/);
+  assert.match(robots, /https:\/\/wholebody\.foundation\/sitemap\.xml/);
+  assert.match(sitemap, /\["", "\/research", "\/about", "\/contact"\]/);
+  assert.equal(social.subarray(1, 4).toString(), "PNG");
+
+  for (const source of [layout, robots, sitemap]) {
+    for (const forbidden of forbiddenPublicTerms) {
+      assert.doesNotMatch(source, forbidden);
+    }
+  }
+});
+
+test("ships only public research documents in the public library", async () => {
   const documentsRoot = new URL("../public/documents/", import.meta.url);
   const files = (await readdir(documentsRoot))
     .filter((name) => name.endsWith(".pdf"))
     .sort();
-  assert.deepEqual(files, documentNames);
+  assert.deepEqual(files, [...publicDocumentNames].sort());
 
-  const source = await readFile(
-    new URL("../app/FoundationExperience.tsx", import.meta.url),
+  const research = await readFile(
+    new URL("../app/research/page.tsx", import.meta.url),
     "utf8",
   );
 
-  for (const name of documentNames) {
+  for (const name of publicDocumentNames) {
     const pdf = await readFile(new URL(name, documentsRoot));
     assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
-    assert.match(source, new RegExp(`/documents/${name.replaceAll(".", "\\.")}`));
+    assert.match(research, new RegExp(`/documents/${name.replaceAll(".", "\\.")}`));
   }
 
-  assert.match(source, /DATASET \/ PENDING FIELD COLLECTION/);
-  assert.match(source, /Mycelial and Ecological Network Survey Protocol/);
-  assert.match(source, /PROTOCOL \/ IN PREPARATION/);
+  for (const name of protectedDocumentNames) {
+    assert.doesNotMatch(
+      research,
+      new RegExp(`/documents/${name.replaceAll(".", "\\.")}`),
+    );
+    await assert.rejects(
+      readFile(new URL(name, documentsRoot)),
+      (error) => error?.code === "ENOENT",
+      `${name} must not ship in the public repository`,
+    );
+  }
 });
 
-test("ships the optimized Jesse Gawlik founder portrait", async () => {
-  const [source, portrait] = await Promise.all([
-    readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
+test("states grounded public commitments and preserves the founder portrait", async () => {
+  const [about, portrait] = await Promise.all([
+    readFile(new URL("../app/about/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../public/images/jesse-gawlik.jpg", import.meta.url)),
   ]);
 
-  assert.match(source, /src="\/images\/jesse-gawlik\.jpg"/);
-  assert.match(source, /width=\{1600\}/);
-  assert.match(source, /height=\{1200\}/);
-  assert.match(source, /loading="eager"/);
-  assert.match(source, /decoding="async"/);
-  assert.doesNotMatch(source, /from "next\/image"/);
-  assert.doesNotMatch(source, /className="portrait-placeholder"/);
+  assert.match(about, /Register field protocols before data collection begins/);
+  assert.match(about, /De-identify participant data/);
+  assert.match(about, /Share failed hypotheses and null findings/);
+  assert.match(about, /licensed engineering before fabrication/);
+  assert.match(about, /src="\/images\/jesse-gawlik\.jpg"/);
+  assert.match(about, /width=\{1600\}/);
+  assert.match(about, /height=\{1200\}/);
+  assert.doesNotMatch(about, /from "next\/image"/);
   assert.equal(portrait[0], 0xff);
   assert.equal(portrait[1], 0xd8);
   assert.ok(portrait.byteLength < 500_000);
-});
-
-test("states a specific and truthful open-science licensing plan", async () => {
-  const source = await readFile(
-    new URL("../app/FoundationExperience.tsx", import.meta.url),
-    "utf8",
-  );
-
-  assert.match(source, /Field study protocols will be registered on OSF before data collection begins/);
-  assert.match(source, /Human-participant data will be de-identified/);
-  assert.match(source, /Public registrations and versioned archival releases will receive repository-issued DOIs/);
-  assert.match(source, /Quarterly expense updates and an annual financial summary/);
-  assert.match(source, /CC BY 4\.0 International license/);
-  assert.match(source, /https:\/\/creativecommons\.org\/licenses\/by\/4\.0\//);
-  assert.match(source, /OSF PROJECT \/ COMING SOON/);
-  assert.match(source, /ZENODO ARCHIVE \/ COMING SOON/);
-  assert.doesNotMatch(source, /osf\.io\/YOUR_PROJECT_ID/);
-});
-
-test("integrates all four interactive architectural models inside their sections", async () => {
-  const [experience, garden, dome, architecture] = await Promise.all([
-    readFile(new URL("../app/FoundationExperience.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/TetrahedronGarden.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/FieldDome.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/ArchitecturalModels.tsx", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(experience, /function Garden\(\) \{\s*return <TetrahedronGarden \/>;/);
-  assert.match(experience, /<FieldDome \/>/);
-  assert.match(experience, /<GreatHallModel \/>/);
-  assert.match(experience, /<ResidentialClustersModel \/>/);
-  assert.doesNotMatch(experience, /Abstract plan/);
-  assert.doesNotMatch(experience, /className="metric-row"/);
-  assert.doesNotMatch(experience, /className="water-note"/);
-  assert.doesNotMatch(experience, /className="phase-model-specs"/);
-  assert.equal(
-    experience.match(/className="architecture-layout"/g)?.length,
-    4,
-    "all four architecture phases should share the same 50/50 layout",
-  );
-  assert.match(garden, /ENHANCE DETAIL/);
-  assert.match(garden, /EXPAND MODEL/);
-  assert.match(dome, /65 CONNECTED STRUTS/);
-  assert.match(dome, /EXPAND MODEL/);
-  assert.match(dome, /function WoodIsolationPlatform/);
-  assert.match(dome, /function OculusSunShade/);
-  assert.match(dome, /makeTimberBeam/);
-  assert.match(dome, /isApex/);
-  assert.match(dome, /VENTED OCULUS \+ SUN SHADE/);
-  assert.match(dome, /ringGeometry args=\{\[1\.02, 1\.58, 64\]\}/);
-  assert.match(dome, /cylinderGeometry args=\{\[1\.42, 1\.52, 0\.11, 48\]\}/);
-  assert.match(dome, /function TetrahedronGarden/);
-  assert.match(dome, /function DiamondPath/);
-  assert.match(dome, /function FirePit/);
-  assert.match(dome, /function WaterFeature/);
-  assert.match(dome, /function EarthTree/);
-  assert.match(dome, /function AirLightTunnel/);
-  assert.match(dome, /const y = 0\.46 \+ index \* 0\.27/);
-  assert.match(dome, /rotation=\{\[Math\.PI \/ 2, 0, 0\]\}/);
-  assert.doesNotMatch(dome, /const z = \(index - 4\) \* 0\.38/);
-  assert.match(dome, /function ElementalCenterpiece/);
-  assert.match(dome, /<ElementalCenterpiece/);
-  assert.match(dome, /element: "EARTH"/);
-  assert.match(dome, /element: "FIRE"/);
-  assert.match(dome, /element: "AIR"/);
-  assert.match(dome, /element: "WATER"/);
-  assert.match(dome, /TETRAHEDRON GARDEN \/ CENTRAL WATER HUB/);
-  assert.match(dome, /4 × 65 CONNECTED STRUTS \/ WOOD ISOLATION PLATFORMS/);
-  assert.match(experience, /Fire\. Water\. Tree\. Light\. One living garden at the center\./);
-  assert.match(dome, /struts\.length !== 65/);
-  assert.match(dome, /joints\.length !== 26/);
-  assert.match(dome, /baseJoints !== 10/);
-  assert.match(dome, /longStruts !== 35/);
-  assert.match(dome, /shortStruts !== 30/);
-  assert.match(dome, /hemispherePanelCount !== 40/);
-  assert.doesNotMatch(dome, /segments\.push\(\[\s*new THREE\.Vector3\(Math\.cos/);
-  assert.doesNotMatch(dome, /<torusGeometry args=\{\[3,/);
-  assert.match(architecture, /function GreatHall/);
-  assert.match(architecture, /dodecahedronGeometry args=\{\[0\.95, 0\]\}/);
-  assert.match(architecture, /function ResidentialClusters/);
-  assert.match(experience, /<h2>Clover Homes\.<\/h2>/);
-  assert.doesNotMatch(experience, /Quincunx residential clusters/);
-  assert.match(architecture, /PHASE 4 \/ CLOVER HOMES/);
-  assert.match(architecture, /Array\.from\(\{ length: 6 \}/);
-  assert.match(architecture, /<OrbitControls/);
-  assert.match(architecture, /requestFullscreen/);
 });

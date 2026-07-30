@@ -1,12 +1,11 @@
-# Locked master-plan render assets
+# Reserved partner render assets
 
 Place the final image files in this directory using these exact names:
 
-- `tet-garden-aerial.jpg`
-- `great-hall-interior.jpg`
-- `master-site-plan.jpg`
-- `quincunx-cluster.jpg`
+- `partner-study-aerial.jpg`
+- `partner-gathering-interior.jpg`
+- `partner-site-plan.jpg`
+- `partner-residential-study.jpg`
 
-The procedural Tetrahedron Garden does not depend on these files. They are
-reserved for the later master-plan, Great Hall, and residential-cluster
-sections.
+Public routes do not depend on these files. They are reserved for reviewed
+partner studies and must not be linked from the public website.
